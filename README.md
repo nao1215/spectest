@@ -1,4 +1,11 @@
-# What is spectest?
+[![LinuxUnitTest](https://github.com/nao1215/spectest/actions/workflows/linux_test.yml/badge.svg)](https://github.com/nao1215/spectest/actions/workflows/linux_test.yml)
+[![MacUnitTest](https://github.com/nao1215/spectest/actions/workflows/mac_test.yml/badge.svg)](https://github.com/nao1215/spectest/actions/workflows/mac_test.yml)
+[![Vuluncheck](https://github.com/nao1215/spectest/actions/workflows/govulncheck.yml/badge.svg)](https://github.com/nao1215/spectest/actions/workflows/govulncheck.yml)
+[![Gosec](https://github.com/nao1215/spectest/actions/workflows/security.yml/badge.svg)](https://github.com/nao1215/spectest/actions/workflows/security.yml)
+[![reviewdog](https://github.com/nao1215/spectest/actions/workflows/reviewdog.yml/badge.svg)](https://github.com/nao1215/spectest/actions/workflows/reviewdog.yml)
+![Coverage](https://raw.githubusercontent.com/nao1215/octocovs-central-repo/main/badges/nao1215/spectest/coverage.svg)
+
+## What is spectest?
 
 **This project is forked from [steinfletcher/apitest](https://github.com/steinfletcher/apitest)** apitest was functionally complete. However, I wanted more features, so I decided to fork it to actively develop it further. I will mainly enhance document generation and integration with AWS."
 
@@ -6,6 +13,9 @@ A simple and extensible behavioural testing library. Supports mocking external h
 
 In behavioural tests the internal structure of the app is not known by the tests. Data is input to the system and the outputs are expected to meet certain conditions.
 
+## Supported OS
+- Linux
+- Mac
 
 ## Installation
 
