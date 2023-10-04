@@ -14,7 +14,7 @@ import (
 	"testing"
 )
 
-func TestMocks_Cookie_Matches(t *testing.T) {
+func TestMocksCookieMatches(t *testing.T) {
 	reqURL := "http://test.com/v1/path"
 	req := httptest.NewRequest(http.MethodGet, reqURL, nil)
 	req.Header.Set("Cookie", "k=v")
@@ -25,7 +25,7 @@ func TestMocks_Cookie_Matches(t *testing.T) {
 	assert.NoError(t, matchError)
 }
 
-func TestMocks_Cookie_NameFailsToMatch(t *testing.T) {
+func TestMocksCookieNameFailsToMatch(t *testing.T) {
 	reqURL := "http://test.com/v1/path"
 	req := httptest.NewRequest(http.MethodGet, reqURL, nil)
 	req.Header.Set("Cookie", "a=c")
@@ -37,7 +37,7 @@ func TestMocks_Cookie_NameFailsToMatch(t *testing.T) {
 		"expected cookie with name 'x' not received")
 }
 
-func TestMocks_Cookie_ValueFailsToMatch(t *testing.T) {
+func TestMocksCookieValueFailsToMatch(t *testing.T) {
 	reqURL := "http://test.com/v1/path"
 	req := httptest.NewRequest(http.MethodGet, reqURL, nil)
 	req.Header.Set("Cookie", "a=c")
@@ -49,7 +49,7 @@ func TestMocks_Cookie_ValueFailsToMatch(t *testing.T) {
 		"failed to match cookie: [Mismatched field Value. Expected v but received c]")
 }
 
-func TestMocks_CookiePresent_Matches(t *testing.T) {
+func TestMocksCookiePresentMatches(t *testing.T) {
 	reqURL := "http://test.com/v1/path"
 	req := httptest.NewRequest(http.MethodGet, reqURL, nil)
 	req.Header.Set("Cookie", "k=v")
@@ -60,7 +60,7 @@ func TestMocks_CookiePresent_Matches(t *testing.T) {
 	assert.NoError(t, matchError)
 }
 
-func TestMocks_CookiePresent_FailsToMatch(t *testing.T) {
+func TestMocksCookiePresentFailsToMatch(t *testing.T) {
 	reqURL := "http://test.com/v1/path"
 	req := httptest.NewRequest(http.MethodGet, reqURL, nil)
 	req.Header.Set("Cookie", "k=v")
@@ -71,7 +71,7 @@ func TestMocks_CookiePresent_FailsToMatch(t *testing.T) {
 	assert.Equal(t, matchError.Error(), "expected cookie with name 'a' not received")
 }
 
-func TestMocks_CookieNotPresent_Matches(t *testing.T) {
+func TestMocksCookieNotPresentMatches(t *testing.T) {
 	reqURL := "http://test.com/v1/path"
 	req := httptest.NewRequest(http.MethodGet, reqURL, nil)
 	req.Header.Set("Cookie", "k=v")
@@ -82,7 +82,7 @@ func TestMocks_CookieNotPresent_Matches(t *testing.T) {
 	assert.NoError(t, matchError)
 }
 
-func TestMocks_CookieNotPresent_FailsToMatch(t *testing.T) {
+func TestMocksCookieNotPresentFailsToMatch(t *testing.T) {
 	reqURL := "http://test.com/v1/path"
 	req := httptest.NewRequest(http.MethodGet, reqURL, nil)
 	req.Header.Set("Cookie", "k=v")
@@ -93,14 +93,14 @@ func TestMocks_CookieNotPresent_FailsToMatch(t *testing.T) {
 	assert.Equal(t, matchError.Error(), "did not expect a cookie with name 'k'")
 }
 
-func TestMocks_NewUnmatchedMockError_Empty(t *testing.T) {
+func TestMocksNewUnmatchedMockErrorEmpty(t *testing.T) {
 	mockError := newUnmatchedMockError()
 
 	assert.Equal(t, true, mockError != nil)
 	assert.Equal(t, 0, len(mockError.errors))
 }
 
-func TestMocks_NewEmptyUnmatchedMockError_ExpectedErrorsString(t *testing.T) {
+func TestMocksNewEmptyUnmatchedMockErrorExpectedErrorsString(t *testing.T) {
 	mockError := newUnmatchedMockError().
 		addErrors(1, errors.New("a boo boo has occurred")).
 		addErrors(2, errors.New("tom drank too much beer"))
@@ -112,7 +112,7 @@ func TestMocks_NewEmptyUnmatchedMockError_ExpectedErrorsString(t *testing.T) {
 		mockError.Error())
 }
 
-func TestMocks_HostMatcher(t *testing.T) {
+func TestMocksHostMatcher(t *testing.T) {
 	tests := map[string]struct {
 		request       *http.Request
 		mockUrl       string
@@ -150,7 +150,7 @@ func TestMocks_HostMatcher(t *testing.T) {
 	}
 }
 
-func TestMocks_HeaderMatcher(t *testing.T) {
+func TestMocksHeaderMatcher(t *testing.T) {
 	tests := []struct {
 		requestHeaders     map[string]string
 		headerToMatchKey   string
@@ -179,7 +179,7 @@ func TestMocks_HeaderMatcher(t *testing.T) {
 	}
 }
 
-func TestMocks_MockRequest_Header_WorksWithHeaders(t *testing.T) {
+func TestMocksMockRequestHeaderWorksWithHeaders(t *testing.T) {
 	mock := NewMock().
 		Get("/path").
 		Header("A", "12345").
@@ -193,7 +193,7 @@ func TestMocks_MockRequest_Header_WorksWithHeaders(t *testing.T) {
 	assert.Equal(t, true, matchError == nil)
 }
 
-func TestMocks_HeaderPresentMatcher(t *testing.T) {
+func TestMocksHeaderPresentMatcher(t *testing.T) {
 	tests := map[string]struct {
 		requestHeaders map[string]string
 		headerPresent  string
@@ -217,7 +217,7 @@ func TestMocks_HeaderPresentMatcher(t *testing.T) {
 	}
 }
 
-func TestMocks_HeaderNotPresentMatcher(t *testing.T) {
+func TestMocksHeaderNotPresentMatcher(t *testing.T) {
 	tests := map[string]struct {
 		requestHeaders   map[string]string
 		headerNotPresent string
@@ -241,7 +241,7 @@ func TestMocks_HeaderNotPresentMatcher(t *testing.T) {
 	}
 }
 
-func TestMocks_BasicAuth(t *testing.T) {
+func TestMocksBasicAuth(t *testing.T) {
 	tests := map[string]struct {
 		reqUsername   string
 		reqPassword   string
@@ -292,9 +292,9 @@ func TestMocks_BasicAuth(t *testing.T) {
 	}
 }
 
-func TestMocks_QueryMatcher_Success(t *testing.T) {
+func TestMocksQueryMatcherSuccess(t *testing.T) {
 	tests := []struct {
-		requestUrl   string
+		requestURL   string
 		queryToMatch map[string][]string
 	}{
 		{"http://test.com/v1/path?a=1", map[string][]string{"a": {"1"}}},
@@ -304,9 +304,9 @@ func TestMocks_QueryMatcher_Success(t *testing.T) {
 		{"http://test.com/v2/path?b=2&a=apple", map[string][]string{"a": {"a([a-z]+)ple"}}},
 	}
 	for _, test := range tests {
-		t.Run(test.requestUrl, func(t *testing.T) {
-			req := httptest.NewRequest(http.MethodGet, test.requestUrl, nil)
-			mockRequest := NewMock().Get(test.requestUrl)
+		t.Run(test.requestURL, func(t *testing.T) {
+			req := httptest.NewRequest(http.MethodGet, test.requestURL, nil)
+			mockRequest := NewMock().Get(test.requestURL)
 			for k := range test.queryToMatch {
 				for _, value := range test.queryToMatch[k] {
 					mockRequest.Query(k, value)
@@ -319,9 +319,9 @@ func TestMocks_QueryMatcher_Success(t *testing.T) {
 	}
 }
 
-func TestMocks_QueryMatcher_Errors(t *testing.T) {
+func TestMocksQueryMatcherErrors(t *testing.T) {
 	tests := []struct {
-		requestUrl    string
+		requestURL    string
 		queryToMatch  map[string][]string
 		expectedError error
 	}{
@@ -332,9 +332,9 @@ func TestMocks_QueryMatcher_Errors(t *testing.T) {
 		{"http://test.com/v2/path?b=2&a=1", map[string][]string{"a": {"a-z]+)ch_invalid_regexp"}}, errors.New("failed to parse regexp for query param a with value a-z]+)ch_invalid_regexp")},
 	}
 	for _, test := range tests {
-		t.Run(test.requestUrl, func(t *testing.T) {
-			req := httptest.NewRequest(http.MethodGet, test.requestUrl, nil)
-			mockRequest := NewMock().Get(test.requestUrl)
+		t.Run(test.requestURL, func(t *testing.T) {
+			req := httptest.NewRequest(http.MethodGet, test.requestURL, nil)
+			mockRequest := NewMock().Get(test.requestURL)
 			for k := range test.queryToMatch {
 				for _, value := range test.queryToMatch[k] {
 					mockRequest.Query(k, value)
@@ -347,7 +347,7 @@ func TestMocks_QueryMatcher_Errors(t *testing.T) {
 	}
 }
 
-func TestMocks_QueryParams_DoesNotOverwriteQuery(t *testing.T) {
+func TestMocksQueryParamsDoesNotOverwriteQuery(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "http://test.com/v2/path?b=2&a=1", nil)
 	mockRequest := NewMock().
 		Get("http://test.com").
@@ -360,7 +360,7 @@ func TestMocks_QueryParams_DoesNotOverwriteQuery(t *testing.T) {
 	assert.Equal(t, true, matchError == nil)
 }
 
-func TestMocks_QueryCollection(t *testing.T) {
+func TestMocksQueryCollection(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "http://test.com/v2/path?a=1&a=2&b=3&c=4", nil)
 	mockRequest := NewMock().
 		Get("http://test.com").
@@ -374,7 +374,7 @@ func TestMocks_QueryCollection(t *testing.T) {
 	assert.Equal(t, true, matchError == nil)
 }
 
-func TestMocks_QueryCollection_Fails(t *testing.T) {
+func TestMocksQueryCollectionFails(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "http://test.com/v2/path?a=1&a=2&b=3&c=4", nil)
 	mockRequest := NewMock().
 		Get("http://test.com").
@@ -388,9 +388,9 @@ func TestMocks_QueryCollection_Fails(t *testing.T) {
 	assert.Equal(t, true, matchError != nil)
 }
 
-func TestMocks_QueryPresent(t *testing.T) {
+func TestMocksQueryPresent(t *testing.T) {
 	tests := []struct {
-		requestUrl    string
+		requestURL    string
 		queryParam    string
 		expectedError error
 	}{
@@ -400,16 +400,16 @@ func TestMocks_QueryPresent(t *testing.T) {
 		{"http://test.com/v2/path?b=2&a=1", "a", nil},
 	}
 	for _, test := range tests {
-		t.Run(test.requestUrl, func(t *testing.T) {
-			req := httptest.NewRequest(http.MethodGet, test.requestUrl, nil)
-			mockRequest := NewMock().Get(test.requestUrl).QueryPresent(test.queryParam)
+		t.Run(test.requestURL, func(t *testing.T) {
+			req := httptest.NewRequest(http.MethodGet, test.requestURL, nil)
+			mockRequest := NewMock().Get(test.requestURL).QueryPresent(test.queryParam)
 			matchError := queryPresentMatcher(req, mockRequest)
 			assert.Equal(t, test.expectedError, matchError)
 		})
 	}
 }
 
-func TestMocks_QueryNotPresent(t *testing.T) {
+func TestMocksQueryNotPresent(t *testing.T) {
 	tests := []struct {
 		queryString   string
 		queryParam    string
@@ -430,7 +430,7 @@ func TestMocks_QueryNotPresent(t *testing.T) {
 	}
 }
 
-func TestMocks_FormDataMatcher(t *testing.T) {
+func TestMocksFormDataMatcher(t *testing.T) {
 	tests := []struct {
 		name             string
 		requestFormData  map[string][]string
@@ -516,7 +516,7 @@ func TestMocks_FormDataMatcher(t *testing.T) {
 	}
 }
 
-func TestMocks_FormDataPresent(t *testing.T) {
+func TestMocksFormDataPresent(t *testing.T) {
 	tests := []struct {
 		name                       string
 		requestFormData            map[string]string
@@ -550,7 +550,7 @@ func TestMocks_FormDataPresent(t *testing.T) {
 	}
 }
 
-func TestMocks_FormDataNotPresent(t *testing.T) {
+func TestMocksFormDataNotPresent(t *testing.T) {
 	tests := []struct {
 		name                          string
 		requestFormData               map[string]string
@@ -584,10 +584,10 @@ func TestMocks_FormDataNotPresent(t *testing.T) {
 	}
 }
 
-func TestMocks_SchemeMatcher(t *testing.T) {
+func TestMocksSchemeMatcher(t *testing.T) {
 	tests := []struct {
-		requestUrl    string
-		mockUrl       string
+		requestURL    string
+		mockURL       string
 		expectedError error
 	}{
 		{"http://test.com", "https://test.com", errors.New("received scheme http did not match mock scheme https")},
@@ -596,18 +596,18 @@ func TestMocks_SchemeMatcher(t *testing.T) {
 		{"localhost:80", "localhost:80", nil},
 	}
 	for _, test := range tests {
-		t.Run(fmt.Sprintf("%s %s", test.requestUrl, test.mockUrl), func(t *testing.T) {
-			req := httptest.NewRequest(http.MethodGet, test.requestUrl, nil)
-			matchError := schemeMatcher(req, NewMock().Get(test.mockUrl))
+		t.Run(fmt.Sprintf("%s %s", test.requestURL, test.mockURL), func(t *testing.T) {
+			req := httptest.NewRequest(http.MethodGet, test.requestURL, nil)
+			matchError := schemeMatcher(req, NewMock().Get(test.mockURL))
 			if !reflect.DeepEqual(matchError, test.expectedError) {
 				t.Fatalf("mockUrl='%s' requestUrl='%s' actual=%v shouldMatch=%v",
-					test.mockUrl, test.requestUrl, matchError, test.expectedError)
+					test.mockURL, test.requestURL, matchError, test.expectedError)
 			}
 		})
 	}
 }
 
-func TestMocks_BodyMatcher(t *testing.T) {
+func TestMocksBodyMatcher(t *testing.T) {
 	tests := []struct {
 		requestBody   string
 		matchBody     string
@@ -629,7 +629,7 @@ func TestMocks_BodyMatcher(t *testing.T) {
 	}
 }
 
-func TestMocks_BodyMatcher_Regexp(t *testing.T) {
+func TestMocksBodyMatcherRegexp(t *testing.T) {
 	tests := []struct {
 		requestBody   string
 		matchBody     string
@@ -650,13 +650,13 @@ func TestMocks_BodyMatcher_Regexp(t *testing.T) {
 	}
 }
 
-func TestMocks_BodyMatcher_SupportsRawArrays(t *testing.T) {
+func TestMocksBodyMatcherSupportsRawArrays(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/path", strings.NewReader(`[{"a":1, "b": 2, "c": "something"}]`))
 	matchError := bodyMatcher(req, NewMock().Get("/path").JSON(`[{"b": 2, "c": "something", "a": 1}]`))
 	assert.NoError(t, matchError)
 }
 
-func TestMocks_RequestBody(t *testing.T) {
+func TestMocksRequestBody(t *testing.T) {
 	tests := map[string]struct {
 		requestBody interface{}
 	}{
@@ -673,9 +673,9 @@ func TestMocks_RequestBody(t *testing.T) {
 	}
 }
 
-func TestMocks_PathMatcher(t *testing.T) {
+func TestMocksPathMatcher(t *testing.T) {
 	tests := []struct {
-		requestUrl    string
+		requestURL    string
 		pathToMatch   string
 		expectedError error
 	}{
@@ -687,17 +687,17 @@ func TestMocks_PathMatcher(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.pathToMatch, func(t *testing.T) {
-			req := httptest.NewRequest(http.MethodGet, test.requestUrl, nil)
+			req := httptest.NewRequest(http.MethodGet, test.requestURL, nil)
 			matchError := pathMatcher(req, NewMock().Get(test.pathToMatch))
 			if matchError != nil && !reflect.DeepEqual(matchError, test.expectedError) {
 				t.Fatalf("methodToMatch='%s' requestUrl='%s' shouldMatch=%v",
-					test.pathToMatch, test.requestUrl, matchError)
+					test.pathToMatch, test.requestURL, matchError)
 			}
 		})
 	}
 }
 
-func TestMocks_AddMatcher(t *testing.T) {
+func TestMocksAddMatcher(t *testing.T) {
 	tests := map[string]struct {
 		matcherResponse error
 		mockResponse    *MockResponse
@@ -747,7 +747,7 @@ func TestMocks_AddMatcher(t *testing.T) {
 	}
 }
 
-func TestMocks_AddMatcher_KeepsDefaultMocks(t *testing.T) {
+func TestMocksAddMatcherKeepsDefaultMocks(t *testing.T) {
 	testMock := NewMock()
 
 	// Default matchers present on new mock
@@ -766,7 +766,7 @@ func TestMocks_AddMatcher_KeepsDefaultMocks(t *testing.T) {
 	assert.Equal(t, len(defaultMatchers)+1, len(testMock.request.matchers))
 }
 
-func TestMocks_PanicsIfUrlInvalid(t *testing.T) {
+func TestMocksPanicsIfURLInvalid(t *testing.T) {
 	defer func() {
 		if r := recover(); r == nil {
 			t.Fatal("expected to panic")
@@ -776,7 +776,7 @@ func TestMocks_PanicsIfUrlInvalid(t *testing.T) {
 	NewMock().Get("http:// blah")
 }
 
-func TestMocks_Matches(t *testing.T) {
+func TestMocksMatches(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/preferences/12345", nil)
 
 	getPreferences := NewMock().
@@ -799,7 +799,7 @@ func TestMocks_Matches(t *testing.T) {
 	assert.Equal(t, `{"is_contactable": true}`, mockResponse.body)
 }
 
-func TestMocks_Matches_Errors(t *testing.T) {
+func TestMocksMatchesErrors(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/test/mock", nil)
 
 	testMock := NewMock().
@@ -830,7 +830,7 @@ func TestMocks_Matches_Errors(t *testing.T) {
 	}}, matchErrors)
 }
 
-func TestMocks_Matches_NilIfNoMatch(t *testing.T) {
+func TestMocksMatchesNilIfNoMatch(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/preferences/12345", nil)
 
 	mockResponse, matchErrors := matches(req, []*Mock{})
@@ -843,7 +843,7 @@ func TestMocks_Matches_NilIfNoMatch(t *testing.T) {
 	assert.Equal(t, newUnmatchedMockError(), matchErrors)
 }
 
-func TestMocks_UnmatchedMockErrorOrderedMockKeys(t *testing.T) {
+func TestMocksUnmatchedMockErrorOrderedMockKeys(t *testing.T) {
 	unmatchedMockError := newUnmatchedMockError().
 		addErrors(3, errors.New("oh no")).
 		addErrors(1, errors.New("oh shoot")).
@@ -854,7 +854,7 @@ func TestMocks_UnmatchedMockErrorOrderedMockKeys(t *testing.T) {
 		unmatchedMockError.Error())
 }
 
-func TestMocks_Matches_ErrorsMatchUnmatchedMocks(t *testing.T) {
+func TestMocksMatchesErrorsMatchUnmatchedMocks(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/preferences/12345", nil)
 
 	mockResponse, matchErrors := matches(req,
@@ -873,7 +873,7 @@ func TestMocks_Matches_ErrorsMatchUnmatchedMocks(t *testing.T) {
 		matchErrors.Error())
 }
 
-func TestMocks_MethodMatcher(t *testing.T) {
+func TestMocksMethodMatcher(t *testing.T) {
 	tests := []struct {
 		requestMethod string
 		methodToMatch string
@@ -899,7 +899,7 @@ func TestMocks_MethodMatcher(t *testing.T) {
 	}
 }
 
-func TestMocks_Request_SetsTheMethod(t *testing.T) {
+func TestMocksRequestSetsTheMethod(t *testing.T) {
 	tests := []struct {
 		expectedMethod string
 		methodSetter   func(m *Mock)
@@ -920,7 +920,7 @@ func TestMocks_Request_SetsTheMethod(t *testing.T) {
 	}
 }
 
-func TestMocks_URLFormatterSupport(t *testing.T) {
+func TestMocksURLFormatterSupport(t *testing.T) {
 	t.Run("Getf", func(tc *testing.T) {
 		req := NewMock().Getf("/user/%d", 1)
 		assert.Equal(tc, "/user/1", req.url.Path)
@@ -952,7 +952,7 @@ func TestMocks_URLFormatterSupport(t *testing.T) {
 	})
 }
 
-func TestMocks_BodyFormatterSupport(t *testing.T) {
+func TestMocksBodyFormatterSupport(t *testing.T) {
 	t.Run("request body", func(tc *testing.T) {
 		req := NewMock().Post("/user/1").Bodyf(`{"name": "%s"}`, "Jan")
 		assert.Equal(tc, `{"name": "Jan"}`, req.body)
@@ -964,7 +964,7 @@ func TestMocks_BodyFormatterSupport(t *testing.T) {
 	})
 }
 
-func TestMocks_Response_SetsTextPlainIfNoContentTypeSet(t *testing.T) {
+func TestMocksResponseSetsTextPlainIfNoContentTypeSet(t *testing.T) {
 	mockResponse := NewMock().
 		Get("assert").
 		RespondWith().
@@ -977,7 +977,7 @@ func TestMocks_Response_SetsTextPlainIfNoContentTypeSet(t *testing.T) {
 	assert.Equal(t, "text/plain", response.Header.Get("Content-Type"))
 }
 
-func TestMocks_Response_SetsTheBodyAsJSON(t *testing.T) {
+func TestMocksResponseSetsTheBodyAsJSON(t *testing.T) {
 	mockResponse := NewMock().
 		Get("assert").
 		RespondWith().
@@ -990,7 +990,7 @@ func TestMocks_Response_SetsTheBodyAsJSON(t *testing.T) {
 	assert.Equal(t, "application/json", response.Header.Get("Content-Type"))
 }
 
-func TestMocks_ResponseJSON(t *testing.T) {
+func TestMocksResponseJSON(t *testing.T) {
 	mockResponse := NewMock().
 		Get("assert").
 		RespondWith().
@@ -1003,7 +1003,7 @@ func TestMocks_ResponseJSON(t *testing.T) {
 	assert.Equal(t, "application/json", response.Header.Get("Content-Type"))
 }
 
-func TestMocks_Response_SetsTheBodyAsOther(t *testing.T) {
+func TestMocksResponseSetsTheBodyAsOther(t *testing.T) {
 	mockResponse := NewMock().
 		Get("assert").
 		RespondWith().
@@ -1017,7 +1017,7 @@ func TestMocks_Response_SetsTheBodyAsOther(t *testing.T) {
 	assert.Equal(t, "text/html", response.Header.Get("Content-Type"))
 }
 
-func TestMocks_Response_Headers_WithNormalizedKeys(t *testing.T) {
+func TestMocksResponseHeadersWithNormalizedKeys(t *testing.T) {
 	mockResponse := NewMock().
 		Get("assert").
 		RespondWith().
@@ -1030,7 +1030,7 @@ func TestMocks_Response_Headers_WithNormalizedKeys(t *testing.T) {
 	assert.Equal(t, http.Header(map[string][]string{"A": {"1"}, "B": {"2"}, "C": {"3"}}), response.Header)
 }
 
-func TestMocks_Response_Cookies(t *testing.T) {
+func TestMocksResponseCookies(t *testing.T) {
 	mockResponse := NewMock().
 		Get("test").
 		RespondWith().
@@ -1047,7 +1047,7 @@ func TestMocks_Response_Cookies(t *testing.T) {
 	}, response.Cookies())
 }
 
-func TestMocks_Standalone(t *testing.T) {
+func TestMocksStandalone(t *testing.T) {
 	cli := http.Client{Timeout: 5}
 	defer NewMock().
 		Post("http://localhost:8080/path").
@@ -1064,7 +1064,7 @@ func TestMocks_Standalone(t *testing.T) {
 	assert.Equal(t, http.StatusCreated, resp.StatusCode)
 }
 
-func TestMocks_Standalone_WithContainer(t *testing.T) {
+func TestMocksStandaloneWithContainer(t *testing.T) {
 	cli := http.Client{Timeout: 5}
 	reset := NewStandaloneMocks(
 		NewMock().
@@ -1099,7 +1099,7 @@ func TestMocks_Standalone_WithContainer(t *testing.T) {
 	assert.JSONEq(t, `{"a": 12345}`, string(data))
 }
 
-func TestMocks_Standalone_WithCustomHTTPClient(t *testing.T) {
+func TestMocksStandaloneWithCustomHTTPClient(t *testing.T) {
 	httpClient := customCli
 	defer NewMock().
 		HttpClient(httpClient).
@@ -1117,7 +1117,7 @@ func TestMocks_Standalone_WithCustomHTTPClient(t *testing.T) {
 	assert.Equal(t, http.StatusCreated, resp.StatusCode)
 }
 
-func TestMocks_WithHTTPTimeout(t *testing.T) {
+func TestMocksWithHTTPTimeout(t *testing.T) {
 	httpClient := customCli
 	defer NewMock().
 		HttpClient(httpClient).
@@ -1139,7 +1139,7 @@ func TestMocks_WithHTTPTimeout(t *testing.T) {
 	assert.Equal(t, true, isTimeout)
 }
 
-func TestMocks_ApiTest_WithMocks(t *testing.T) {
+func TestMocksApiTestWithMocks(t *testing.T) {
 	tests := []struct {
 		name    string
 		httpCli *http.Client
@@ -1165,9 +1165,9 @@ func TestMocks_ApiTest_WithMocks(t *testing.T) {
 				End()
 
 			New().
-				HttpClient(test.httpCli).
+				HTTPClient(test.httpCli).
 				Mocks(getUser, getPreferences).
-				Handler(getUserHandler(NewHttpGet(test.httpCli))).
+				Handler(getUserHandler(NewHTTPGet(test.httpCli))).
 				Get("/user").
 				Expect(t).
 				Status(http.StatusOK).
@@ -1177,7 +1177,7 @@ func TestMocks_ApiTest_WithMocks(t *testing.T) {
 	}
 }
 
-func TestMocks_ApiTest_SupportsObservingMocks(t *testing.T) {
+func TestMocksApiTestSupportsObservingMocks(t *testing.T) {
 	var observedMocks []*mockInteraction
 
 	getUser := NewMock().
@@ -1226,7 +1226,7 @@ func TestMocks_ApiTest_SupportsObservingMocks(t *testing.T) {
 	assert.Equal(t, 3, len(observedMocks))
 }
 
-func TestMocks_ApiTest_SupportsObservingMocksWithReport(t *testing.T) {
+func TestMocksApiTestSupportsObservingMocksWithReport(t *testing.T) {
 	var observedMocks []*mockInteraction
 	reporter := &RecorderCaptor{}
 	observeMocksCalled := false
@@ -1284,7 +1284,7 @@ func TestMocks_ApiTest_SupportsObservingMocksWithReport(t *testing.T) {
 	assert.True(t, reporter.capturedRecorder.Meta["duration"].(int64) > oneSecondInNanoSecs)
 }
 
-func TestMocks_ApiTest_SupportsMultipleMocks(t *testing.T) {
+func TestMocksApiTestSupportsMultipleMocks(t *testing.T) {
 	getUser := NewMock().
 		Get("http://localhost:8080").
 		RespondWith().
@@ -1334,7 +1334,7 @@ func getUserData() []byte {
 	return bytes
 }
 
-func getUserHandler(get HttpGet) *http.ServeMux {
+func getUserHandler(get HTTPGet) *http.ServeMux {
 	handler := http.NewServeMux()
 	handler.HandleFunc("/user", func(w http.ResponseWriter, r *http.Request) {
 		var user User
@@ -1375,9 +1375,9 @@ var customCli = &http.Client{
 	Transport: &http.Transport{},
 }
 
-type HttpGet func(path string, response interface{})
+type HTTPGet func(path string, response interface{})
 
-func NewHttpGet(cli *http.Client) HttpGet {
+func NewHTTPGet(cli *http.Client) HTTPGet {
 	return func(path string, response interface{}) {
 		res, err := cli.Get(fmt.Sprintf("http://localhost:8080%s", path))
 		if err != nil {

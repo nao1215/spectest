@@ -44,6 +44,7 @@ type DefaultVerifier struct{}
 
 var _ Verifier = DefaultVerifier{}
 
+// True asserts that the value is true
 func (a DefaultVerifier) True(t TestingT, value bool, msgAndArgs ...interface{}) bool {
 	if !value {
 		return a.Fail(t, "Should be true", msgAndArgs...)
@@ -66,6 +67,7 @@ func (a DefaultVerifier) JSONEq(t TestingT, expected string, actual string, msgA
 	return a.Equal(t, expectedJSONAsInterface, actualJSONAsInterface, msgAndArgs...)
 }
 
+// Equal asserts that two values are equal
 func (a DefaultVerifier) Equal(t TestingT, expected, actual interface{}, msgAndArgs ...interface{}) bool {
 	if err := validateEqualArgs(expected, actual); err != nil {
 		return a.Fail(t, fmt.Sprintf("Invalid operation: %#v == %#v (%s)",
@@ -315,29 +317,30 @@ type labeledContent struct {
 // NoopVerifier is a verifier that does not perform verification
 type NoopVerifier struct{}
 
-func (n NoopVerifier) True(t TestingT, v bool, msgAndArgs ...interface{}) bool {
+// True is always true
+func (n NoopVerifier) True(_ TestingT, _ bool, _ ...interface{}) bool {
 	return true
 }
 
 var _ Verifier = NoopVerifier{}
 
 // Equal does not perform any assertion and always returns true
-func (n NoopVerifier) Equal(t TestingT, expected, actual interface{}, msgAndArgs ...interface{}) bool {
+func (n NoopVerifier) Equal(_ TestingT, _, _ interface{}, _ ...interface{}) bool {
 	return true
 }
 
 // JSONEq does not perform any assertion and always returns true
-func (n NoopVerifier) JSONEq(t TestingT, expected string, actual string, msgAndArgs ...interface{}) bool {
+func (n NoopVerifier) JSONEq(_ TestingT, _ string, _ string, _ ...interface{}) bool {
 	return true
 }
 
 // Fail does not perform any assertion and always returns true
-func (n NoopVerifier) Fail(t TestingT, failureMessage string, msgAndArgs ...interface{}) bool {
+func (n NoopVerifier) Fail(_ TestingT, _ string, _ ...interface{}) bool {
 	return true
 }
 
 // NoError asserts that a function returned no error
-func (n NoopVerifier) NoError(t TestingT, err error, msgAndArgs ...interface{}) bool {
+func (n NoopVerifier) NoError(_ TestingT, _ error, _ ...interface{}) bool {
 	return true
 }
 

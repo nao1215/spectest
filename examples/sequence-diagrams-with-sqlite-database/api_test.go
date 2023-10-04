@@ -24,7 +24,7 @@ func init() {
 	sql.Register("wrappedSqlite", wrappedDriver)
 }
 
-func TestGetUser_With_Default_Report_Formatter(t *testing.T) {
+func TestGetUserWithDefaultReportFormatter(t *testing.T) {
 	_ = os.Setenv("SQLITE_DSN", "./foo.db")
 
 	username := uuid.NewV4().String()[0:7]
@@ -49,7 +49,7 @@ func TestGetUser_With_Default_Report_Formatter(t *testing.T) {
 		End()
 }
 
-func TestPostUser_With_Default_Report_Formatter(t *testing.T) {
+func TestPostUserWithDefaultReportFormatter(t *testing.T) {
 	dsn := os.Getenv("SQLITE_DSN")
 	if dsn == "" {
 		t.SkipNow()

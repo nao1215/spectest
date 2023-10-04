@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func TestApiTest_Cookies_ExpectedCookie(t *testing.T) {
+func TestApiTestCookiesExpectedCookie(t *testing.T) {
 	expiry, _ := time.Parse("1/2/2006 15:04:05", "03/01/2017 12:00:00")
 
 	cookie := NewCookie("Tom").
@@ -16,7 +16,7 @@ func TestApiTest_Cookies_ExpectedCookie(t *testing.T) {
 		Expires(expiry).
 		MaxAge(10).
 		Secure(true).
-		HttpOnly(false)
+		HTTPOnly(false)
 
 	ten := 10
 	boolt := true
@@ -34,7 +34,7 @@ func TestApiTest_Cookies_ExpectedCookie(t *testing.T) {
 	}, *cookie)
 }
 
-func TestApiTest_Cookies_ToHttpCookie(t *testing.T) {
+func TestApiTestCookiesToHttpCookie(t *testing.T) {
 	expiry, _ := time.Parse("1/2/2006 15:04:05", "03/01/2017 12:00:00")
 
 	httpCookie := NewCookie("Tom").
@@ -44,8 +44,8 @@ func TestApiTest_Cookies_ToHttpCookie(t *testing.T) {
 		Expires(expiry).
 		MaxAge(10).
 		Secure(true).
-		HttpOnly(false).
-		ToHttpCookie()
+		HTTPOnly(false).
+		ToHTTPCookie()
 
 	assert.Equal(t, http.Cookie{
 		Name:     "Tom",
@@ -59,7 +59,7 @@ func TestApiTest_Cookies_ToHttpCookie(t *testing.T) {
 	}, *httpCookie)
 }
 
-func TestApiTest_Cookies_FromHttpCookie(t *testing.T) {
+func TestApiTestCookiesFromHttpCookie(t *testing.T) {
 	expiry, _ := time.Parse("1/2/2006 15:04:05", "03/01/2017 12:00:00")
 
 	cookie := NewCookie("Tom").
@@ -69,20 +69,20 @@ func TestApiTest_Cookies_FromHttpCookie(t *testing.T) {
 		Expires(expiry).
 		MaxAge(10).
 		Secure(true).
-		HttpOnly(false)
+		HTTPOnly(false)
 
-	result := FromHTTPCookie(cookie.ToHttpCookie())
+	result := FromHTTPCookie(cookie.ToHTTPCookie())
 
 	assert.Equal(t, cookie, result)
 }
 
-func TestApiTest_Cookies_ToHttpCookie_PartiallyCreated(t *testing.T) {
+func TestApiTestCookiesToHttpCookiePartiallyCreated(t *testing.T) {
 	expiry, _ := time.Parse("1/2/2006 15:04:05", "03/01/2017 12:00:00")
 
 	httpCookie := NewCookie("Tom").
 		Value("LovesBeers").
 		Expires(expiry).
-		ToHttpCookie()
+		ToHTTPCookie()
 
 	assert.Equal(t, http.Cookie{
 		Name:     "Tom",
@@ -138,7 +138,7 @@ func TestCompareCookies(t *testing.T) {
 		},
 		{
 			name:       "mismatches http only",
-			expected:   NewCookie("C").Value("A").HttpOnly(true),
+			expected:   NewCookie("C").Value("A").HTTPOnly(true),
 			actual:     http.Cookie{Name: "C", Value: "A", HttpOnly: false},
 			mismatches: []string{"Mismatched field HttpOnly. Expected true but received false"},
 		},

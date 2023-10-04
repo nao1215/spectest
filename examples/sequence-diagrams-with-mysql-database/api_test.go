@@ -26,7 +26,7 @@ func init() {
 	sql.Register("wrappedMysql", wrappedDriver)
 }
 
-func TestGetUser_With_Default_Report_Formatter(t *testing.T) {
+func TestGetUserWithDefaultReportFormatter(t *testing.T) {
 	dsn := os.Getenv("MYSQL_DSN")
 	if dsn == "" {
 		t.SkipNow()
@@ -52,7 +52,7 @@ func TestGetUser_With_Default_Report_Formatter(t *testing.T) {
 		End()
 }
 
-func TestPostUser_With_Default_Report_Formatter(t *testing.T) {
+func TestPostUserWithDefaultReportFormatter(t *testing.T) {
 	dsn := os.Getenv("MYSQL_DSN")
 	if dsn == "" {
 		t.SkipNow()

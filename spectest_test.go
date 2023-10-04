@@ -19,7 +19,7 @@ import (
 	"github.com/nao1215/spectest/mocks"
 )
 
-func TestApiTest_ResponseBody(t *testing.T) {
+func TestApiTestResponseBody(t *testing.T) {
 	apitest.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write([]byte(`{"id": "1234", "name": "Andy"}`))
 		w.WriteHeader(http.StatusOK)
@@ -31,7 +31,7 @@ func TestApiTest_ResponseBody(t *testing.T) {
 		End()
 }
 
-func TestApiTest_HttpRequest(t *testing.T) {
+func TestApiTestHttpRequest(t *testing.T) {
 	handler := http.NewServeMux()
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		data, _ := io.ReadAll(r.Body)
@@ -49,13 +49,13 @@ func TestApiTest_HttpRequest(t *testing.T) {
 	request.Header.Set("key", "val")
 
 	apitest.Handler(handler).
-		HttpRequest(request).
+		HTTPRequest(request).
 		Expect(t).
 		Status(http.StatusOK).
 		End()
 }
 
-func TestApiTest_AddsJSONBodyToRequest(t *testing.T) {
+func TestApiTestAddsJSONBodyToRequest(t *testing.T) {
 	handler := http.NewServeMux()
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		data, _ := io.ReadAll(r.Body)
@@ -79,7 +79,7 @@ func TestApiTest_AddsJSONBodyToRequest(t *testing.T) {
 		End()
 }
 
-func TestApiTest_AddsJSONBodyToRequest_SupportsFormatter(t *testing.T) {
+func TestApiTestAddsJSONBodyToRequestSupportsFormatter(t *testing.T) {
 	handler := http.NewServeMux()
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		data, _ := io.ReadAll(r.Body)
@@ -104,7 +104,7 @@ func TestApiTest_AddsJSONBodyToRequest_SupportsFormatter(t *testing.T) {
 		End()
 }
 
-func TestApiTest_RequestURLFormat(t *testing.T) {
+func TestApiTestRequestURLFormat(t *testing.T) {
 	apitest.New().
 		HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
@@ -167,7 +167,7 @@ func TestApiTest_RequestURLFormat(t *testing.T) {
 		End()
 }
 
-func TestApiTest_JSONBody(t *testing.T) {
+func TestApiTestJSONBody(t *testing.T) {
 	type bodyStruct struct {
 		A int `json:"a"`
 	}
@@ -212,7 +212,7 @@ func TestApiTest_JSONBody(t *testing.T) {
 	}
 }
 
-func TestApiTest_AddsJSONBodyToRequestUsingJSON(t *testing.T) {
+func TestApiTestAddsJSONBodyToRequestUsingJSON(t *testing.T) {
 	handler := http.NewServeMux()
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		data, _ := io.ReadAll(r.Body)
@@ -236,7 +236,7 @@ func TestApiTest_AddsJSONBodyToRequestUsingJSON(t *testing.T) {
 		End()
 }
 
-func TestApiTest_AddsTextBodyToRequest(t *testing.T) {
+func TestApiTestAddsTextBodyToRequest(t *testing.T) {
 	handler := http.NewServeMux()
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		data, _ := io.ReadAll(r.Body)
@@ -256,7 +256,7 @@ func TestApiTest_AddsTextBodyToRequest(t *testing.T) {
 		End()
 }
 
-func TestApiTest_AddsQueryParamsToRequest(t *testing.T) {
+func TestApiTestAddsQueryParamsToRequest(t *testing.T) {
 	handler := http.NewServeMux()
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		if "b" != r.URL.Query().Get("a") {
@@ -275,7 +275,7 @@ func TestApiTest_AddsQueryParamsToRequest(t *testing.T) {
 		End()
 }
 
-func TestApiTest_AddsQueryParamCollectionToRequest(t *testing.T) {
+func TestApiTestAddsQueryParamCollectionToRequest(t *testing.T) {
 	handler := http.NewServeMux()
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		if "a=b&a=c&a=d&e=f" != r.URL.RawQuery {
@@ -295,7 +295,7 @@ func TestApiTest_AddsQueryParamCollectionToRequest(t *testing.T) {
 		End()
 }
 
-func TestApiTest_AddsQueryParamCollectionToRequest_HandlesEmpty(t *testing.T) {
+func TestApiTestAddsQueryParamCollectionToRequestHandlesEmpty(t *testing.T) {
 	handler := http.NewServeMux()
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		if "e=f" != r.URL.RawQuery {
@@ -315,7 +315,7 @@ func TestApiTest_AddsQueryParamCollectionToRequest_HandlesEmpty(t *testing.T) {
 		End()
 }
 
-func TestApiTest_CanCombineQueryParamMethods(t *testing.T) {
+func TestApiTestCanCombineQueryParamMethods(t *testing.T) {
 	expectedQueryString := "a=1&a=2&a=9&a=22&b=2"
 	handler := http.NewServeMux()
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
@@ -338,7 +338,7 @@ func TestApiTest_CanCombineQueryParamMethods(t *testing.T) {
 		End()
 }
 
-func TestApiTest_AddsHeadersToRequest(t *testing.T) {
+func TestApiTestAddsHeadersToRequest(t *testing.T) {
 	handler := http.NewServeMux()
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		header := r.Header["Authorization"]
@@ -359,7 +359,7 @@ func TestApiTest_AddsHeadersToRequest(t *testing.T) {
 		End()
 }
 
-func TestApiTest_AddsContentTypeHeaderToRequest(t *testing.T) {
+func TestApiTestAddsContentTypeHeaderToRequest(t *testing.T) {
 	handler := http.NewServeMux()
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		if r.Header["Content-Type"][0] != "application/x-www-form-urlencoded" {
@@ -379,7 +379,7 @@ func TestApiTest_AddsContentTypeHeaderToRequest(t *testing.T) {
 		End()
 }
 
-func TestApiTest_AddsCookiesToRequest(t *testing.T) {
+func TestApiTestAddsCookiesToRequest(t *testing.T) {
 	handler := http.NewServeMux()
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		if cookie, err := r.Cookie("Cookie1"); err != nil || cookie.Value != "Yummy" {
@@ -404,7 +404,7 @@ func TestApiTest_AddsCookiesToRequest(t *testing.T) {
 		End()
 }
 
-func TestApiTest_AddsBasicAuthToRequest(t *testing.T) {
+func TestApiTestAddsBasicAuthToRequest(t *testing.T) {
 	handler := http.NewServeMux()
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		username, password, ok := r.BasicAuth()
@@ -428,7 +428,7 @@ func TestApiTest_AddsBasicAuthToRequest(t *testing.T) {
 		End()
 }
 
-func TestApiTest_AddsTimedOutContextToRequest(t *testing.T) {
+func TestApiTestAddsTimedOutContextToRequest(t *testing.T) {
 
 	handler := http.NewServeMux()
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
@@ -451,7 +451,7 @@ func TestApiTest_AddsTimedOutContextToRequest(t *testing.T) {
 		End()
 }
 
-func TestApiTest_AddsCancelledContextToRequest(t *testing.T) {
+func TestApiTestAddsCancelledContextToRequest(t *testing.T) {
 
 	handler := http.NewServeMux()
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
@@ -473,7 +473,7 @@ func TestApiTest_AddsCancelledContextToRequest(t *testing.T) {
 		End()
 }
 
-func TestApiTest_GraphQLQuery(t *testing.T) {
+func TestApiTestGraphQLQuery(t *testing.T) {
 	apitest.New().
 		HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			bodyBytes, err := io.ReadAll(r.Body)
@@ -499,7 +499,7 @@ func TestApiTest_GraphQLQuery(t *testing.T) {
 		End()
 }
 
-func TestApiTest_GraphQLRequest(t *testing.T) {
+func TestApiTestGraphQLRequest(t *testing.T) {
 	apitest.New().
 		HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			bodyBytes, err := io.ReadAll(r.Body)
@@ -539,7 +539,7 @@ func TestApiTest_GraphQLRequest(t *testing.T) {
 		End()
 }
 
-func TestApiTest_MatchesJSONResponseBody(t *testing.T) {
+func TestApiTestMatchesJSONResponseBody(t *testing.T) {
 	handler := http.NewServeMux()
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusCreated)
@@ -559,7 +559,7 @@ func TestApiTest_MatchesJSONResponseBody(t *testing.T) {
 		End()
 }
 
-func TestApiTest_MatchesJSONResponseBodyWithFormatter(t *testing.T) {
+func TestApiTestMatchesJSONResponseBodyWithFormatter(t *testing.T) {
 	handler := http.NewServeMux()
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusCreated)
@@ -579,7 +579,7 @@ func TestApiTest_MatchesJSONResponseBodyWithFormatter(t *testing.T) {
 		End()
 }
 
-func TestApiTest_MatchesJSONBodyFromFile(t *testing.T) {
+func TestApiTestMatchesJSONBodyFromFile(t *testing.T) {
 	handler := http.NewServeMux()
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		data, _ := io.ReadAll(r.Body)
@@ -603,7 +603,7 @@ func TestApiTest_MatchesJSONBodyFromFile(t *testing.T) {
 		End()
 }
 
-func TestApiTest_MatchesBodyFromFile(t *testing.T) {
+func TestApiTestMatchesBodyFromFile(t *testing.T) {
 	handler := http.NewServeMux()
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		data, _ := io.ReadAll(r.Body)
@@ -628,7 +628,7 @@ func TestApiTest_MatchesBodyFromFile(t *testing.T) {
 		End()
 }
 
-func TestApiTest_MatchesJSONResponseBodyWithWhitespace(t *testing.T) {
+func TestApiTestMatchesJSONResponseBodyWithWhitespace(t *testing.T) {
 	handler := http.NewServeMux()
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusCreated)
@@ -651,7 +651,7 @@ func TestApiTest_MatchesJSONResponseBodyWithWhitespace(t *testing.T) {
 		End()
 }
 
-func TestApiTest_MatchesTextResponseBody(t *testing.T) {
+func TestApiTestMatchesTextResponseBody(t *testing.T) {
 	handler := http.NewServeMux()
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -671,7 +671,7 @@ func TestApiTest_MatchesTextResponseBody(t *testing.T) {
 		End()
 }
 
-func TestApiTest_MatchesResponseCookies(t *testing.T) {
+func TestApiTestMatchesResponseCookies(t *testing.T) {
 	handler := http.NewServeMux()
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Set-ExpectedCookie", "ABC=12345; DEF=67890; XXX=1fsadg235; VVV=9ig32g34g")
@@ -715,7 +715,7 @@ func TestApiTest_MatchesResponseCookies(t *testing.T) {
 		End()
 }
 
-func TestApiTest_MatchesResponseHttpCookies(t *testing.T) {
+func TestApiTestMatchesResponseHttpCookies(t *testing.T) {
 	handler := http.NewServeMux()
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		http.SetCookie(w, &http.Cookie{
@@ -739,7 +739,7 @@ func TestApiTest_MatchesResponseHttpCookies(t *testing.T) {
 		End()
 }
 
-func TestApiTest_MatchesResponseHttpCookies_OnlySuppliedFields(t *testing.T) {
+func TestApiTestMatchesResponseHttpCookies_OnlySuppliedFields(t *testing.T) {
 	parsedDateTime, err := time.Parse(time.RFC3339, "2019-01-26T23:19:02Z")
 	if err != nil {
 		t.Fatalf("%s", err)
@@ -768,11 +768,11 @@ func TestApiTest_MatchesResponseHttpCookies_OnlySuppliedFields(t *testing.T) {
 				Path("/").
 				Expires(parsedDateTime).
 				Secure(true).
-				HttpOnly(true)).
+				HTTPOnly(true)).
 		End()
 }
 
-func TestApiTest_MatchesResponseHeaders_WithMixedKeyCase(t *testing.T) {
+func TestApiTestMatchesResponseHeadersWithMixedKeyCase(t *testing.T) {
 	handler := http.NewServeMux()
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("ABC", "12345")
@@ -801,7 +801,7 @@ func TestApiTest_MatchesResponseHeaders_WithMixedKeyCase(t *testing.T) {
 		End()
 }
 
-func TestApiTest_EndReturnsTheResult(t *testing.T) {
+func TestApiTestEndReturnsTheResult(t *testing.T) {
 	type resBody struct {
 		B string `json:"b"`
 	}
@@ -829,7 +829,7 @@ func TestApiTest_EndReturnsTheResult(t *testing.T) {
 	assert.Equal(t, "hi", r.B)
 }
 
-func TestApiTest_CustomAssert(t *testing.T) {
+func TestApiTestCustomAssert(t *testing.T) {
 	handler := http.NewServeMux()
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Set-ExpectedCookie", "ABC=12345; DEF=67890; XXX=1fsadg235; VVV=9ig32g34g")
@@ -844,7 +844,7 @@ func TestApiTest_CustomAssert(t *testing.T) {
 		End()
 }
 
-func TestApiTest_VerifierCapturesTheTestMessage(t *testing.T) {
+func TestApiTestVerifierCapturesTheTestMessage(t *testing.T) {
 	verifier := mocks.NewVerifier()
 	verifier.EqualFn = func(t apitest.TestingT, expected, actual interface{}, msgAndArgs ...interface{}) bool {
 		if expected == http.StatusOK {
@@ -869,7 +869,7 @@ func TestApiTest_VerifierCapturesTheTestMessage(t *testing.T) {
 		End()
 }
 
-func TestApiTest_Report(t *testing.T) {
+func TestApiTestReport(t *testing.T) {
 	getUser := apitest.NewMock().
 		Get("http://localhost:8080").
 		RespondWith().
@@ -908,7 +908,7 @@ func TestApiTest_Report(t *testing.T) {
 	assert.Equal(t, true, r.Meta["duration"] != nil)
 }
 
-func TestApiTest_Recorder(t *testing.T) {
+func TestApiTestRecorder(t *testing.T) {
 	getUser := apitest.NewMock().
 		Get("http://localhost:8080").
 		RespondWith().
@@ -958,7 +958,7 @@ func TestApiTest_Recorder(t *testing.T) {
 	assert.Equal(t, messageResponse, r.Events[1])
 }
 
-func TestApiTest_Observe(t *testing.T) {
+func TestApiTestObserve(t *testing.T) {
 	handler := http.NewServeMux()
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -980,7 +980,7 @@ func TestApiTest_Observe(t *testing.T) {
 	assert.Equal(t, true, observeCalled)
 }
 
-func TestApiTest_Observe_DumpsTheHttpRequestAndResponse(t *testing.T) {
+func TestApiTestObserveDumpsTheHttpRequestAndResponse(t *testing.T) {
 	handler := http.NewServeMux()
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusCreated)
@@ -1001,7 +1001,7 @@ func TestApiTest_Observe_DumpsTheHttpRequestAndResponse(t *testing.T) {
 		End()
 }
 
-func TestApiTest_ObserveWithReport(t *testing.T) {
+func TestApiTestObserveWithReport(t *testing.T) {
 	reporter := &RecorderCaptor{}
 	handler := http.NewServeMux()
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
@@ -1025,7 +1025,7 @@ func TestApiTest_ObserveWithReport(t *testing.T) {
 	assert.Equal(t, true, observeCalled)
 }
 
-func TestApiTest_Intercept(t *testing.T) {
+func TestApiTestIntercept(t *testing.T) {
 	handler := http.NewServeMux()
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.RawQuery != "a[]=xxx&a[]=yyy" {
@@ -1053,14 +1053,14 @@ func TestApiTest_Intercept(t *testing.T) {
 		End()
 }
 
-func TestApiTest_ExposesRequestAndResponse(t *testing.T) {
+func TestApiTestExposesRequestAndResponse(t *testing.T) {
 	apiTest := apitest.New()
 
 	assert.Equal(t, true, apiTest.Request() != nil)
 	assert.Equal(t, true, apiTest.Response() != nil)
 }
 
-func TestApiTest_RequestContextIsPreserved(t *testing.T) {
+func TestApiTestRequestContextIsPreserved(t *testing.T) {
 	ctxKey := struct{}{}
 	handler := http.NewServeMux()
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
@@ -1081,7 +1081,7 @@ func TestApiTest_RequestContextIsPreserved(t *testing.T) {
 		End()
 }
 
-func TestApiTest_NoopVerifier(t *testing.T) {
+func TestApiTestNoopVerifier(t *testing.T) {
 	handler := http.NewServeMux()
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusCreated)
@@ -1167,7 +1167,7 @@ func TestRealNetworking(t *testing.T) {
 	<-finish
 }
 
-func TestApiTest_AddsUrlEncodedFormBody(t *testing.T) {
+func TestApiTestAddsUrlEncodedFormBody(t *testing.T) {
 	handler := http.NewServeMux()
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		if r.Header["Content-Type"][0] != "application/x-www-form-urlencoded" {
@@ -1211,7 +1211,7 @@ func TestApiTest_AddsUrlEncodedFormBody(t *testing.T) {
 		End()
 }
 
-func TestApiTest_AddsMultipartFormData(t *testing.T) {
+func TestApiTestAddsMultipartFormData(t *testing.T) {
 	handler := http.NewServeMux()
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		if !strings.Contains(r.Header["Content-Type"][0], "multipart/form-data") {
@@ -1285,7 +1285,7 @@ func TestApiTest_AddsMultipartFormData(t *testing.T) {
 		End()
 }
 
-func TestApiTest_CombineFormDataWithMultipart(t *testing.T) {
+func TestApiTestCombineFormDataWithMultipart(t *testing.T) {
 	if os.Getenv("RUN_FATAL_TEST") == "FormData" {
 		apitest.New().
 			Post("/hello").
@@ -1320,7 +1320,7 @@ func TestApiTest_CombineFormDataWithMultipart(t *testing.T) {
 	}
 }
 
-func TestApiTest_ErrorIfMockInvocationsDoNotMatchTimes(t *testing.T) {
+func TestApiTestErrorIfMockInvocationsDoNotMatchTimes(t *testing.T) {
 	getUser := apitest.NewMock().
 		Get("http://localhost:8080").
 		RespondWith().
@@ -1351,7 +1351,7 @@ func TestApiTest_ErrorIfMockInvocationsDoNotMatchTimes(t *testing.T) {
 	assert.Equal(t, "http://localhost:8080", unmatchedMocks[0].URL.String())
 }
 
-func TestApiTest_MatchesTimes(t *testing.T) {
+func TestApiTestMatchesTimes(t *testing.T) {
 	getUser := apitest.NewMock().
 		Get("http://localhost:8080").
 		RespondWith().

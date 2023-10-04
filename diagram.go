@@ -7,7 +7,6 @@ import (
 	"fmt"
 	htmlTemplate "html/template"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/http/httputil"
 	"os"
@@ -193,7 +192,7 @@ func newHTMLTemplateModel(r *Recorder) (htmlTemplateModel, error) {
 			}
 			entry.Timestamp = v.Timestamp
 			logs = append(logs, entry)
-		case HttpResponse:
+		case HTTPResponse:
 			webSequenceDiagram.addResponseRow(v.Source, v.Target, strconv.Itoa(v.Value.StatusCode))
 			entry, err := newHTTPResponseLogEntry(v.Value)
 			if err != nil {
@@ -271,7 +270,7 @@ func formatBodyContent(bodyReadCloser io.ReadCloser, replaceBody func(replacemen
 		return "", err
 	}
 
-	replaceBody(ioutil.NopCloser(bytes.NewReader(body)))
+	replaceBody(io.NopCloser(bytes.NewReader(body)))
 
 	buf := new(bytes.Buffer)
 	if json.Valid(body) {

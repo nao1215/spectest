@@ -10,7 +10,7 @@ import (
 	jsonpath "github.com/steinfletcher/apitest-jsonpath"
 )
 
-func TestGetUser_CookieMatching(t *testing.T) {
+func TestGetUserCookieMatching(t *testing.T) {
 	apitest.New().
 		HandlerFunc(FiberToHandlerFunc(newApp())).
 		Get("/user/1234").
@@ -20,7 +20,7 @@ func TestGetUser_CookieMatching(t *testing.T) {
 		End()
 }
 
-func TestGetUser_Success(t *testing.T) {
+func TestGetUserSuccess(t *testing.T) {
 	apitest.New().
 		HandlerFunc(FiberToHandlerFunc(newApp())).
 		Get("/user/1234").
@@ -30,7 +30,7 @@ func TestGetUser_Success(t *testing.T) {
 		End()
 }
 
-func TestGetUser_Success_JSONPath(t *testing.T) {
+func TestGetUserSuccessJSONPath(t *testing.T) {
 	apitest.New().
 		HandlerFunc(FiberToHandlerFunc(newApp())).
 		Get("/user/1234").
@@ -40,7 +40,7 @@ func TestGetUser_Success_JSONPath(t *testing.T) {
 		End()
 }
 
-func TestGetUser_NotFound(t *testing.T) {
+func TestGetUserNotFound(t *testing.T) {
 	apitest.New().
 		HandlerFunc(FiberToHandlerFunc(newApp())).
 		Get("/user/1515").
