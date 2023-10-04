@@ -44,7 +44,7 @@ func TestGetOptCodes(t *testing.T) {
 	s := NewMatcher(splitChars(a), splitChars(b))
 	w := &bytes.Buffer{}
 	for _, op := range s.GetOpCodes() {
-		fmt.Fprintf(w, "%s a[%d:%d], (%s) b[%d:%d] (%s)%s)", string(op.Tag),
+		fmt.Fprintf(w, "%s a[%d:%d], (%s) b[%d:%d] (%s)%s", string(op.Tag),
 			op.I1, op.I2, a[op.I1:op.I2], op.J1, op.J2, b[op.J1:op.J2],
 			newLine())
 	}
