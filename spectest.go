@@ -1,3 +1,4 @@
+// Package spectest is simple and extensible behavioral testing library for Go. You can use api test to simplify REST API, HTTP handler and e2e tests. (forked from steinfletcher/apitest)
 package spectest
 
 import (
@@ -179,8 +180,8 @@ func (a *APITest) Mocks(mocks ...*Mock) *APITest {
 	return a
 }
 
-// HttpClient allows the developer to provide a custom http client when using mocks
-func (a *APITest) HttpClient(cli *http.Client) *APITest {
+// HTTPClient allows the developer to provide a custom http client when using mocks
+func (a *APITest) HTTPClient(cli *http.Client) *APITest {
 	a.httpClient = cli
 	return a
 }
@@ -259,8 +260,8 @@ func (a *APITest) Method(method string) *Request {
 	return a.request
 }
 
-// HttpRequest defines the native `http.Request`
-func (a *APITest) HttpRequest(req *http.Request) *Request {
+// HTTPRequest defines the native `http.Request`
+func (a *APITest) HTTPRequest(req *http.Request) *Request {
 	a.httpRequest = req
 	return a.request
 }
@@ -753,14 +754,17 @@ func (a *APITest) report() *http.Response {
 	var capturedMockInteractions []*mockInteraction
 
 	a.observers = append(a.observers, func(finalRes *http.Response, inboundReq *http.Request, a *APITest) {
-		capturedFinalRes = copyHttpResponse(finalRes)
-		capturedInboundReq = copyHttpRequest(inboundReq)
+		capturedFinalRes = copyHTTPResponse(finalRes)
+		defer func() {
+			capturedFinalRes.Body.Close() //nolint errcheck TODO:
+		}()
+		capturedInboundReq = copyHTTPRequest(inboundReq)
 	})
 
 	a.mocksObservers = append(a.mocksObservers, func(mockRes *http.Response, mockReq *http.Request, a *APITest) {
 		capturedMockInteractions = append(capturedMockInteractions, &mockInteraction{
-			request:   copyHttpRequest(mockReq),
-			response:  copyHttpResponse(mockRes),
+			request:   copyHTTPRequest(mockReq),
+			response:  copyHTTPResponse(mockRes),
 			timestamp: time.Now().UTC(),
 		})
 	})
@@ -781,7 +785,7 @@ func (a *APITest) report() *http.Response {
 	a.recorder.
 		AddTitle(fmt.Sprintf("%s %s", capturedInboundReq.Method, capturedInboundReq.URL.String())).
 		AddSubTitle(a.name).
-		AddHttpRequest(HttpRequest{
+		AddHTTPRequest(HttpRequest{
 			Source:    ConsumerDefaultName,
 			Target:    SystemUnderTestDefaultName,
 			Value:     capturedInboundReq,
@@ -789,14 +793,14 @@ func (a *APITest) report() *http.Response {
 		})
 
 	for _, interaction := range capturedMockInteractions {
-		a.recorder.AddHttpRequest(HttpRequest{
+		a.recorder.AddHTTPRequest(HttpRequest{
 			Source:    SystemUnderTestDefaultName,
 			Target:    interaction.GetRequestHost(),
 			Value:     interaction.request,
 			Timestamp: interaction.timestamp,
 		})
 		if interaction.response != nil {
-			a.recorder.AddHttpResponse(HttpResponse{
+			a.recorder.AddHTTPResponse(HTTPResponse{
 				Source:    interaction.GetRequestHost(),
 				Target:    SystemUnderTestDefaultName,
 				Value:     interaction.response,
@@ -805,7 +809,7 @@ func (a *APITest) report() *http.Response {
 		}
 	}
 
-	a.recorder.AddHttpResponse(HttpResponse{
+	a.recorder.AddHTTPResponse(HTTPResponse{
 		Source:    SystemUnderTestDefaultName,
 		Target:    ConsumerDefaultName,
 		Value:     capturedFinalRes,
@@ -889,7 +893,7 @@ func (r *Response) runTest() *http.Response {
 	a.assertCookies(res)
 	a.assertFunc(res, req)
 
-	return copyHttpResponse(res)
+	return copyHTTPResponse(res)
 }
 
 func (a *APITest) assertMocks() {
@@ -903,7 +907,7 @@ func (a *APITest) assertMocks() {
 func (a *APITest) assertFunc(res *http.Response, req *http.Request) {
 	if len(a.response.assert) > 0 {
 		for _, assertFn := range a.response.assert {
-			err := assertFn(copyHttpResponse(res), copyHttpRequest(req))
+			err := assertFn(copyHTTPResponse(res), copyHTTPRequest(req))
 			if err != nil {
 				a.verifier.NoError(a.t, err, failureMessageArgs{Name: a.name})
 			}
@@ -928,10 +932,10 @@ func (a *APITest) doRequest() (*http.Response, *http.Request) {
 	var res *http.Response
 	var err error
 	if !a.networkingEnabled {
-		a.serveHttp(resRecorder, copyHttpRequest(req))
+		a.serveHTTP(resRecorder, copyHTTPRequest(req))
 		res = resRecorder.Result()
 	} else {
-		res, err = a.networkingHTTPClient.Do(copyHttpRequest(req))
+		res, err = a.networkingHTTPClient.Do(copyHTTPRequest(req))
 		if err != nil {
 			a.t.Fatal(err)
 		}
@@ -947,7 +951,7 @@ func (a *APITest) doRequest() (*http.Response, *http.Request) {
 	return res, req
 }
 
-func (a *APITest) serveHttp(res *httptest.ResponseRecorder, req *http.Request) {
+func (a *APITest) serveHTTP(res *httptest.ResponseRecorder, req *http.Request) {
 	defer func() {
 		if err := recover(); err != nil {
 			a.t.Fatalf("%s: %s", err, debug.Stack())
@@ -1000,7 +1004,7 @@ func (a *APITest) buildRequest() *http.Request {
 	}
 
 	for _, cookie := range a.request.cookies {
-		req.AddCookie(cookie.ToHttpCookie())
+		req.AddCookie(cookie.ToHTTPCookie())
 	}
 
 	if a.request.basicAuth != "" {
@@ -1150,7 +1154,7 @@ func debugLog(prefix, header, msg string) {
 	fmt.Printf("\n%s %s\n%s\n", prefix, header, msg)
 }
 
-func copyHttpResponse(response *http.Response) *http.Response {
+func copyHTTPResponse(response *http.Response) *http.Response {
 	if response == nil {
 		return nil
 	}
@@ -1179,7 +1183,7 @@ func copyHttpResponse(response *http.Response) *http.Response {
 	return resCopy
 }
 
-func copyHttpRequest(request *http.Request) *http.Request {
+func copyHTTPRequest(request *http.Request) *http.Request {
 	resCopy := &http.Request{
 		Method:        request.Method,
 		Host:          request.Host,

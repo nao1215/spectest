@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-func TestDiagram_BadgeCSSClass(t *testing.T) {
+func TestDiagramBadgeCSSClass(t *testing.T) {
 	tests := []struct {
 		status int
 		class  string
@@ -28,7 +28,7 @@ func TestDiagram_BadgeCSSClass(t *testing.T) {
 	}
 }
 
-func TestFormatBodyContent_ShouldReplaceBody(t *testing.T) {
+func TestFormatBodyContentShouldReplaceBody(t *testing.T) {
 	stream := io.NopCloser(strings.NewReader("lol"))
 
 	val, err := formatBodyContent(stream, func(replacementBody io.ReadCloser) {
@@ -44,7 +44,7 @@ func TestFormatBodyContent_ShouldReplaceBody(t *testing.T) {
 	assert.Equal(t, "lol", valSecondRun)
 }
 
-func TestWebSequenceDiagram_GeneratesDSL(t *testing.T) {
+func TestWebSequenceDiagramGeneratesDSL(t *testing.T) {
 	wsd := webSequenceDiagramDSL{}
 	wsd.addRequestRow("A", "B", "request1")
 	wsd.addRequestRow("B", "C", "request2")
@@ -63,13 +63,13 @@ func TestWebSequenceDiagram_GeneratesDSL(t *testing.T) {
 	}
 }
 
-func TestNewSequenceDiagramFormatter_SetsDefaultPath(t *testing.T) {
+func TestNewSequenceDiagramFormatterSetsDefaultPath(t *testing.T) {
 	formatter := SequenceDiagram()
 
 	assert.Equal(t, ".sequence", formatter.storagePath)
 }
 
-func TestNewSequenceDiagramFormatter_OverridesPath(t *testing.T) {
+func TestNewSequenceDiagramFormatterOverridesPath(t *testing.T) {
 	formatter := SequenceDiagram(".sequence-diagram")
 
 	assert.Equal(t, ".sequence-diagram", formatter.storagePath)
@@ -90,10 +90,10 @@ func TestRecorderBuilder(t *testing.T) {
 	assert.Equal(t, "reqSource", recorder.Events[0].(HttpRequest).Source)
 	assert.Equal(t, "mesReqSource", recorder.Events[1].(MessageRequest).Source)
 	assert.Equal(t, "mesResSource", recorder.Events[2].(MessageResponse).Source)
-	assert.Equal(t, "resSource", recorder.Events[3].(HttpResponse).Source)
+	assert.Equal(t, "resSource", recorder.Events[3].(HTTPResponse).Source)
 }
 
-func TestNewHTMLTemplateModel_ErrorsIfNoEventsDefined(t *testing.T) {
+func TestNewHTMLTemplateModelErrorsIfNoEventsDefined(t *testing.T) {
 	recorder := NewTestRecorder()
 
 	_, err := newHTMLTemplateModel(recorder)
@@ -101,7 +101,7 @@ func TestNewHTMLTemplateModel_ErrorsIfNoEventsDefined(t *testing.T) {
 	assert.Equal(t, "no events are defined", err.Error())
 }
 
-func TestNewHTMLTemplateModel_Success(t *testing.T) {
+func TestNewHTMLTemplateModelSuccess(t *testing.T) {
 	recorder := aRecorder()
 
 	model, err := newHTMLTemplateModel(recorder)
@@ -120,10 +120,10 @@ func aRecorder() *Recorder {
 	return NewTestRecorder().
 		AddTitle("title").
 		AddSubTitle("subTitle").
-		AddHttpRequest(aRequest()).
+		AddHTTPRequest(aRequest()).
 		AddMessageRequest(MessageRequest{Header: "A", Body: "B", Source: "mesReqSource"}).
 		AddMessageResponse(MessageResponse{Header: "C", Body: "D", Source: "mesResSource"}).
-		AddHttpResponse(aResponse()).
+		AddHTTPResponse(aResponse()).
 		AddMeta(map[string]interface{}{
 			"path":   "/user",
 			"name":   "some test",
@@ -143,7 +143,7 @@ func TestNewHttpRequestLogEntry(t *testing.T) {
 	assert.JSONEq(t, logEntry.Body, `{"a": 12345}`)
 }
 
-func TestNewHttpResponseLogEntry_JSON(t *testing.T) {
+func TestNewHttpResponseLogEntryJSON(t *testing.T) {
 	response := &http.Response{
 		ProtoMajor:    1,
 		ProtoMinor:    1,
@@ -160,7 +160,7 @@ func TestNewHttpResponseLogEntry_JSON(t *testing.T) {
 	assert.JSONEq(t, logEntry.Body, `{"a": 12345}`)
 }
 
-func TestNewHttpResponseLogEntry_PlainText(t *testing.T) {
+func TestNewHttpResponseLogEntryPlainText(t *testing.T) {
 	response := &http.Response{
 		ProtoMajor:    1,
 		ProtoMinor:    1,
@@ -183,8 +183,8 @@ func aRequest() HttpRequest {
 	return HttpRequest{Value: req, Source: "reqSource", Target: "reqTarget"}
 }
 
-func aResponse() HttpResponse {
-	return HttpResponse{
+func aResponse() HTTPResponse {
+	return HTTPResponse{
 		Value: &http.Response{
 			StatusCode:    http.StatusNoContent,
 			ProtoMajor:    1,
@@ -212,7 +212,7 @@ func (m *FS) create(name string) (*os.File, error) {
 	return file, nil
 }
 
-func (m *FS) mkdirAll(path string, perm os.FileMode) error {
+func (m *FS) mkdirAll(path string, _ os.FileMode) error {
 	m.CapturedMkdirAllPath = path
 	return nil
 }

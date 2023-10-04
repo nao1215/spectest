@@ -61,14 +61,14 @@ func (cookie *Cookie) Secure(secure bool) *Cookie {
 	return cookie
 }
 
-// HttpOnly sets the httpOnly bool of the Cookie
-func (cookie *Cookie) HttpOnly(httpOnly bool) *Cookie {
+// HTTPOnly sets the httpOnly bool of the Cookie
+func (cookie *Cookie) HTTPOnly(httpOnly bool) *Cookie {
 	cookie.httpOnly = &httpOnly
 	return cookie
 }
 
-// ToHttpCookie transforms the Cookie to an http cookie
-func (cookie *Cookie) ToHttpCookie() *http.Cookie {
+// ToHTTPCookie transforms the Cookie to an http cookie
+func (cookie *Cookie) ToHTTPCookie() *http.Cookie {
 	httpCookie := http.Cookie{}
 
 	if cookie.name != nil {
@@ -115,7 +115,7 @@ func FromHTTPCookie(httpCookie *http.Cookie) *Cookie {
 		Expires(httpCookie.Expires).
 		MaxAge(httpCookie.MaxAge).
 		Secure(httpCookie.Secure).
-		HttpOnly(httpCookie.HttpOnly)
+		HTTPOnly(httpCookie.HttpOnly)
 }
 
 // Compares cookies based on only the provided fields from Cookie.
@@ -130,13 +130,13 @@ func compareCookies(expectedCookie *Cookie, actualCookie *http.Cookie) (bool, []
 		compareErrors = compareExpires(expectedCookie, actualCookie, compareErrors)
 		compareErrors = compareMaxAge(expectedCookie, actualCookie, compareErrors)
 		compareErrors = compareSecure(expectedCookie, actualCookie, compareErrors)
-		compareErrors = compareHttpOnly(expectedCookie, actualCookie, compareErrors)
+		compareErrors = compareHTTPOnly(expectedCookie, actualCookie, compareErrors)
 	}
 
 	return cookieFound, compareErrors
 }
 
-func compareHttpOnly(expectedCookie *Cookie, actualCookie *http.Cookie, compareErrors []string) []string {
+func compareHTTPOnly(expectedCookie *Cookie, actualCookie *http.Cookie, compareErrors []string) []string {
 	if expectedCookie.httpOnly != nil && *expectedCookie.httpOnly != actualCookie.HttpOnly {
 		compareErrors = append(compareErrors, formatError("HttpOnly", *expectedCookie.httpOnly, actualCookie.HttpOnly))
 	}

@@ -7,7 +7,7 @@ import (
 	apitest "github.com/nao1215/spectest"
 )
 
-func TestGetUser_CookieMatching(t *testing.T) {
+func TestGetUserCookieMatching(t *testing.T) {
 	apitest.New().
 		Handler(newApp().iris.Router).
 		Get("/user/1234").
@@ -19,7 +19,7 @@ func TestGetUser_CookieMatching(t *testing.T) {
 		End()
 }
 
-func TestGetUser_Success(t *testing.T) {
+func TestGetUserSuccess(t *testing.T) {
 	apitest.New().
 		Handler(newApp().iris.Router).
 		Get("/user/1234").
@@ -29,7 +29,7 @@ func TestGetUser_Success(t *testing.T) {
 		End()
 }
 
-func TestGetUser_Success_JSONPath(t *testing.T) {
+func TestGetUserSuccessJSONPath(t *testing.T) {
 	apitest.New().
 		Handler(newApp().iris.Router).
 		Get("/user/1234").
@@ -39,7 +39,7 @@ func TestGetUser_Success_JSONPath(t *testing.T) {
 		End()
 }
 
-func TestGetUser_NotFound(t *testing.T) {
+func TestGetUserNotFound(t *testing.T) {
 	apitest.New().
 		Handler(newApp().iris.Router).
 		Get("/user/1515").

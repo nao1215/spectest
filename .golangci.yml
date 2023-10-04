@@ -37,7 +37,7 @@ linters:
     - nakedret
     - noctx
     - nolintlint
-    - paralleltest
+    #- paralleltest
     - prealloc
     - rowserrcheck
     - sqlclosecheck

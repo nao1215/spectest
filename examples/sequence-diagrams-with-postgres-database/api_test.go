@@ -15,7 +15,7 @@ import (
 
 // This test requires a postgres database to run
 
-func TestGetUser_With_Default_Report_Formatter(t *testing.T) {
+func TestGetUserWithDefaultReportFormatter(t *testing.T) {
 	skip(t)
 
 	username := uuid.NewV4().String()[0:7]
@@ -35,7 +35,7 @@ func TestGetUser_With_Default_Report_Formatter(t *testing.T) {
 		End()
 }
 
-func TestPostUser_With_Default_Report_Formatter(t *testing.T) {
+func TestPostUserWithDefaultReportFormatter(t *testing.T) {
 	skip(t)
 
 	username := uuid.NewV4().String()[0:7]

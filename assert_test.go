@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestApiTest_Assert_StatusCodes(t *testing.T) {
+func TestApiTestAssertStatusCodes(t *testing.T) {
 	tests := []struct {
 		responseStatus []int
 		assertFunc     Assert

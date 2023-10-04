@@ -7,7 +7,7 @@ import (
 	apitest "github.com/nao1215/spectest"
 )
 
-func TestGetUser_With_Default_Report_Formatter(t *testing.T) {
+func TestGetUserWithDefaultReportFormatter(t *testing.T) {
 	apitest.New("gets the user 1").
 		Report(apitest.SequenceDiagram()).
 		Meta(map[string]interface{}{"host": "user-service"}).
@@ -22,7 +22,7 @@ func TestGetUser_With_Default_Report_Formatter(t *testing.T) {
 		End()
 }
 
-func TestGetUser_With_Default_Report_Formatter_Overriding_Path(t *testing.T) {
+func TestGetUserWithDefaultReportFormatterOverridingPath(t *testing.T) {
 	apitest.New("gets the user 2").
 		Meta(map[string]interface{}{"host": "user-service"}).
 		Report(apitest.SequenceDiagram(".sequence-diagrams")).

@@ -9,7 +9,7 @@ import (
 	"github.com/steinfletcher/apitest/examples/graphql/graph"
 )
 
-func TestQuery_Empty(t *testing.T) {
+func TestQueryEmpty(t *testing.T) {
 	apitest.New().
 		Handler(graph.NewHandler()).
 		Post("/query").
@@ -32,7 +32,7 @@ func TestQuery_Empty(t *testing.T) {
 		End()
 }
 
-func TestQuery_WithTodo(t *testing.T) {
+func TestQueryWithTodo(t *testing.T) {
 	handler := graph.NewHandler()
 
 	apitest.New().

@@ -201,7 +201,7 @@ func buildResponseFromMock(mockResponse *MockResponse) *http.Response {
 	}
 
 	for _, cookie := range mockResponse.cookies {
-		if v := cookie.ToHttpCookie().String(); v != "" {
+		if v := cookie.ToHTTPCookie().String(); v != "" {
 			res.Header.Add("Set-Cookie", v)
 		}
 	}
@@ -366,7 +366,7 @@ func (m *Mock) HttpClient(cli *http.Client) *Mock {
 
 // Get configures the mock to match http method GET
 func (m *Mock) Get(u string) *MockRequest {
-	m.parseUrl(u)
+	m.parseURL(u)
 	m.request.method = http.MethodGet
 	return m.request
 }
@@ -378,14 +378,14 @@ func (m *Mock) Getf(format string, args ...interface{}) *MockRequest {
 
 // Head configures the mock to match http method HEAD
 func (m *Mock) Head(u string) *MockRequest {
-	m.parseUrl(u)
+	m.parseURL(u)
 	m.request.method = http.MethodHead
 	return m.request
 }
 
 // Put configures the mock to match http method PUT
 func (m *Mock) Put(u string) *MockRequest {
-	m.parseUrl(u)
+	m.parseURL(u)
 	m.request.method = http.MethodPut
 	return m.request
 }
@@ -397,7 +397,7 @@ func (m *Mock) Putf(format string, args ...interface{}) *MockRequest {
 
 // Post configures the mock to match http method POST
 func (m *Mock) Post(u string) *MockRequest {
-	m.parseUrl(u)
+	m.parseURL(u)
 	m.request.method = http.MethodPost
 	return m.request
 }
@@ -409,7 +409,7 @@ func (m *Mock) Postf(format string, args ...interface{}) *MockRequest {
 
 // Delete configures the mock to match http method DELETE
 func (m *Mock) Delete(u string) *MockRequest {
-	m.parseUrl(u)
+	m.parseURL(u)
 	m.request.method = http.MethodDelete
 	return m.request
 }
@@ -421,7 +421,7 @@ func (m *Mock) Deletef(format string, args ...interface{}) *MockRequest {
 
 // Patch configures the mock to match http method PATCH
 func (m *Mock) Patch(u string) *MockRequest {
-	m.parseUrl(u)
+	m.parseURL(u)
 	m.request.method = http.MethodPatch
 	return m.request
 }
@@ -431,7 +431,7 @@ func (m *Mock) Patchf(format string, args ...interface{}) *MockRequest {
 	return m.Patch(fmt.Sprintf(format, args...))
 }
 
-func (m *Mock) parseUrl(u string) {
+func (m *Mock) parseURL(u string) {
 	parsed, err := url.Parse(u)
 	if err != nil {
 		panic(err)
@@ -916,7 +916,7 @@ var formDataMatcher = func(req *http.Request, spec *MockRequest) error {
 	mockFormData := spec.formData
 
 	for key, values := range mockFormData {
-		r := copyHttpRequest(req)
+		r := copyHTTPRequest(req)
 		err := r.ParseForm()
 		if err != nil {
 			return errors.New("unable to parse form data")
@@ -952,7 +952,7 @@ var formDataMatcher = func(req *http.Request, spec *MockRequest) error {
 
 var formDataPresentMatcher = func(req *http.Request, spec *MockRequest) error {
 	if len(spec.formDataPresent) > 0 {
-		r := copyHttpRequest(req)
+		r := copyHTTPRequest(req)
 		if err := r.ParseForm(); err != nil {
 			return errors.New("unable to parse form data")
 		}
@@ -970,7 +970,7 @@ var formDataPresentMatcher = func(req *http.Request, spec *MockRequest) error {
 
 var formDataNotPresentMatcher = func(req *http.Request, spec *MockRequest) error {
 	if len(spec.formDataNotPresent) > 0 {
-		r := copyHttpRequest(req)
+		r := copyHTTPRequest(req)
 		if err := r.ParseForm(); err != nil {
 			return errors.New("unable to parse form data")
 		}

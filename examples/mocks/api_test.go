@@ -8,7 +8,7 @@ import (
 	apitest "github.com/nao1215/spectest"
 )
 
-func TestGetUser_Success(t *testing.T) {
+func TestGetUserSuccess(t *testing.T) {
 	apitest.New().
 		Mocks(getPreferencesMock, getUserMock).
 		Handler(newApp().Router).

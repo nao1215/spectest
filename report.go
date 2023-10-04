@@ -52,8 +52,8 @@ type (
 		Timestamp time.Time
 	}
 
-	// HttpResponse represents an http response
-	HttpResponse struct {
+	// HTTPResponse represents an http response
+	HTTPResponse struct {
 		Source    string
 		Target    string
 		Value     *http.Response
@@ -65,7 +65,7 @@ type (
 func (r HttpRequest) GetTime() time.Time { return r.Timestamp }
 
 // GetTime gets the time of the HttpResponse interaction
-func (r HttpResponse) GetTime() time.Time { return r.Timestamp }
+func (r HTTPResponse) GetTime() time.Time { return r.Timestamp }
 
 // GetTime gets the time of the MessageRequest interaction
 func (r MessageRequest) GetTime() time.Time { return r.Timestamp }
@@ -78,14 +78,14 @@ func NewTestRecorder() *Recorder {
 	return &Recorder{}
 }
 
-// AddHttpRequest add an http request to recorder
-func (r *Recorder) AddHttpRequest(req HttpRequest) *Recorder {
+// AddHTTPRequest add an http request to recorder
+func (r *Recorder) AddHTTPRequest(req HttpRequest) *Recorder {
 	r.Events = append(r.Events, req)
 	return r
 }
 
-// AddHttpResponse add an HttpResponse to the recorder
-func (r *Recorder) AddHttpResponse(req HttpResponse) *Recorder {
+// AddHTTPResponse add an HTTPResponse to the recorder
+func (r *Recorder) AddHTTPResponse(req HTTPResponse) *Recorder {
 	r.Events = append(r.Events, req)
 	return r
 }
@@ -127,7 +127,7 @@ func (r *Recorder) ResponseStatus() (int, error) {
 	}
 
 	switch v := r.Events[len(r.Events)-1].(type) {
-	case HttpResponse:
+	case HTTPResponse:
 		return v.Value.StatusCode, nil
 	case MessageResponse:
 		return -1, nil
