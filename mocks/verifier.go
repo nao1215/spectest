@@ -1,7 +1,7 @@
 package mocks
 
 import (
-	"github.com/steinfletcher/apitest"
+	apitest "github.com/nao1215/spectest"
 )
 
 var _ apitest.Verifier = MockVerifier{}

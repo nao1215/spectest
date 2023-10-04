@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/steinfletcher/apitest"
+	apitest "github.com/nao1215/spectest"
 )
 
 func TestGetUser_With_Default_Report_Formatter(t *testing.T) {

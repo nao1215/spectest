@@ -1,6 +1,6 @@
-module github.com/steinfletcher/apitest/examples
+module github.com/nao1215/spectest/examples
 
-replace github.com/steinfletcher/apitest => ../
+replace github.com/nao1215/spectest => ../
 
 require (
 	github.com/99designs/gqlgen v0.12.2
@@ -19,8 +19,8 @@ require (
 	github.com/onsi/gomega v1.10.1
 	github.com/pressly/goose v2.6.0+incompatible
 	github.com/satori/go.uuid v1.2.0
-	github.com/steinfletcher/apitest v1.4.8
-	github.com/steinfletcher/apitest-jsonpath v1.5.1
+	github.com/nao1215/spectest v1.4.8
+	github.com/nao1215/spectest-jsonpath v1.5.1
 	github.com/vektah/gqlparser/v2 v2.0.1
 )
 

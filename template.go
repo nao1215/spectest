@@ -1,4 +1,4 @@
-package apitest
+package spectest
 
 const reportTemplate = `<!DOCTYPE html>
 <html lang="en">

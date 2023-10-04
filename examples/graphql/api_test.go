@@ -1,11 +1,12 @@
 package main_test
 
 import (
-	"github.com/steinfletcher/apitest"
-	jsonpath "github.com/steinfletcher/apitest-jsonpath"
-	"github.com/steinfletcher/apitest/examples/graphql/graph"
 	"net/http"
 	"testing"
+
+	apitest "github.com/nao1215/spectest"
+	jsonpath "github.com/steinfletcher/apitest-jsonpath"
+	"github.com/steinfletcher/apitest/examples/graphql/graph"
 )
 
 func TestQuery_Empty(t *testing.T) {

@@ -8,9 +8,9 @@ import (
 	"testing"
 
 	"github.com/jmoiron/sqlx"
+	apitest "github.com/nao1215/spectest"
+	apitestdb "github.com/nao1215/spectest/x/db"
 	uuid "github.com/satori/go.uuid"
-	"github.com/steinfletcher/apitest"
-	apitestdb "github.com/steinfletcher/apitest/x/db"
 )
 
 var recorder *apitest.Recorder

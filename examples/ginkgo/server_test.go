@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	apitest "github.com/nao1215/spectest"
 	. "github.com/onsi/ginkgo"
-	"github.com/steinfletcher/apitest"
 	jsonpath "github.com/steinfletcher/apitest-jsonpath"
 	server "github.com/steinfletcher/apitest/examples/ginkgo"
 )
