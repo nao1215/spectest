@@ -755,6 +755,9 @@ func (a *APITest) report() *http.Response {
 
 	a.observers = append(a.observers, func(finalRes *http.Response, inboundReq *http.Request, a *APITest) {
 		capturedFinalRes = copyHTTPResponse(finalRes)
+		defer func() {
+			capturedFinalRes.Body.Close() //nolint errcheck TODO:
+		}()
 		capturedInboundReq = copyHTTPRequest(inboundReq)
 	})
 

@@ -429,7 +429,6 @@ func TestApiTestAddsBasicAuthToRequest(t *testing.T) {
 }
 
 func TestApiTestAddsTimedOutContextToRequest(t *testing.T) {
-
 	handler := http.NewServeMux()
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		time.Sleep(time.Nanosecond * 10)
