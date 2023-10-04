@@ -1309,7 +1309,7 @@ func TestApiTestCombineFormDataWithMultipart(t *testing.T) {
 	for name, tt := range tests {
 		t.Run(name, func(t *testing.T) {
 
-			cmd := exec.Command(os.Args[0], "-test.run=TestApiTest_CombineFormDataWithMultipart")
+			cmd := exec.Command(os.Args[0], "-test.run=TestApiTestCombineFormDataWithMultipart")
 			cmd.Env = append(os.Environ(), "RUN_FATAL_TEST="+tt)
 			err := cmd.Run()
 			if e, ok := err.(*exec.ExitError); ok && !e.Success() {
