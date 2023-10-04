@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/steinfletcher/apitest"
+	apitest "github.com/nao1215/spectest"
 )
 
 func TestGetUser_Success(t *testing.T) {

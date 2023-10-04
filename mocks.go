@@ -1,4 +1,4 @@
-package apitest
+package spectest
 
 import (
 	"bytes"
@@ -18,7 +18,7 @@ import (
 	"time"
 
 	"github.com/davecgh/go-spew/spew"
-	"github.com/steinfletcher/apitest/difflib"
+	"github.com/nao1215/spectest/difflib"
 )
 
 // Transport wraps components used to observe and manipulate the real request and response objects

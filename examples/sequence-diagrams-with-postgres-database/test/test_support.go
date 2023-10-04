@@ -4,9 +4,9 @@ import (
 	"database/sql"
 
 	"github.com/jmoiron/sqlx"
+	apitest "github.com/nao1215/spectest"
+	apitestdb "github.com/nao1215/spectest/x/db"
 	"github.com/pressly/goose"
-	"github.com/steinfletcher/apitest"
-	apitestdb "github.com/steinfletcher/apitest/x/db"
 )
 
 const dsn = "host=localhost port=5432 user=postgres password=postgres dbname=apitest sslmode=disable"

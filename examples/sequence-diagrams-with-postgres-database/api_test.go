@@ -7,10 +7,10 @@ import (
 	"testing"
 
 	"github.com/jmoiron/sqlx"
+	apitest "github.com/nao1215/spectest"
+	"github.com/nao1215/spectest/examples/sequence-diagrams-with-postgres-database/test"
+	_ "github.com/nao1215/spectest/examples/sequence-diagrams-with-postgres-database/test"
 	uuid "github.com/satori/go.uuid"
-	"github.com/steinfletcher/apitest"
-	"github.com/steinfletcher/apitest/examples/sequence-diagrams-with-postgres-database/test"
-	_ "github.com/steinfletcher/apitest/examples/sequence-diagrams-with-postgres-database/test"
 )
 
 // This test requires a postgres database to run

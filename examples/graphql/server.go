@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/steinfletcher/apitest/examples/graphql/graph"
+	"github.com/nao1215/spectest/examples/graphql/graph"
 )
 
 const defaultPort = "8000"

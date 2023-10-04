@@ -1,10 +1,11 @@
 package graph
 
 import (
+	"net/http"
+
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/steinfletcher/apitest/examples/graphql/graph/generated"
-	"net/http"
+	"github.com/nao1215/spectest/examples/graphql/graph/generated"
 )
 
 func NewHandler() http.Handler {

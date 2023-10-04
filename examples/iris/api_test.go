@@ -4,8 +4,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/steinfletcher/apitest"
-	"github.com/steinfletcher/apitest-jsonpath"
+	apitest "github.com/nao1215/spectest"
 )
 
 func TestGetUser_CookieMatching(t *testing.T) {

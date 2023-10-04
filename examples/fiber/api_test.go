@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/steinfletcher/apitest"
+	apitest "github.com/nao1215/spectest"
 	jsonpath "github.com/steinfletcher/apitest-jsonpath"
 )
 

@@ -1,34 +1,16 @@
-<p align="center">
-    <img src="https://apitest.dev/static/images/dummy.svg" width="150">
-</p>
+# What is spectest?
 
-<p align="center">
-<a href="https://godoc.org/github.com/steinfletcher/apitest"><img src="https://godoc.org/github.com/steinfletcher/apitest?status.svg" alt="Godoc" /></a>
-<a href="https://circleci.com/gh/steinfletcher/apitest"><img src="https://circleci.com/gh/steinfletcher/apitest.svg?style=shield" alt="Build Status" /></a>
-<a href="https://goreportcard.com/report/github.com/steinfletcher/apitest"><img src="https://goreportcard.com/badge/github.com/steinfletcher/apitest" alt="Go Report Card" /></a>
-<a href="https://github.com/avelino/awesome-go/#testing"><img src="https://awesome.re/mentioned-badge.svg" alt="Mentioned in Awesome Go" /></a>
-</p>
-
-# apitest
+**This project is forked from [steinfletcher/apitest](https://github.com/steinfletcher/apitest)** apitest was functionally complete. However, I wanted more features, so I decided to fork it to actively develop it further. I will mainly enhance document generation and integration with AWS."
 
 A simple and extensible behavioural testing library. Supports mocking external http calls and renders sequence diagrams on completion.
 
 In behavioural tests the internal structure of the app is not known by the tests. Data is input to the system and the outputs are expected to meet certain conditions.
 
-Join the conversation at #apitest on [https://gophers.slack.com](https://gophers.slack.com).
-
-<span>Logo by <a target="_blank" href="https://twitter.com/egonelbre">@egonelbre</a><span>
-
-Note: The API for apitest is stable and complete - despite the lack of activity this repository is still actively maintained. Any new issues will be addressed. Feature requests will be considered.
-
-## Documentation
-
-Please visit [https://apitest.dev](https://apitest.dev) for the latest documentation.
 
 ## Installation
 
 ```bash
-go get -u github.com/steinfletcher/apitest
+go get -u github.com/nao1215/apitest
 ```
 
 ## Demo
@@ -41,16 +23,16 @@ go get -u github.com/steinfletcher/apitest
 
 | Example                                                                                              | Comment                                                                                                    |
 | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| [gin](https://github.com/steinfletcher/apitest/tree/master/examples/gin)                             | popular martini-like web framework                                                                         |
-| [graphql](https://github.com/steinfletcher/apitest/tree/master/examples/graphql)                     | using gqlgen.com to generate a graphql server                                                              |
-| [gorilla](https://github.com/steinfletcher/apitest/tree/master/examples/gorilla)                     | the gorilla web toolkit                                                                                    |
-| [iris](https://github.com/steinfletcher/apitest/tree/master/examples/iris)                           | iris web framework                                                                                         |
-| [echo](https://github.com/steinfletcher/apitest/tree/master/examples/echo)                           | High performance, extensible, minimalist Go web framework                                                  |
-| [fiber](https://github.com/steinfletcher/apitest/tree/master/examples/fiber)                         | Express inspired web framework written in Go                                                               |
-| [httprouter](https://github.com/steinfletcher/apitest/tree/master/examples/httprouter)               | High performance HTTP request router that scales well                                                      |
-| [mocks](https://github.com/steinfletcher/apitest/tree/master/examples/mocks)                         | example mocking out external http calls                                                                    |
-| [sequence diagrams](https://github.com/steinfletcher/apitest/tree/master/examples/sequence-diagrams) | generate sequence diagrams from tests. See the [demo](http://demo-html.apitest.dev.s3-website-eu-west-1.amazonaws.com/)  |
-| [Ginkgo](https://github.com/steinfletcher/apitest/tree/master/examples/ginkgo) | Ginkgo BDD test framework|
+| [gin](https://github.com/nao1215/apitest/tree/master/examples/gin)                             | popular martini-like web framework                                                                         |
+| [graphql](https://github.com/nao1215/apitest/tree/master/examples/graphql)                     | using gqlgen.com to generate a graphql server                                                              |
+| [gorilla](https://github.com/nao1215/apitest/tree/master/examples/gorilla)                     | the gorilla web toolkit                                                                                    |
+| [iris](https://github.com/nao1215/apitest/tree/master/examples/iris)                           | iris web framework                                                                                         |
+| [echo](https://github.com/nao1215/apitest/tree/master/examples/echo)                           | High performance, extensible, minimalist Go web framework                                                  |
+| [fiber](https://github.com/nao1215/nao1215/tree/master/examples/fiber)                         | Express inspired web framework written in Go                                                               |
+| [httprouter](https://github.com/nao1215/apitest/tree/master/examples/httprouter)               | High performance HTTP request router that scales well                                                      |
+| [mocks](https://github.com/nao1215/apitest/tree/master/examples/mocks)                         | example mocking out external http calls                                                                    |
+| [sequence diagrams](https://github.com/nao1215/apitest/tree/master/examples/sequence-diagrams) | generate sequence diagrams from tests |
+| [Ginkgo](https://github.com/nao1215/apitest/tree/master/examples/ginkgo) | Ginkgo BDD test framework|
 
 ### Companion libraries
 

@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/steinfletcher/apitest"
+	apitest "github.com/nao1215/spectest"
 	jsonpath "github.com/steinfletcher/apitest-jsonpath"
 )
 

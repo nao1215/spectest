@@ -6,8 +6,8 @@ package graph
 import (
 	"context"
 
-	"github.com/steinfletcher/apitest/examples/graphql/graph/generated"
-	"github.com/steinfletcher/apitest/examples/graphql/graph/model"
+	"github.com/nao1215/spectest/examples/graphql/graph/generated"
+	"github.com/nao1215/spectest/examples/graphql/graph/model"
 )
 
 func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {

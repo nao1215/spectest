@@ -1,4 +1,4 @@
-package apitest_test
+package spectest_test
 
 import (
 	"context"
@@ -15,8 +15,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/steinfletcher/apitest"
-	"github.com/steinfletcher/apitest/mocks"
+	apitest "github.com/nao1215/spectest"
+	"github.com/nao1215/spectest/mocks"
 )
 
 func TestApiTest_ResponseBody(t *testing.T) {
