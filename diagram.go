@@ -266,7 +266,7 @@ func formatBodyContent(bodyReadCloser io.ReadCloser, replaceBody func(replacemen
 		return "", nil
 	}
 
-	body, err := ioutil.ReadAll(bodyReadCloser)
+	body, err := io.ReadAll(bodyReadCloser)
 	if err != nil {
 		return "", err
 	}
