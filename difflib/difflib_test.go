@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math"
 	"reflect"
+	"runtime"
 	"strings"
 	"testing"
 )
@@ -43,8 +44,9 @@ func TestGetOptCodes(t *testing.T) {
 	s := NewMatcher(splitChars(a), splitChars(b))
 	w := &bytes.Buffer{}
 	for _, op := range s.GetOpCodes() {
-		fmt.Fprintf(w, "%s a[%d:%d], (%s) b[%d:%d] (%s)\n", string(op.Tag),
-			op.I1, op.I2, a[op.I1:op.I2], op.J1, op.J2, b[op.J1:op.J2])
+		fmt.Fprintf(w, "%s a[%d:%d], (%s) b[%d:%d] (%s)%s)", string(op.Tag),
+			op.I1, op.I2, a[op.I1:op.I2], op.J1, op.J2, b[op.J1:op.J2],
+			newLine())
 	}
 	result := string(w.Bytes())
 	expected := `d a[0:1], (q) b[0:0] ()
@@ -54,7 +56,7 @@ e a[4:6], (cd) b[3:5] (cd)
 i a[6:6], () b[5:6] (f)
 `
 	if expected != result {
-		t.Errorf("unexpected op codes: \n%s", result)
+		t.Errorf("unexpected op codes: %s%s", newLine(), result)
 	}
 }
 
@@ -75,10 +77,11 @@ func TestGroupedOpCodes(t *testing.T) {
 	s := NewMatcher(a, b)
 	w := &bytes.Buffer{}
 	for _, g := range s.GetGroupedOpCodes(-1) {
-		fmt.Fprintf(w, "group\n")
+		fmt.Fprintf(w, "group%s", newLine())
 		for _, op := range g {
-			fmt.Fprintf(w, "  %s, %d, %d, %d, %d\n", string(op.Tag),
-				op.I1, op.I2, op.J1, op.J2)
+			fmt.Fprintf(w, "  %s, %d, %d, %d, %d%s", string(op.Tag),
+				op.I1, op.I2, op.J1, op.J2,
+				newLine())
 		}
 	}
 	result := string(w.Bytes())
@@ -98,7 +101,7 @@ group
   e, 35, 38, 31, 34
 `
 	if expected != result {
-		t.Errorf("unexpected op codes: \n%s", result)
+		t.Errorf("unexpected op codes: %s%s", newLine(), result)
 	}
 }
 
@@ -219,19 +222,19 @@ func TestOutputFormatTabDelimiter(t *testing.T) {
 		FromDate: "2005-01-26 23:30:50",
 		ToFile:   "Current",
 		ToDate:   "2010-04-12 10:20:52",
-		Eol:      "\n",
+		Eol:      newLine(),
 	}
 	ud, err := GetUnifiedDiffString(diff)
 	assertEqual(t, err, nil)
 	assertEqual(t, SplitLines(ud)[:2], []string{
-		"\u001B[31m---\u001B[0m Original\t2005-01-26 23:30:50\n",
-		"\u001B[32m+++\u001B[0m Current\t2010-04-12 10:20:52\n",
+		fmt.Sprintf("\u001B[31m---\u001B[0m Original\t2005-01-26 23:30:50%s", newLine()),
+		fmt.Sprintf("\u001B[32m+++\u001B[0m Current\t2010-04-12 10:20:52%s", newLine()),
 	})
 	cd, err := GetContextDiffString(ContextDiff(diff))
 	assertEqual(t, err, nil)
 	assertEqual(t, SplitLines(cd)[:2], []string{
-		"*** Original\t2005-01-26 23:30:50\n",
-		"--- Current\t2010-04-12 10:20:52\n",
+		fmt.Sprintf("*** Original\t2005-01-26 23:30:50%s", newLine()),
+		fmt.Sprintf("--- Current\t2010-04-12 10:20:52%s", newLine()),
 	})
 }
 
@@ -241,15 +244,21 @@ func TestOutputFormatNoTrailingTabOnEmptyFiledate(t *testing.T) {
 		B:        splitChars("two"),
 		FromFile: "Original",
 		ToFile:   "Current",
-		Eol:      "\n",
+		Eol:      newLine(),
 	}
 	ud, err := GetUnifiedDiffString(diff)
 	assertEqual(t, err, nil)
-	assertEqual(t, SplitLines(ud)[:2], []string{"\u001B[31m---\u001B[0m Original\n", "\u001B[32m+++\u001B[0m Current\n"})
+	assertEqual(t, SplitLines(ud)[:2], []string{
+		fmt.Sprintf("\u001B[31m---\u001B[0m Original%s", newLine()),
+		fmt.Sprintf("\u001B[32m+++\u001B[0m Current%s", newLine()),
+	})
 
 	cd, err := GetContextDiffString(ContextDiff(diff))
 	assertEqual(t, err, nil)
-	assertEqual(t, SplitLines(cd)[:2], []string{"*** Original\n", "--- Current\n"})
+	assertEqual(t, SplitLines(cd)[:2], []string{
+		fmt.Sprintf("*** Original%s", newLine()),
+		fmt.Sprintf("--- Current%s", newLine()),
+	})
 }
 
 func TestSplitLines(t *testing.T) {
@@ -257,9 +266,10 @@ func TestSplitLines(t *testing.T) {
 		input string
 		want  []string
 	}{
-		{"foo", []string{"foo\n"}},
-		{"foo\nbar", []string{"foo\n", "bar\n"}},
-		{"foo\nbar\n", []string{"foo\n", "bar\n", "\n"}},
+		{"foo", []string{fmt.Sprintf("foo%s", newLine())}},
+		{fmt.Sprintf("foo%sbar", newLine()), []string{fmt.Sprintf("foo%s", newLine()), fmt.Sprintf("bar%s", newLine())}},
+		{fmt.Sprintf("foo%sbar%s", newLine(), newLine()),
+			[]string{fmt.Sprintf("foo%s", newLine()), fmt.Sprintf("bar%s", newLine()), newLine()}},
 	}
 	for _, test := range allTests {
 		assertEqual(t, SplitLines(test.input), test.want)
@@ -267,7 +277,7 @@ func TestSplitLines(t *testing.T) {
 }
 
 func benchmarkSplitLines(b *testing.B, count int) {
-	str := strings.Repeat("foo\n", count)
+	str := strings.Repeat(fmt.Sprintf("foo%s", newLine()), count)
 
 	b.ResetTimer()
 
@@ -283,4 +293,11 @@ func BenchmarkSplitLines100(b *testing.B) {
 
 func BenchmarkSplitLines10000(b *testing.B) {
 	benchmarkSplitLines(b, 10000)
+}
+
+func newLine() string {
+	if runtime.GOOS == "windows" {
+		return "\r\n"
+	}
+	return "\n"
 }
