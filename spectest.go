@@ -1,4 +1,4 @@
-// Package spectest is simple and extensible behavioural testing library for Go. You can use api test to simplify REST API, HTTP handler and e2e tests. (forked from steinfletcher/apitest)
+// Package spectest is simple and extensible behavioral testing library for Go. You can use api test to simplify REST API, HTTP handler and e2e tests. (forked from steinfletcher/apitest)
 package spectest
 
 import (

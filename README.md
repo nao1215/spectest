@@ -9,9 +9,9 @@
 
 **This project is forked from [steinfletcher/apitest](https://github.com/steinfletcher/apitest)** apitest was functionally complete. However, I wanted more features, so I decided to fork it to actively develop it further. I will mainly enhance document generation and integration with AWS."
 
-A simple and extensible behavioural testing library. Supports mocking external http calls and renders sequence diagrams on completion.
+A simple and extensible behavioral testing library. Supports mocking external http calls and renders sequence diagrams on completion.
 
-In behavioural tests the internal structure of the app is not known by the tests. Data is input to the system and the outputs are expected to meet certain conditions.
+In behavioral tests the internal structure of the app is not known by the tests. Data is input to the system and the outputs are expected to meet certain conditions.
 
 ## Supported OS
 - Linux
@@ -58,7 +58,7 @@ go get -u github.com/nao1215/spectest
 This library was influenced by the following software packages:
 
 * [YatSpec](https://github.com/bodar/yatspec) for creating sequence diagrams from tests
-* [MockMVC](https://spring.io) and [superagent](https://github.com/visionmedia/superagent) for the concept and behavioural testing approach
+* [MockMVC](https://spring.io) and [superagent](https://github.com/visionmedia/superagent) for the concept and behavioral testing approach
 * [Gock](https://github.com/h2non/gock) for the approach to mocking HTTP services in Go
 * [Baloo](https://github.com/h2non/baloo) for API design
 
