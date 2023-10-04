@@ -20,12 +20,12 @@ In behavioural tests the internal structure of the app is not known by the tests
 ## Installation
 
 ```bash
-go get -u github.com/nao1215/apitest
+go get -u github.com/nao1215/spectest
 ```
 
 ## Demo
 
-![animated gif](./apitest.gif)
+![animated gif](./spectest.gif)
 
 ## Examples
 
