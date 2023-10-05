@@ -772,7 +772,7 @@ func (a *APITest) report() *http.Response {
 	a.recorder.
 		AddTitle(fmt.Sprintf("%s %s", capturedInboundReq.Method, capturedInboundReq.URL.String())).
 		AddSubTitle(a.name).
-		AddHTTPRequest(HttpRequest{
+		AddHTTPRequest(HTTPRequest{
 			Source:    ConsumerDefaultName,
 			Target:    SystemUnderTestDefaultName,
 			Value:     capturedInboundReq,
@@ -780,7 +780,7 @@ func (a *APITest) report() *http.Response {
 		})
 
 	for _, interaction := range capturedMockInteractions {
-		a.recorder.AddHTTPRequest(HttpRequest{
+		a.recorder.AddHTTPRequest(HTTPRequest{
 			Source:    SystemUnderTestDefaultName,
 			Target:    interaction.GetRequestHost(),
 			Value:     interaction.request,

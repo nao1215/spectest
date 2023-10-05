@@ -44,8 +44,8 @@ type (
 		Timestamp time.Time
 	}
 
-	// HttpRequest represents an http request
-	HttpRequest struct {
+	// HTTPRequest represents an http request
+	HTTPRequest struct {
 		Source    string
 		Target    string
 		Value     *http.Request
@@ -62,7 +62,7 @@ type (
 )
 
 // GetTime gets the time of the HttpRequest interaction
-func (r HttpRequest) GetTime() time.Time { return r.Timestamp }
+func (r HTTPRequest) GetTime() time.Time { return r.Timestamp }
 
 // GetTime gets the time of the HttpResponse interaction
 func (r HTTPResponse) GetTime() time.Time { return r.Timestamp }
@@ -79,7 +79,7 @@ func NewTestRecorder() *Recorder {
 }
 
 // AddHTTPRequest add an http request to recorder
-func (r *Recorder) AddHTTPRequest(req HttpRequest) *Recorder {
+func (r *Recorder) AddHTTPRequest(req HTTPRequest) *Recorder {
 	r.Events = append(r.Events, req)
 	return r
 }

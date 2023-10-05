@@ -7,9 +7,9 @@ import (
 
 func TestRecorderResponseStatusRecordsFinalResponseStatus(t *testing.T) {
 	status, err := NewTestRecorder().
-		AddHTTPRequest(HttpRequest{}).
+		AddHTTPRequest(HTTPRequest{}).
 		AddHTTPResponse(HTTPResponse{Value: &http.Response{StatusCode: http.StatusAccepted}}).
-		AddHTTPRequest(HttpRequest{}).
+		AddHTTPRequest(HTTPRequest{}).
 		AddHTTPResponse(HTTPResponse{Value: &http.Response{StatusCode: http.StatusBadRequest}}).
 		ResponseStatus()
 
@@ -26,7 +26,7 @@ func TestRecorderResponseStatusErrorsIfNoEventsDefined(t *testing.T) {
 
 func TestRecorderResponseStatusErrorsIfFinalEventNotAResponse(t *testing.T) {
 	_, err := NewTestRecorder().
-		AddHTTPRequest(HttpRequest{}).
+		AddHTTPRequest(HTTPRequest{}).
 		ResponseStatus()
 
 	assert.Equal(t, "final event should be a response type", err.Error())

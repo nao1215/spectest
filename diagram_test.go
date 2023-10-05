@@ -87,7 +87,7 @@ func TestRecorderBuilder(t *testing.T) {
 		"host":   "example.com",
 		"method": "GET",
 	}, recorder.Meta)
-	assert.Equal(t, "reqSource", recorder.Events[0].(HttpRequest).Source)
+	assert.Equal(t, "reqSource", recorder.Events[0].(HTTPRequest).Source)
 	assert.Equal(t, "mesReqSource", recorder.Events[1].(MessageRequest).Source)
 	assert.Equal(t, "mesResSource", recorder.Events[2].(MessageResponse).Source)
 	assert.Equal(t, "resSource", recorder.Events[3].(HTTPResponse).Source)
@@ -177,10 +177,10 @@ func TestNewHttpResponseLogEntryPlainText(t *testing.T) {
 	assert.Equal(t, logEntry.Body, `abcdef`)
 }
 
-func aRequest() HttpRequest {
+func aRequest() HTTPRequest {
 	req := httptest.NewRequest(http.MethodGet, "http://example.com/abcdef?name=abc", nil)
 	req.Header.Set("Content-Type", "application/json")
-	return HttpRequest{Value: req, Source: "reqSource", Target: "reqTarget"}
+	return HTTPRequest{Value: req, Source: "reqSource", Target: "reqTarget"}
 }
 
 func aResponse() HTTPResponse {

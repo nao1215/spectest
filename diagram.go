@@ -183,7 +183,7 @@ func newHTMLTemplateModel(r *Recorder) (htmlTemplateModel, error) {
 
 	for _, event := range r.Events {
 		switch v := event.(type) {
-		case HttpRequest:
+		case HTTPRequest:
 			httpReq := v.Value
 			webSequenceDiagram.addRequestRow(v.Source, v.Target, formatDiagramRequest(httpReq))
 			entry, err := newHTTPRequestLogEntry(httpReq)
