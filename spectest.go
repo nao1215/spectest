@@ -58,18 +58,6 @@ type APITest struct {
 	finished                 time.Time
 }
 
-// InboundRequest used to wrap the incoming request with a timestamp
-type InboundRequest struct {
-	request   *http.Request
-	timestamp time.Time
-}
-
-// FinalResponse used to wrap the final response with a timestamp
-type FinalResponse struct {
-	response  *http.Response
-	timestamp time.Time
-}
-
 // Observe will be called by with the request and response on completion
 type Observe func(*http.Response, *http.Request, *APITest)
 
@@ -102,12 +90,12 @@ func New(name ...string) *APITest {
 	return apiTest
 }
 
-// Handler is a convenience method for creating a new apitest with a handler
+// Handler is a convenience method for creating a new spectest with a handler
 func Handler(handler http.Handler) *APITest {
 	return New().Handler(handler)
 }
 
-// HandlerFunc is a convenience method for creating a new apitest with a handler func
+// HandlerFunc is a convenience method for creating a new spectest with a handler func
 func HandlerFunc(handlerFunc http.HandlerFunc) *APITest {
 	return New().HandlerFunc(handlerFunc)
 }
@@ -129,7 +117,7 @@ func (a *APITest) EnableMockResponseDelay() *APITest {
 	return a
 }
 
-// Debug logs to the console the http wire representation of all http interactions that are intercepted by apitest. This includes the inbound request to the application under test, the response returned by the application and any interactions that are intercepted by the mock server.
+// Debug logs to the console the http wire representation of all http interactions that are intercepted by spectest. This includes the inbound request to the application under test, the response returned by the application and any interactions that are intercepted by the mock server.
 func (a *APITest) Debug() *APITest {
 	a.debugEnabled = true
 	return a
@@ -679,7 +667,7 @@ func (r *Response) End() Result {
 	defer func() {
 		if apiTest.debugEnabled {
 			apiTest.finished = time.Now()
-			fmt.Println(fmt.Sprintf("Duration: %s\n", apiTest.finished.Sub(apiTest.started)))
+			fmt.Printf("Duration: %s\n", apiTest.finished.Sub(apiTest.started))
 		}
 	}()
 
@@ -697,7 +685,7 @@ func (r *Response) End() Result {
 
 	var unmatchedMocks []UnmatchedMock
 	for _, m := range r.apiTest.mocks {
-		if m.isUsed == false {
+		if !m.isUsed {
 			unmatchedMocks = append(unmatchedMocks, UnmatchedMock{
 				URL: *m.request.url,
 			})
@@ -898,7 +886,7 @@ func (r *Response) runTest() *http.Response {
 
 func (a *APITest) assertMocks() {
 	for _, mock := range a.mocks {
-		if mock.isUsed == false && mock.timesSet {
+		if !mock.isUsed && mock.timesSet {
 			a.verifier.Fail(a.t, "mock was not invoked expected times", failureMessageArgs{Name: a.name})
 		}
 	}

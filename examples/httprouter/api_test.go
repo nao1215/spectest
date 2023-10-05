@@ -4,22 +4,22 @@ import (
 	"net/http"
 	"testing"
 
-	apitest "github.com/go-spectest/spectest"
+	"github.com/go-spectest/spectest"
 	jsonpath "github.com/steinfletcher/apitest-jsonpath"
 )
 
 func TestGetUserCookieMatching(t *testing.T) {
-	apitest.New().
+	spectest.New().
 		Handler(newRouter()).
 		Get("/user/1234").
 		Expect(t).
-		Cookies(apitest.NewCookie("CookieForAndy").Value("Andy")).
+		Cookies(spectest.NewCookie("CookieForAndy").Value("Andy")).
 		Status(http.StatusOK).
 		End()
 }
 
 func TestGetUserSuccess(t *testing.T) {
-	apitest.New().
+	spectest.New().
 		Handler(newRouter()).
 		Get("/user/1234").
 		Expect(t).
@@ -29,7 +29,7 @@ func TestGetUserSuccess(t *testing.T) {
 }
 
 func TestGetUserSuccessJSONPath(t *testing.T) {
-	apitest.New().
+	spectest.New().
 		Handler(newRouter()).
 		Get("/user/1234").
 		Expect(t).
@@ -39,7 +39,7 @@ func TestGetUserSuccessJSONPath(t *testing.T) {
 }
 
 func TestGetUserNotFound(t *testing.T) {
-	apitest.New().
+	spectest.New().
 		Handler(newRouter()).
 		Get("/user/1515").
 		Expect(t).

@@ -30,7 +30,7 @@ type failureMessageArgs struct {
 }
 
 // Verifier is the assertion interface allowing consumers to inject a custom assertion implementation.
-// It also allows failure scenarios to be tested within apitest
+// It also allows failure scenarios to be tested within spectest
 type Verifier interface {
 	Equal(t TestingT, expected, actual interface{}, msgAndArgs ...interface{}) bool
 	True(t TestingT, value bool, msgAndArgs ...interface{}) bool

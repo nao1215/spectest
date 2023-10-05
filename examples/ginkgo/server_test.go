@@ -3,7 +3,7 @@ package server_test
 import (
 	"net/http"
 
-	apitest "github.com/go-spectest/spectest"
+	"github.com/go-spectest/spectest"
 	"github.com/gorilla/mux"
 	. "github.com/onsi/ginkgo"
 	jsonpath "github.com/steinfletcher/apitest-jsonpath"
@@ -24,11 +24,11 @@ var _ = Describe("Ginkgo/Server", func() {
 
 	Context("Successful CookieMatching", func() {
 		It("cookies should be set correctly", func() {
-			apitest.New().
+			spectest.New().
 				Handler(router).
 				Get("/user/1234").
 				Expect(t).
-				Cookies(apitest.NewCookie("TomsFavouriteDrink").
+				Cookies(spectest.NewCookie("TomsFavouriteDrink").
 					Value("Beer").
 					Path("/")).
 				Status(http.StatusOK).
@@ -38,7 +38,7 @@ var _ = Describe("Ginkgo/Server", func() {
 
 	Context("Successful GetUser", func() {
 		It("Get User body should return desired value", func() {
-			apitest.New().
+			spectest.New().
 				Handler(router).
 				Get("/user/1234").
 				Expect(t).
@@ -48,7 +48,7 @@ var _ = Describe("Ginkgo/Server", func() {
 		})
 
 		It("Get User jsonpath should return desired value", func() {
-			apitest.New().
+			spectest.New().
 				Handler(router).
 				Get("/user/1234").
 				Expect(t).
@@ -60,7 +60,7 @@ var _ = Describe("Ginkgo/Server", func() {
 
 	Context("Unsuccessful GetUser", func() {
 		It("User not found error should be raised", func() {
-			apitest.New().
+			spectest.New().
 				Handler(router).
 				Get("/user/1515").
 				Expect(t).

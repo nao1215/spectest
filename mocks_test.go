@@ -115,22 +115,22 @@ func TestMocksNewEmptyUnmatchedMockErrorExpectedErrorsString(t *testing.T) {
 func TestMocksHostMatcher(t *testing.T) {
 	tests := map[string]struct {
 		request       *http.Request
-		mockUrl       string
+		mockURL       string
 		expectedError error
 	}{
 		"matching": {
 			request:       httptest.NewRequest(http.MethodGet, "http://test.com", nil),
-			mockUrl:       "https://test.com",
+			mockURL:       "https://test.com",
 			expectedError: nil,
 		},
 		"not matching": {
 			request:       httptest.NewRequest(http.MethodGet, "https://test.com", nil),
-			mockUrl:       "https://testa.com",
+			mockURL:       "https://testa.com",
 			expectedError: errors.New("received host test.com did not match mock host testa.com"),
 		},
 		"no expected host": {
 			request:       httptest.NewRequest(http.MethodGet, "https://test.com", nil),
-			mockUrl:       "",
+			mockURL:       "",
 			expectedError: nil,
 		},
 		"matching using URL host": {
@@ -138,13 +138,13 @@ func TestMocksHostMatcher(t *testing.T) {
 				Host: "test.com",
 				Path: "/",
 			}},
-			mockUrl:       "https://test.com",
+			mockURL:       "https://test.com",
 			expectedError: nil,
 		},
 	}
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			matchError := hostMatcher(test.request, NewMock().Get(test.mockUrl))
+			matchError := hostMatcher(test.request, NewMock().Get(test.mockURL))
 			assert.Equal(t, test.expectedError, matchError)
 		})
 	}

@@ -3,19 +3,19 @@ package test
 import (
 	"database/sql"
 
-	apitest "github.com/go-spectest/spectest"
+	"github.com/go-spectest/spectest"
 	apitestdb "github.com/go-spectest/spectest/x/db"
 	"github.com/jmoiron/sqlx"
 	"github.com/pressly/goose"
 )
 
-const dsn = "host=localhost port=5432 user=postgres password=postgres dbname=apitest sslmode=disable"
+const dsn = "host=localhost port=5432 user=postgres password=postgres dbname=spectest sslmode=disable"
 
 // Recorder is a generic recorder to be reused
-var Recorder *apitest.Recorder
+var Recorder *spectest.Recorder
 
 func init() {
-	Recorder = apitest.NewTestRecorder()
+	Recorder = spectest.NewTestRecorder()
 
 	// Wrap your database driver of choice with a recorder
 	// and register it so you can use it later

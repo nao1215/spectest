@@ -23,7 +23,7 @@ func TestApiTestAssertStatusCodes(t *testing.T) {
 			response := &http.Response{StatusCode: status}
 			err := test.assertFunc(response, nil)
 			if test.isSuccess && err != nil {
-				t.Fatalf("Expecteted nil but received %s", err)
+				t.Fatalf("Expected nil but received %s", err)
 			} else if !test.isSuccess && err == nil {
 				t.Fatalf("Expected error but didn't receive one")
 			}
