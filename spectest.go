@@ -28,10 +28,6 @@ const SystemUnderTestDefaultName = "sut"
 // ConsumerDefaultName default consumer name
 const ConsumerDefaultName = "cli"
 
-var divider = strings.Repeat("-", 10)
-var requestDebugPrefix = fmt.Sprintf("%s>", divider)
-var responseDebugPrefix = fmt.Sprintf("<%s", divider)
-
 // APITest is the top level struct holding the test spec
 type APITest struct {
 	debugEnabled             bool
@@ -913,7 +909,7 @@ func (a *APITest) doRequest() (*http.Response, *http.Request) {
 	if a.debugEnabled {
 		requestDump, err := httputil.DumpRequest(req, true)
 		if err == nil {
-			debugLog(requestDebugPrefix, "inbound http request", string(requestDump))
+			debugLog(requestDebugPrefix(), "inbound http request", string(requestDump))
 		}
 	}
 
@@ -932,7 +928,7 @@ func (a *APITest) doRequest() (*http.Response, *http.Request) {
 	if a.debugEnabled {
 		responseDump, err := httputil.DumpResponse(res, true)
 		if err == nil {
-			debugLog(responseDebugPrefix, "final response", string(responseDump))
+			debugLog(responseDebugPrefix(), "final response", string(responseDump))
 		}
 	}
 
@@ -1204,4 +1200,12 @@ func copyHTTPRequest(request *http.Request) *http.Request {
 	resCopy.Header = headers
 
 	return resCopy
+}
+
+func requestDebugPrefix() string {
+	return fmt.Sprintf("%s>", strings.Repeat("-", 10))
+}
+
+func responseDebugPrefix() string {
+	return fmt.Sprintf("<%s", strings.Repeat("-", 10))
 }
