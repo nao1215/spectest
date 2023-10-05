@@ -22,12 +22,12 @@ type (
 		SubTitle       string
 		StatusCode     int
 		BadgeClass     string
-		LogEntries     []logEntry
+		LogEntries     []LogEntry
 		WebSequenceDSL string
 		MetaJSON       htmlTemplate.JS
 	}
 
-	logEntry struct {
+	LogEntry struct {
 		Header    string
 		Body      string
 		Timestamp time.Time
@@ -178,7 +178,7 @@ func newHTMLTemplateModel(r *Recorder) (htmlTemplateModel, error) {
 	if len(r.Events) == 0 {
 		return htmlTemplateModel{}, errors.New("no events are defined")
 	}
-	var logs []logEntry
+	var logs []LogEntry
 	webSequenceDiagram := &webSequenceDiagramDSL{meta: r.Meta}
 
 	for _, event := range r.Events {
@@ -202,10 +202,10 @@ func newHTMLTemplateModel(r *Recorder) (htmlTemplateModel, error) {
 			logs = append(logs, entry)
 		case MessageRequest:
 			webSequenceDiagram.addRequestRow(v.Source, v.Target, v.Header)
-			logs = append(logs, logEntry{Header: v.Header, Body: v.Body, Timestamp: v.Timestamp})
+			logs = append(logs, LogEntry{Header: v.Header, Body: v.Body, Timestamp: v.Timestamp})
 		case MessageResponse:
 			webSequenceDiagram.addResponseRow(v.Source, v.Target, v.Header)
-			logs = append(logs, logEntry{Header: v.Header, Body: v.Body, Timestamp: v.Timestamp})
+			logs = append(logs, LogEntry{Header: v.Header, Body: v.Body, Timestamp: v.Timestamp})
 		default:
 			panic("received unknown event type")
 		}
@@ -232,32 +232,32 @@ func newHTMLTemplateModel(r *Recorder) (htmlTemplateModel, error) {
 	}, nil
 }
 
-func NewHTTPRequestLogEntry(req *http.Request) (logEntry, error) {
+func NewHTTPRequestLogEntry(req *http.Request) (LogEntry, error) {
 	reqHeader, err := httputil.DumpRequest(req, false)
 	if err != nil {
-		return logEntry{}, err
+		return LogEntry{}, err
 	}
 	body, err := formatBodyContent(req.Body, func(replacementBody io.ReadCloser) {
 		req.Body = replacementBody
 	})
 	if err != nil {
-		return logEntry{}, err
+		return LogEntry{}, err
 	}
-	return logEntry{Header: string(reqHeader), Body: body}, err
+	return LogEntry{Header: string(reqHeader), Body: body}, err
 }
 
-func NewHTTPResponseLogEntry(res *http.Response) (logEntry, error) {
+func NewHTTPResponseLogEntry(res *http.Response) (LogEntry, error) {
 	resDump, err := httputil.DumpResponse(res, false)
 	if err != nil {
-		return logEntry{}, err
+		return LogEntry{}, err
 	}
 	body, err := formatBodyContent(res.Body, func(replacementBody io.ReadCloser) {
 		res.Body = replacementBody
 	})
 	if err != nil {
-		return logEntry{}, err
+		return LogEntry{}, err
 	}
-	return logEntry{Header: string(resDump), Body: body}, err
+	return LogEntry{Header: string(resDump), Body: body}, err
 }
 
 func formatBodyContent(bodyReadCloser io.ReadCloser, replaceBody func(replacementBody io.ReadCloser)) (string, error) {
