@@ -3,8 +3,8 @@ package server_test
 import (
 	"net/http"
 
+	apitest "github.com/go-spectest/spectest"
 	"github.com/gorilla/mux"
-	apitest "github.com/nao1215/spectest"
 	. "github.com/onsi/ginkgo"
 	jsonpath "github.com/steinfletcher/apitest-jsonpath"
 	server "github.com/steinfletcher/apitest/examples/ginkgo"

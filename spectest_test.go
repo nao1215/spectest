@@ -15,8 +15,8 @@ import (
 	"testing"
 	"time"
 
-	apitest "github.com/nao1215/spectest"
-	"github.com/nao1215/spectest/mocks"
+	apitest "github.com/go-spectest/spectest"
+	"github.com/go-spectest/spectest/mocks"
 )
 
 func TestApiTestResponseBody(t *testing.T) {

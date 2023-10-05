@@ -1,9 +1,8 @@
-[![LinuxUnitTest](https://github.com/nao1215/spectest/actions/workflows/linux_test.yml/badge.svg)](https://github.com/nao1215/spectest/actions/workflows/linux_test.yml)
-[![MacUnitTest](https://github.com/nao1215/spectest/actions/workflows/mac_test.yml/badge.svg)](https://github.com/nao1215/spectest/actions/workflows/mac_test.yml)
-[![Vuluncheck](https://github.com/nao1215/spectest/actions/workflows/govulncheck.yml/badge.svg)](https://github.com/nao1215/spectest/actions/workflows/govulncheck.yml)
-[![Gosec](https://github.com/nao1215/spectest/actions/workflows/security.yml/badge.svg)](https://github.com/nao1215/spectest/actions/workflows/security.yml)
-[![reviewdog](https://github.com/nao1215/spectest/actions/workflows/reviewdog.yml/badge.svg)](https://github.com/nao1215/spectest/actions/workflows/reviewdog.yml)
-![Coverage](https://raw.githubusercontent.com/nao1215/octocovs-central-repo/main/badges/nao1215/spectest/coverage.svg)
+[![LinuxUnitTest](https://github.com/go-spectest/spectest/actions/workflows/linux_test.yml/badge.svg)](https://github.com/go-spectest/spectest/actions/workflows/linux_test.yml)
+[![MacUnitTest](https://github.com/go-spectest/spectest/actions/workflows/mac_test.yml/badge.svg)](https://github.com/go-spectest/spectest/actions/workflows/mac_test.yml)
+[![Vuluncheck](https://github.com/go-spectest/spectest/actions/workflows/govulncheck.yml/badge.svg)](https://github.com/go-spectest/spectest/actions/workflows/govulncheck.yml)
+[![reviewdog](https://github.com/go-spectest/spectest/actions/workflows/reviewdog.yml/badge.svg)](https://github.com/go-spectest/spectest/actions/workflows/reviewdog.yml)
+![Coverage](https://raw.githubusercontent.com/go-spectest/octocovs-central-repo/main/badges/go-spectest/spectest/coverage.svg)
 
 ## What is spectest?
 
@@ -20,7 +19,7 @@ In behavioral tests the internal structure of the app is not known by the tests.
 ## Installation
 
 ```bash
-go get -u github.com/nao1215/spectest
+go get -u github.com/go-spectest/spectest
 ```
 
 ## Demo
@@ -33,16 +32,16 @@ go get -u github.com/nao1215/spectest
 
 | Example                                                                                              | Comment                                                                                                    |
 | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| [gin](https://github.com/nao1215/apitest/tree/master/examples/gin)                             | popular martini-like web framework                                                                         |
-| [graphql](https://github.com/nao1215/apitest/tree/master/examples/graphql)                     | using gqlgen.com to generate a graphql server                                                              |
-| [gorilla](https://github.com/nao1215/apitest/tree/master/examples/gorilla)                     | the gorilla web toolkit                                                                                    |
-| [iris](https://github.com/nao1215/apitest/tree/master/examples/iris)                           | iris web framework                                                                                         |
-| [echo](https://github.com/nao1215/apitest/tree/master/examples/echo)                           | High performance, extensible, minimalist Go web framework                                                  |
-| [fiber](https://github.com/nao1215/nao1215/tree/master/examples/fiber)                         | Express inspired web framework written in Go                                                               |
-| [httprouter](https://github.com/nao1215/apitest/tree/master/examples/httprouter)               | High performance HTTP request router that scales well                                                      |
-| [mocks](https://github.com/nao1215/apitest/tree/master/examples/mocks)                         | example mocking out external http calls                                                                    |
-| [sequence diagrams](https://github.com/nao1215/apitest/tree/master/examples/sequence-diagrams) | generate sequence diagrams from tests |
-| [Ginkgo](https://github.com/nao1215/apitest/tree/master/examples/ginkgo) | Ginkgo BDD test framework|
+| [gin](https://github.com/go-spectest/apitest/tree/master/examples/gin)                             | popular martini-like web framework                                                                         |
+| [graphql](https://github.com/go-spectest/apitest/tree/master/examples/graphql)                     | using gqlgen.com to generate a graphql server                                                              |
+| [gorilla](https://github.com/go-spectest/apitest/tree/master/examples/gorilla)                     | the gorilla web toolkit                                                                                    |
+| [iris](https://github.com/go-spectest/apitest/tree/master/examples/iris)                           | iris web framework                                                                                         |
+| [echo](https://github.com/go-spectest/apitest/tree/master/examples/echo)                           | High performance, extensible, minimalist Go web framework                                                  |
+| [fiber](https://github.com/go-spectest/go-spectest/tree/master/examples/fiber)                         | Express inspired web framework written in Go                                                               |
+| [httprouter](https://github.com/go-spectest/apitest/tree/master/examples/httprouter)               | High performance HTTP request router that scales well                                                      |
+| [mocks](https://github.com/go-spectest/apitest/tree/master/examples/mocks)                         | example mocking out external http calls                                                                    |
+| [sequence diagrams](https://github.com/go-spectest/apitest/tree/master/examples/sequence-diagrams) | generate sequence diagrams from tests |
+| [Ginkgo](https://github.com/go-spectest/apitest/tree/master/examples/ginkgo) | Ginkgo BDD test framework|
 
 ### Companion libraries
 

@@ -6,8 +6,8 @@ package graph
 import (
 	"context"
 
-	"github.com/nao1215/spectest/examples/graphql/graph/generated"
-	"github.com/nao1215/spectest/examples/graphql/graph/model"
+	"github.com/go-spectest/spectest/examples/graphql/graph/generated"
+	"github.com/go-spectest/spectest/examples/graphql/graph/model"
 )
 
 func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {

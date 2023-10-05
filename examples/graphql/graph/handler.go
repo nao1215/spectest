@@ -5,7 +5,7 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/nao1215/spectest/examples/graphql/graph/generated"
+	"github.com/go-spectest/spectest/examples/graphql/graph/generated"
 )
 
 func NewHandler() http.Handler {
