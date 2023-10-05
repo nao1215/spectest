@@ -599,14 +599,14 @@ func (rows *recordingRows) Next(dest []driver.Value) error {
 
 // see https://golang.org/src/database/sql/ctxutil.go
 func namedValueToValue(named []driver.NamedValue) ([]driver.Value, error) {
-	dargs := make([]driver.Value, len(named))
+	args := make([]driver.Value, len(named))
 	for n, param := range named {
 		if len(param.Name) > 0 {
 			return nil, errors.New("sql: driver does not support the use of Named Parameters")
 		}
-		dargs[n] = param.Value
+		args[n] = param.Value
 	}
-	return dargs, nil
+	return args, nil
 }
 
 // sqlDriverNameToDriver opens a dummy connection to get a driver
