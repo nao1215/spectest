@@ -1,7 +1,6 @@
 [![LinuxUnitTest](https://github.com/go-spectest/spectest/actions/workflows/linux_test.yml/badge.svg)](https://github.com/go-spectest/spectest/actions/workflows/linux_test.yml)
 [![MacUnitTest](https://github.com/go-spectest/spectest/actions/workflows/mac_test.yml/badge.svg)](https://github.com/go-spectest/spectest/actions/workflows/mac_test.yml)
 [![Vuluncheck](https://github.com/go-spectest/spectest/actions/workflows/govulncheck.yml/badge.svg)](https://github.com/go-spectest/spectest/actions/workflows/govulncheck.yml)
-[![Gosec](https://github.com/go-spectest/spectest/actions/workflows/security.yml/badge.svg)](https://github.com/go-spectest/spectest/actions/workflows/security.yml)
 [![reviewdog](https://github.com/go-spectest/spectest/actions/workflows/reviewdog.yml/badge.svg)](https://github.com/go-spectest/spectest/actions/workflows/reviewdog.yml)
 ![Coverage](https://raw.githubusercontent.com/go-spectest/octocovs-central-repo/main/badges/go-spectest/spectest/coverage.svg)
 
