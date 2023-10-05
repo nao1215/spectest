@@ -28,10 +28,6 @@ const SystemUnderTestDefaultName = "sut"
 // ConsumerDefaultName default consumer name
 const ConsumerDefaultName = "cli"
 
-var divider = strings.Repeat("-", 10)
-var requestDebugPrefix = fmt.Sprintf("%s>", divider)
-var responseDebugPrefix = fmt.Sprintf("<%s", divider)
-
 // APITest is the top level struct holding the test spec
 type APITest struct {
 	debugEnabled             bool
@@ -65,6 +61,7 @@ type Observe func(*http.Response, *http.Request, *APITest)
 type RecorderHook func(*Recorder)
 
 // New creates a new api test. The name is optional and will appear in test reports
+// TODO: not used name[1]〜name[n]. Use it or remove it.
 func New(name ...string) *APITest {
 	apiTest := &APITest{
 		meta: map[string]interface{}{},
@@ -101,10 +98,11 @@ func HandlerFunc(handlerFunc http.HandlerFunc) *APITest {
 }
 
 // EnableNetworking will enable networking for provided clients
-func (a *APITest) EnableNetworking(cli ...*http.Client) *APITest {
+// TODO: not used clients[1] 〜 clients[n]. Use it or remove it.
+func (a *APITest) EnableNetworking(clients ...*http.Client) *APITest {
 	a.networkingEnabled = true
-	if len(cli) == 1 {
-		a.networkingHTTPClient = cli[0]
+	if len(clients) == 1 {
+		a.networkingHTTPClient = clients[0]
 		return a
 	}
 	a.networkingHTTPClient = http.DefaultClient
@@ -117,7 +115,10 @@ func (a *APITest) EnableMockResponseDelay() *APITest {
 	return a
 }
 
-// Debug logs to the console the http wire representation of all http interactions that are intercepted by spectest. This includes the inbound request to the application under test, the response returned by the application and any interactions that are intercepted by the mock server.
+// Debug logs to the console the http wire representation of all http interactions
+// that are intercepted by spectest. This includes the inbound request to the application
+// under test, the response returned by the application and any interactions that are
+// intercepted by the mock server.
 func (a *APITest) Debug() *APITest {
 	a.debugEnabled = true
 	return a
@@ -135,7 +136,8 @@ func (a *APITest) Recorder(recorder *Recorder) *APITest {
 	return a
 }
 
-// Meta provides a hook to add custom meta data to the test which can be picked up when defining a custom reporter
+// Meta provides a hook to add custom meta data to the test
+// which can be picked up when defining a custom reporter
 func (a *APITest) Meta(meta map[string]interface{}) *APITest {
 	a.meta = meta
 	return a
@@ -159,9 +161,9 @@ func (a *APITest) Mocks(mocks ...*Mock) *APITest {
 	for i := range mocks {
 		times := mocks[i].response.mock.times
 		for j := 1; j <= times; j++ {
-			mockCpy := mocks[i].copy()
-			mockCpy.times = 1
-			m = append(m, mockCpy)
+			mockCopy := mocks[i].copy()
+			mockCopy.times = 1
+			m = append(m, mockCopy)
 		}
 	}
 	a.mocks = m
@@ -169,8 +171,8 @@ func (a *APITest) Mocks(mocks ...*Mock) *APITest {
 }
 
 // HTTPClient allows the developer to provide a custom http client when using mocks
-func (a *APITest) HTTPClient(cli *http.Client) *APITest {
-	a.httpClient = cli
+func (a *APITest) HTTPClient(client *http.Client) *APITest {
+	a.httpClient = client
 	return a
 }
 
@@ -222,7 +224,8 @@ type Request struct {
 	apiTest         *APITest
 }
 
-// Intercept will be called before the request is made. Updates to the request will be reflected in the test
+// Intercept will be called before the request is made.
+// Updates to the request will be reflected in the test
 type Intercept func(*http.Request)
 
 type pair struct {
@@ -398,9 +401,7 @@ func (r *Request) GraphQLRequest(body GraphQLRequestBody) *Request {
 	if err != nil {
 		r.apiTest.t.Fatal(err)
 	}
-
 	r.body = string(data)
-
 	return r
 }
 
@@ -494,7 +495,6 @@ func (r *Request) FormData(name string, values ...string) *Request {
 // Also sets the content type of the request to multipart/form-data
 func (r *Request) MultipartFormData(name string, values ...string) *Request {
 	defer r.checkCombineFormDataWithMultipart()
-
 	r.setMultipartWriter()
 
 	for _, value := range values {
@@ -502,7 +502,6 @@ func (r *Request) MultipartFormData(name string, values ...string) *Request {
 			r.apiTest.t.Fatal(err)
 		}
 	}
-
 	return r
 }
 
@@ -913,7 +912,7 @@ func (a *APITest) doRequest() (*http.Response, *http.Request) {
 	if a.debugEnabled {
 		requestDump, err := httputil.DumpRequest(req, true)
 		if err == nil {
-			debugLog(requestDebugPrefix, "inbound http request", string(requestDump))
+			debugLog(requestDebugPrefix(), "inbound http request", string(requestDump))
 		}
 	}
 
@@ -932,7 +931,7 @@ func (a *APITest) doRequest() (*http.Response, *http.Request) {
 	if a.debugEnabled {
 		responseDump, err := httputil.DumpResponse(res, true)
 		if err == nil {
-			debugLog(responseDebugPrefix, "final response", string(responseDump))
+			debugLog(responseDebugPrefix(), "final response", string(responseDump))
 		}
 	}
 
@@ -1204,4 +1203,12 @@ func copyHTTPRequest(request *http.Request) *http.Request {
 	resCopy.Header = headers
 
 	return resCopy
+}
+
+func requestDebugPrefix() string {
+	return fmt.Sprintf("%s>", strings.Repeat("-", 10))
+}
+
+func responseDebugPrefix() string {
+	return fmt.Sprintf("<%s", strings.Repeat("-", 10))
 }

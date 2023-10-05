@@ -139,16 +139,16 @@ func (r *Transport) RoundTrip(req *http.Request) (mockResponse *http.Response, m
 func debugMock(res *http.Response, req *http.Request) {
 	requestDump, err := httputil.DumpRequestOut(req, true)
 	if err == nil {
-		debugLog(requestDebugPrefix, "request to mock", string(requestDump))
+		debugLog(requestDebugPrefix(), "request to mock", string(requestDump))
 	}
 
 	if res != nil {
 		responseDump, err := httputil.DumpResponse(res, true)
 		if err == nil {
-			debugLog(responseDebugPrefix, "response from mock", string(responseDump))
+			debugLog(responseDebugPrefix(), "response from mock", string(responseDump))
 		}
 	} else {
-		debugLog(responseDebugPrefix, "response from mock", "")
+		debugLog(responseDebugPrefix(), "response from mock", "")
 	}
 }
 
@@ -316,7 +316,7 @@ func (r *StandaloneMocks) Debug() *StandaloneMocks {
 	return r
 }
 
-// End finalises the mock, ready for use
+// End finalizes the mock, ready for use
 func (r *StandaloneMocks) End() func() {
 	transport := newTransport(
 		r.mocks,
@@ -620,7 +620,7 @@ func (r *MockRequest) AddMatcher(matcher Matcher) *MockRequest {
 	return r
 }
 
-// RespondWith finalises the mock request phase of set up and allowing the definition of response attributes to be defined
+// RespondWith finalizes the mock request phase of set up and allowing the definition of response attributes to be defined
 func (r *MockRequest) RespondWith() *MockResponse {
 	return r.mock.response
 }
@@ -715,12 +715,12 @@ func (r *MockResponse) Times(times int) *MockResponse {
 	return r
 }
 
-// End finalise the response definition phase in order for the mock to be used
+// End finalizes the response definition phase in order for the mock to be used
 func (r *MockResponse) End() *Mock {
 	return r.mock
 }
 
-// EndStandalone finalises the response definition of standalone mocks
+// EndStandalone finalizes the response definition of standalone mocks
 func (r *MockResponse) EndStandalone(other ...*Mock) func() {
 	transport := newTransport(
 		append([]*Mock{r.mock}, other...),
