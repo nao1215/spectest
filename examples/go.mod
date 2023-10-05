@@ -1,5 +1,5 @@
-module github.com/nao1215/spectest/examples
+module github.com/go-spectest/spectest/examples
 
-replace github.com/nao1215/spectest => ../
+replace github.com/go-spectest/spectest => ../
 
 go 1.18

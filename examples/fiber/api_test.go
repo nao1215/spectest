@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"testing"
 
+	apitest "github.com/go-spectest/spectest"
 	"github.com/gofiber/fiber/v2"
-	apitest "github.com/nao1215/spectest"
 	jsonpath "github.com/steinfletcher/apitest-jsonpath"
 )
 

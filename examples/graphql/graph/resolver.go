@@ -1,6 +1,6 @@
 package graph
 
-import "github.com/nao1215/spectest/examples/graphql/graph/model"
+import "github.com/go-spectest/spectest/examples/graphql/graph/model"
 
 //go:generate gqlgen
 
