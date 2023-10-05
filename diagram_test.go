@@ -204,7 +204,7 @@ type FS struct {
 
 func (m *FS) create(name string) (*os.File, error) {
 	m.CapturedCreateName = name
-	file, err := os.CreateTemp("/tmp", "apitest")
+	file, err := os.CreateTemp("/tmp", "spectest")
 	if err != nil {
 		panic(err)
 	}

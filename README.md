@@ -32,16 +32,16 @@ go get -u github.com/go-spectest/spectest
 
 | Example                                                                                              | Comment                                                                                                    |
 | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| [gin](https://github.com/go-spectest/apitest/tree/master/examples/gin)                             | popular martini-like web framework                                                                         |
-| [graphql](https://github.com/go-spectest/apitest/tree/master/examples/graphql)                     | using gqlgen.com to generate a graphql server                                                              |
-| [gorilla](https://github.com/go-spectest/apitest/tree/master/examples/gorilla)                     | the gorilla web toolkit                                                                                    |
-| [iris](https://github.com/go-spectest/apitest/tree/master/examples/iris)                           | iris web framework                                                                                         |
-| [echo](https://github.com/go-spectest/apitest/tree/master/examples/echo)                           | High performance, extensible, minimalist Go web framework                                                  |
-| [fiber](https://github.com/go-spectest/go-spectest/tree/master/examples/fiber)                         | Express inspired web framework written in Go                                                               |
-| [httprouter](https://github.com/go-spectest/apitest/tree/master/examples/httprouter)               | High performance HTTP request router that scales well                                                      |
-| [mocks](https://github.com/go-spectest/apitest/tree/master/examples/mocks)                         | example mocking out external http calls                                                                    |
-| [sequence diagrams](https://github.com/go-spectest/apitest/tree/master/examples/sequence-diagrams) | generate sequence diagrams from tests |
-| [Ginkgo](https://github.com/go-spectest/apitest/tree/master/examples/ginkgo) | Ginkgo BDD test framework|
+| [gin](https://github.com/go-spectest/spectest/tree/master/examples/gin)                             | popular martini-like web framework                                                                         |
+| [graphql](https://github.com/go-spectest/spectest/tree/master/examples/graphql)                     | using gqlgen.com to generate a graphql server                                                              |
+| [gorilla](https://github.com/go-spectest/spectest/tree/master/examples/gorilla)                     | the gorilla web toolkit                                                                                    |
+| [iris](https://github.com/go-spectest/spectest/tree/master/examples/iris)                           | iris web framework                                                                                         |
+| [echo](https://github.com/go-spectest/spectest/tree/master/examples/echo)                           | High performance, extensible, minimalist Go web framework                                                  |
+| [fiber](https://github.com/go-spectest/spectest/tree/master/examples/fiber)                         | Express inspired web framework written in Go                                                               |
+| [httprouter](https://github.com/go-spectest/spectest/tree/master/examples/httprouter)               | High performance HTTP request router that scales well                                                      |
+| [mocks](https://github.com/go-spectest/spectest/tree/master/examples/mocks)                         | example mocking out external http calls                                                                    |
+| [sequence diagrams](https://github.com/go-spectest/spectest/tree/master/examples/sequence-diagrams) | generate sequence diagrams from tests |
+| [Ginkgo](https://github.com/go-spectest/spectest/tree/master/examples/ginkgo) | Ginkgo BDD test framework|
 
 ### Companion libraries
 
@@ -67,7 +67,7 @@ This library was influenced by the following software packages:
 
 ```go
 func TestApi(t *testing.T) {
-	apitest.New().
+	spectest.New().
 		Handler(handler).
 		Get("/user/1234").
 		Expect(t).
@@ -85,7 +85,7 @@ Given the response is `{"a": 12345, "b": [{"key": "c", "value": "result"}]}`
 
 ```go
 func TestApi(t *testing.T) {
-	apitest.Handler(handler).
+	spectest.Handler(handler).
 		Get("/hello").
 		Expect(t).
 		Assert(jsonpath.Contains(`$.b[? @.key=="c"].value`, "result")).
@@ -97,7 +97,7 @@ and `jsonpath.Equals` checks for value equality
 
 ```go
 func TestApi(t *testing.T) {
-	apitest.Handler(handler).
+	spectest.Handler(handler).
 		Get("/hello").
 		Expect(t).
 		Assert(jsonpath.Equal(`$.a`, float64(12345))).
@@ -109,7 +109,7 @@ func TestApi(t *testing.T) {
 
 ```go
 func TestApi(t *testing.T) {
-	apitest.Handler(handler).
+	spectest.Handler(handler).
 		Get("/hello").
 		Expect(t).
 		Assert(func(res *http.Response, req *http.Request) error {
@@ -124,16 +124,16 @@ func TestApi(t *testing.T) {
 
 ```go
 func TestApi(t *testing.T) {
-	apitest.Handler(handler).
+	spectest.Handler(handler).
 		Patch("/hello").
 		Expect(t).
 		Status(http.StatusOK).
-		Cookies(apitest.Cookie("ABC").Value("12345")).
+		Cookies(spectest.Cookie("ABC").Value("12345")).
 		CookiePresent("Session-Token").
 		CookieNotPresent("XXX").
 		Cookies(
-			apitest.Cookie("ABC").Value("12345"),
-			apitest.Cookie("DEF").Value("67890"),
+			spectest.Cookie("ABC").Value("12345"),
+			spectest.Cookie("DEF").Value("67890"),
 		).
 		End()
 }
@@ -143,7 +143,7 @@ func TestApi(t *testing.T) {
 
 ```go
 func TestApi(t *testing.T) {
-	apitest.Handler(handler).
+	spectest.Handler(handler).
 		Get("/hello").
 		Expect(t).
 		Status(http.StatusOK).
@@ -155,14 +155,14 @@ func TestApi(t *testing.T) {
 #### Mocking external http calls
 
 ```go
-var getUser = apitest.NewMock().
+var getUser = spectest.NewMock().
 	Get("/user/12345").
 	RespondWith().
 	Body(`{"name": "jon", "id": "1234"}`).
 	Status(http.StatusOK).
 	End()
 
-var getPreferences = apitest.NewMock().
+var getPreferences = spectest.NewMock().
 	Get("/preferences/12345").
 	RespondWith().
 	Body(`{"is_contactable": true}`).
@@ -170,7 +170,7 @@ var getPreferences = apitest.NewMock().
 	End()
 
 func TestApi(t *testing.T) {
-	apitest.New().
+	spectest.New().
 		Mocks(getUser, getPreferences).
 		Handler(handler).
 		Get("/hello").
@@ -186,8 +186,8 @@ func TestApi(t *testing.T) {
 ```go
 
 func TestApi(t *testing.T) {
-	apitest.New().
-		Report(apitest.SequenceDiagram()).
+	spectest.New().
+		Report(spectest.SequenceDiagram()).
 		Mocks(getUser, getPreferences).
 		Handler(handler).
 		Get("/hello").
@@ -198,14 +198,14 @@ func TestApi(t *testing.T) {
 }
 ```
 
-It is possible to override the default storage location by passing the formatter instance `Report(apitest.NewSequenceDiagramFormatter(".sequence-diagrams"))`.
-You can bring your own formatter too if you want to produce custom output. By default a sequence diagram is rendered on a html page. See the [demo](http://demo-html.apitest.dev.s3-website-eu-west-1.amazonaws.com/)
+It is possible to override the default storage location by passing the formatter instance `Report(spectest.NewSequenceDiagramFormatter(".sequence-diagrams"))`.
+You can bring your own formatter too if you want to produce custom output. By default a sequence diagram is rendered on a html page.
 
 #### Debugging http requests and responses generated by api test and any mocks
 
 ```go
 func TestApi(t *testing.T) {
-	apitest.New().
+	spectest.New().
 		Debug().
 		Handler(handler).
 		Get("/hello").
@@ -219,7 +219,7 @@ func TestApi(t *testing.T) {
 
 ```go
 func TestApi(t *testing.T) {
-	apitest.Handler(handler).
+	spectest.Handler(handler).
 		Get("/hello").
 		BasicAuth("username", "password").
 		Expect(t).
@@ -232,7 +232,7 @@ func TestApi(t *testing.T) {
 
 ```go
 func TestApi(t *testing.T) {
-	apitest.Handler(handler).
+	spectest.Handler(handler).
 		Get("/hello").
 		WithContext(context.TODO()).
 		Expect(t).
@@ -245,9 +245,9 @@ func TestApi(t *testing.T) {
 
 ```go
 func TestApi(t *testing.T) {
-	apitest.Handler(handler).
+	spectest.Handler(handler).
 		Get("/hello").
-		Cookies(apitest.Cookie("ABC").Value("12345")).
+		Cookies(spectest.Cookie("ABC").Value("12345")).
 		Expect(t).
 		Status(http.StatusOK).
 		End()
@@ -258,7 +258,7 @@ func TestApi(t *testing.T) {
 
 ```go
 func TestApi(t *testing.T) {
-	apitest.Handler(handler).
+	spectest.Handler(handler).
 		Delete("/hello").
 		Headers(map[string]string{"My-Header": "12345"}).
 		Expect(t).
@@ -273,7 +273,7 @@ func TestApi(t *testing.T) {
 
 ```go
 func TestApi(t *testing.T) {
-	apitest.Handler(handler).
+	spectest.Handler(handler).
 		Get("/hello").
 		QueryParams(map[string]string{"a": "1", "b": "2"}).
 		Query("c", "d").
@@ -288,7 +288,7 @@ Providing `{"a": {"b", "c", "d"}` results in parameters encoded as `a=b&a=c&a=d`
 
 ```go
 func TestApi(t *testing.T) {
-	apitest.Handler(handler).
+	spectest.Handler(handler).
 		Get("/hello").
 		QueryCollection(map[string][]string{"a": {"b", "c", "d"}}).
 		Expect(t).
@@ -301,7 +301,7 @@ func TestApi(t *testing.T) {
 
 ```go
 func TestApi(t *testing.T) {
-	apitest.Handler(handler).
+	spectest.Handler(handler).
 		Post("/hello").
 		FormData("a", "1").
 		FormData("b", "2").
@@ -317,7 +317,7 @@ func TestApi(t *testing.T) {
 
 ```go
 func TestApi(t *testing.T) {
-	apitest.Handler(handler).
+	spectest.Handler(handler).
 		Post("/hello").
 		MultipartFormData("a", "1", "2").
 		MultipartFile("file", "path/to/some.file1", "path/to/some.file2").
@@ -331,8 +331,8 @@ func TestApi(t *testing.T) {
 
 ```go
 func TestApi(t *testing.T) {
-	apitest.New().
-		Observe(func(res *http.Response, req *http.Request, apiTest *apitest.APITest) {
+	spectest.New().
+		Observe(func(res *http.Response, req *http.Request, apiTest *spectest.APITest) {
 			// do something with res and req
 		}).
 		Handler(handler).
@@ -349,7 +349,7 @@ This is useful for mutating the request before it is sent to the system under te
 
 ```go
 func TestApi(t *testing.T) {
-	apitest.Handler(handler).
+	spectest.Handler(handler).
 		Intercept(func(req *http.Request) {
 			req.URL.RawQuery = "a[]=xxx&a[]=yyy"
 		}).

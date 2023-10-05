@@ -579,9 +579,7 @@ func (r *MockRequest) QueryParams(queryParams map[string]string) *MockRequest {
 // QueryCollection configures the mock request to match a number of repeating query params, e.g. ?a=1&a=2&a=3
 func (r *MockRequest) QueryCollection(queryParams map[string][]string) *MockRequest {
 	for k, v := range queryParams {
-		for _, val := range v {
-			r.query[k] = append(r.query[k], val)
-		}
+		r.query[k] = append(r.query[k], v...)
 	}
 	return r
 }

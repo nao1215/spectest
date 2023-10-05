@@ -19,8 +19,8 @@ func TestApiTestCookiesExpectedCookie(t *testing.T) {
 		HTTPOnly(false)
 
 	ten := 10
-	boolt := true
-	boolf := false
+	boolTrue := true
+	boolFalse := false
 
 	assert.Equal(t, Cookie{
 		name:     toString("Tom"),
@@ -29,8 +29,8 @@ func TestApiTestCookiesExpectedCookie(t *testing.T) {
 		domain:   toString("in.london"),
 		expires:  &expiry,
 		maxAge:   &ten,
-		secure:   &boolt,
-		httpOnly: &boolf,
+		secure:   &boolTrue,
+		httpOnly: &boolFalse,
 	}, *cookie)
 }
 

@@ -1,3 +1,5 @@
+// Package db provides a wrapper for database/sql to record SQL queries and results.
+// This package is too old. Need to update it to support the latest version of database/sql
 package db
 
 import (
@@ -9,11 +11,11 @@ import (
 	"io"
 	"time"
 
-	apitest "github.com/go-spectest/spectest"
+	"github.com/go-spectest/spectest"
 )
 
 // WrapWithRecorder wraps an existing driver with a Recorder
-func WrapWithRecorder(driverName string, recorder *apitest.Recorder) driver.Driver {
+func WrapWithRecorder(driverName string, recorder *spectest.Recorder) driver.Driver {
 	sqlDriver := sqlDriverNameToDriver(driverName)
 	recordingDriver := &recordingDriver{
 		sourceName: driverName,
@@ -29,13 +31,13 @@ func WrapWithRecorder(driverName string, recorder *apitest.Recorder) driver.Driv
 }
 
 // WrapConnectorWithRecorder wraps an existing connector with a Recorder
-func WrapConnectorWithRecorder(connector driver.Connector, sourceName string, recorder *apitest.Recorder) driver.Connector {
+func WrapConnectorWithRecorder(connector driver.Connector, sourceName string, recorder *spectest.Recorder) driver.Connector {
 	return &recordingConnector{recorder: recorder, sourceName: sourceName, Connector: connector}
 }
 
 type recordingDriver struct {
 	Driver     driver.Driver
-	recorder   *apitest.Recorder
+	recorder   *spectest.Recorder
 	sourceName string
 }
 
@@ -46,9 +48,7 @@ func (d *recordingDriver) Open(name string) (driver.Conn, error) {
 		return nil, err
 	}
 
-	_, isConnQuery := conn.(driver.Queryer)
 	_, isConnQueryCtx := conn.(driver.QueryerContext)
-	_, isConnExec := conn.(driver.Execer)
 	_, isConnExecCtx := conn.(driver.ExecerContext)
 	_, isConnPrepareCtx := conn.(driver.ConnPrepareContext)
 	recordingConn := &recordingConn{Conn: conn, recorder: d.recorder, sourceName: d.sourceName}
@@ -63,15 +63,6 @@ func (d *recordingDriver) Open(name string) (driver.Conn, error) {
 			&recordingConnWithPing{recordingConn},
 		}, nil
 	}
-
-	if isConnQuery && isConnExec {
-		return &recordingConnWithExecQuery{
-			recordingConn,
-			&recordingConnWithExec{recordingConn},
-			&recordingConnWithQuery{recordingConn},
-		}, nil
-	}
-
 	return recordingConn, nil
 }
 
@@ -94,7 +85,7 @@ func (d *recordingDriverContext) OpenConnector(name string) (driver.Connector, e
 
 type recordingConnector struct {
 	Connector  driver.Connector
-	recorder   *apitest.Recorder
+	recorder   *spectest.Recorder
 	sourceName string
 }
 
@@ -104,10 +95,7 @@ func (c *recordingConnector) Connect(context context.Context) (driver.Conn, erro
 	if err != nil {
 		return nil, err
 	}
-
-	_, isConnQuery := conn.(driver.Queryer)
 	_, isConnQueryCtx := conn.(driver.QueryerContext)
-	_, isConnExec := conn.(driver.Execer)
 	_, isConnExecCtx := conn.(driver.ExecerContext)
 	_, isConnPrepareCtx := conn.(driver.ConnPrepareContext)
 	recordingConn := &recordingConn{Conn: conn, recorder: c.recorder, sourceName: c.sourceName}
@@ -122,15 +110,6 @@ func (c *recordingConnector) Connect(context context.Context) (driver.Conn, erro
 			&recordingConnWithPing{recordingConn},
 		}, nil
 	}
-
-	if isConnQuery && isConnExec {
-		return &recordingConnWithExecQuery{
-			recordingConn,
-			&recordingConnWithExec{recordingConn},
-			&recordingConnWithQuery{recordingConn},
-		}, nil
-	}
-
 	return recordingConn, nil
 }
 
@@ -139,7 +118,7 @@ func (c *recordingConnector) Driver() driver.Driver { return c.Connector.Driver(
 
 type recordingConn struct {
 	Conn       driver.Conn
-	recorder   *apitest.Recorder
+	recorder   *spectest.Recorder
 	sourceName string
 }
 
@@ -194,8 +173,8 @@ func (conn *recordingConnWithQuery) Query(query string, args []driver.Value) (dr
 			if len(args) > 0 {
 				recorderBody = fmt.Sprintf("%s %+v", query, args)
 			}
-			conn.recorder.AddMessageRequest(apitest.MessageRequest{
-				Source:    apitest.SystemUnderTestDefaultName,
+			conn.recorder.AddMessageRequest(spectest.MessageRequest{
+				Source:    spectest.SystemUnderTestDefaultName,
 				Target:    conn.sourceName,
 				Header:    "SQL Query",
 				Body:      recorderBody,
@@ -206,7 +185,7 @@ func (conn *recordingConnWithQuery) Query(query string, args []driver.Value) (dr
 		return &recordingRows{Rows: rows, recorder: conn.recorder, sourceName: conn.sourceName}, err
 	}
 
-	return nil, errors.New("Queryer not implemented")
+	return nil, errors.New("queryer not implemented")
 }
 
 type recordingConnWithQueryContext struct {
@@ -231,8 +210,8 @@ func (conn *recordingConnWithQueryContext) QueryContext(ctx context.Context, que
 				}
 				recorderBody = fmt.Sprintf("%s %+v", query, convertedArgs)
 			}
-			conn.recorder.AddMessageRequest(apitest.MessageRequest{
-				Source:    apitest.SystemUnderTestDefaultName,
+			conn.recorder.AddMessageRequest(spectest.MessageRequest{
+				Source:    spectest.SystemUnderTestDefaultName,
 				Target:    conn.sourceName,
 				Header:    "SQL Query",
 				Body:      recorderBody,
@@ -264,8 +243,8 @@ func (conn *recordingConnWithExec) Exec(query string, args []driver.Value) (driv
 			if len(args) > 0 {
 				recorderBody = fmt.Sprintf("%s %+v", query, args)
 			}
-			conn.recorder.AddMessageRequest(apitest.MessageRequest{
-				Source:    apitest.SystemUnderTestDefaultName,
+			conn.recorder.AddMessageRequest(spectest.MessageRequest{
+				Source:    spectest.SystemUnderTestDefaultName,
 				Target:    conn.sourceName,
 				Header:    "SQL Query",
 				Body:      recorderBody,
@@ -275,9 +254,9 @@ func (conn *recordingConnWithExec) Exec(query string, args []driver.Value) (driv
 
 		if result != nil && conn.recorder != nil {
 			rowsAffected, _ := result.RowsAffected()
-			conn.recorder.AddMessageResponse(apitest.MessageResponse{
+			conn.recorder.AddMessageResponse(spectest.MessageResponse{
 				Source:    conn.sourceName,
-				Target:    apitest.SystemUnderTestDefaultName,
+				Target:    spectest.SystemUnderTestDefaultName,
 				Header:    "SQL Result",
 				Body:      fmt.Sprintf("Affected rows: %d", rowsAffected),
 				Timestamp: time.Now().UTC(),
@@ -287,7 +266,7 @@ func (conn *recordingConnWithExec) Exec(query string, args []driver.Value) (driv
 		return result, err
 	}
 
-	return nil, errors.New("Execer not implemented")
+	return nil, errors.New("execer not implemented")
 }
 
 type recordingConnWithExecContext struct {
@@ -312,8 +291,8 @@ func (conn *recordingConnWithExecContext) ExecContext(ctx context.Context, query
 				}
 				recorderBody = fmt.Sprintf("%s %+v", query, convertedArgs)
 			}
-			conn.recorder.AddMessageRequest(apitest.MessageRequest{
-				Source:    apitest.SystemUnderTestDefaultName,
+			conn.recorder.AddMessageRequest(spectest.MessageRequest{
+				Source:    spectest.SystemUnderTestDefaultName,
 				Target:    conn.sourceName,
 				Header:    "SQL Query",
 				Body:      recorderBody,
@@ -323,9 +302,9 @@ func (conn *recordingConnWithExecContext) ExecContext(ctx context.Context, query
 
 		if result != nil && conn.recorder != nil {
 			rowsAffected, _ := result.RowsAffected()
-			conn.recorder.AddMessageResponse(apitest.MessageResponse{
+			conn.recorder.AddMessageResponse(spectest.MessageResponse{
 				Source:    conn.sourceName,
-				Target:    apitest.SystemUnderTestDefaultName,
+				Target:    spectest.SystemUnderTestDefaultName,
 				Header:    "SQL Result",
 				Body:      fmt.Sprintf("Affected rows: %d", rowsAffected),
 				Timestamp: time.Now().UTC(),
@@ -420,7 +399,7 @@ type recordingConnWithExecQueryPrepareContext struct {
 
 type recordingStmt struct {
 	Stmt       driver.Stmt
-	recorder   *apitest.Recorder
+	recorder   *spectest.Recorder
 	sourceName string
 	query      string
 }
@@ -444,8 +423,8 @@ func (stmt *recordingStmt) Exec(args []driver.Value) (driver.Result, error) {
 		if len(args) > 0 {
 			recorderBody = fmt.Sprintf("%s %+v", stmt.query, args)
 		}
-		stmt.recorder.AddMessageRequest(apitest.MessageRequest{
-			Source:    apitest.SystemUnderTestDefaultName,
+		stmt.recorder.AddMessageRequest(spectest.MessageRequest{
+			Source:    spectest.SystemUnderTestDefaultName,
 			Target:    stmt.sourceName,
 			Header:    "SQL Query",
 			Body:      recorderBody,
@@ -455,9 +434,9 @@ func (stmt *recordingStmt) Exec(args []driver.Value) (driver.Result, error) {
 
 	if result != nil && stmt.recorder != nil {
 		rowsAffected, _ := result.RowsAffected()
-		stmt.recorder.AddMessageResponse(apitest.MessageResponse{
+		stmt.recorder.AddMessageResponse(spectest.MessageResponse{
 			Source:    stmt.sourceName,
-			Target:    apitest.SystemUnderTestDefaultName,
+			Target:    spectest.SystemUnderTestDefaultName,
 			Header:    "SQL Result",
 			Body:      fmt.Sprintf("Affected rows: %d", rowsAffected),
 			Timestamp: time.Now().UTC(),
@@ -477,8 +456,8 @@ func (stmt *recordingStmt) Query(args []driver.Value) (driver.Rows, error) {
 		if len(args) > 0 {
 			recorderBody = fmt.Sprintf("%s %+v", stmt.query, args)
 		}
-		stmt.recorder.AddMessageRequest(apitest.MessageRequest{
-			Source:    apitest.SystemUnderTestDefaultName,
+		stmt.recorder.AddMessageRequest(spectest.MessageRequest{
+			Source:    spectest.SystemUnderTestDefaultName,
 			Target:    stmt.sourceName,
 			Header:    "SQL Query",
 			Body:      recorderBody,
@@ -512,8 +491,8 @@ func (stmt *recordingStmtWithExecContext) ExecContext(ctx context.Context, args 
 				recorderBody = fmt.Sprintf("%s %+v", stmt.query, convertedArgs)
 			}
 
-			stmt.recorder.AddMessageRequest(apitest.MessageRequest{
-				Source:    apitest.SystemUnderTestDefaultName,
+			stmt.recorder.AddMessageRequest(spectest.MessageRequest{
+				Source:    spectest.SystemUnderTestDefaultName,
 				Target:    stmt.sourceName,
 				Header:    "SQL Query",
 				Body:      recorderBody,
@@ -523,9 +502,9 @@ func (stmt *recordingStmtWithExecContext) ExecContext(ctx context.Context, args 
 
 		if result != nil && stmt.recorder != nil {
 			rowsAffected, _ := result.RowsAffected()
-			stmt.recorder.AddMessageResponse(apitest.MessageResponse{
+			stmt.recorder.AddMessageResponse(spectest.MessageResponse{
 				Source:    stmt.sourceName,
-				Target:    apitest.SystemUnderTestDefaultName,
+				Target:    spectest.SystemUnderTestDefaultName,
 				Header:    "SQL Result",
 				Body:      fmt.Sprintf("Affected rows: %d", rowsAffected),
 				Timestamp: time.Now().UTC(),
@@ -561,8 +540,8 @@ func (stmt *recordingStmtWithQueryContext) QueryContext(ctx context.Context, arg
 				recorderBody = fmt.Sprintf("%s %+v", stmt.query, convertedArgs)
 			}
 
-			stmt.recorder.AddMessageRequest(apitest.MessageRequest{
-				Source:    apitest.SystemUnderTestDefaultName,
+			stmt.recorder.AddMessageRequest(spectest.MessageRequest{
+				Source:    spectest.SystemUnderTestDefaultName,
 				Target:    stmt.sourceName,
 				Header:    "SQL Query",
 				Body:      recorderBody,
@@ -584,7 +563,7 @@ type recordingStmtWithExecQueryContext struct {
 
 type recordingRows struct {
 	Rows       driver.Rows
-	recorder   *apitest.Recorder
+	recorder   *spectest.Recorder
 	sourceName string
 	RowsFound  int
 }
@@ -596,9 +575,9 @@ func (rows *recordingRows) Columns() []string { return rows.Rows.Columns() }
 // It also sends the number of rows found by the query as a message to the recorder
 func (rows *recordingRows) Close() error {
 	if rows.recorder != nil {
-		rows.recorder.AddMessageResponse(apitest.MessageResponse{
+		rows.recorder.AddMessageResponse(spectest.MessageResponse{
 			Source:    rows.sourceName,
-			Target:    apitest.SystemUnderTestDefaultName,
+			Target:    spectest.SystemUnderTestDefaultName,
 			Header:    "SQL Result",
 			Body:      fmt.Sprintf("Rows returned: %d", rows.RowsFound),
 			Timestamp: time.Now().UTC(),
@@ -637,6 +616,5 @@ func sqlDriverNameToDriver(driverName string) driver.Driver {
 		db.Close()
 		return db.Driver()
 	}
-
 	return nil
 }

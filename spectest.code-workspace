@@ -1,0 +1,75 @@
+{
+    "folders": [
+        {
+            "path": "."
+        }
+    ],
+    "settings": {
+        "cSpell.words": [
+            "abycdf",
+            "acab",
+            "apitest",
+            "authtoken",
+            "bcde",
+            "besti",
+            "bestj",
+            "bestsize",
+            "Bodyf",
+            "Deletef",
+            "difflib",
+            "formdata",
+            "fromfile",
+            "fromfiledate",
+            "fsadg",
+            "Getf",
+            "Headerkey",
+            "kddejong",
+            "kfiufhtne",
+            "lineterm",
+            "multisets",
+            "newj",
+            "nolint",
+            "ntest",
+            "Obershelp",
+            "octocov",
+            "Patchf",
+            "pdsanjdna",
+            "Postf",
+            "Putf",
+            "qabxcd",
+            "Ratcliff",
+            "readlines",
+            "Seqs",
+            "shellcheck",
+            "spectest",
+            "steinfletcher",
+            "timonwong",
+            "todos",
+            "tofile",
+            "tofiledate",
+            "unidiff",
+            "windiff",
+            "writelines"
+        ],
+        "cfnLint.path": "cfn-lint",
+        "cfnLint.overrideSpecPath": ".github/cfn-resource-specification.json",
+        "editor.formatOnSave": true,
+        "[json]": {
+            "editor.defaultFormatter": "vscode.json-language-features",
+            "editor.detectIndentation": false,
+            "editor.insertSpaces": true,
+        },
+        "go.testTimeout": "300s",
+        "files.watcherExclude": {
+            "**/target": true
+        },
+    },
+    "extensions": {
+        "recommendations": [
+            "timonwong.shellcheck",
+            "golang.go",
+            "streetsidesoftware.code-spell-checker",
+            "kddejong.vscode-cfn-lint",
+        ]
+    }
+}

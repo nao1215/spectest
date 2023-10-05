@@ -5,11 +5,11 @@ import (
 	"net/http"
 	"testing"
 
-	apitest "github.com/go-spectest/spectest"
+	"github.com/go-spectest/spectest"
 )
 
 func TestGetUserSuccess(t *testing.T) {
-	apitest.New().
+	spectest.New().
 		Mocks(getPreferencesMock, getUserMock).
 		Handler(newApp().Router).
 		Get("/user").
@@ -19,9 +19,9 @@ func TestGetUserSuccess(t *testing.T) {
 		End()
 }
 
-var getPreferencesMock = apitest.NewMock().
+var getPreferencesMock = spectest.NewMock().
 	Get("/preferences/12345").
-	AddMatcher(func(r *http.Request, mr *apitest.MockRequest) error {
+	AddMatcher(func(r *http.Request, mr *spectest.MockRequest) error {
 		// Custom matching func for URL Scheme
 		if r.URL.Scheme != "http" {
 			return errors.New("request did not have 'http' scheme")
@@ -33,7 +33,7 @@ var getPreferencesMock = apitest.NewMock().
 	Status(http.StatusOK).
 	End()
 
-var getUserMock = apitest.NewMock().
+var getUserMock = spectest.NewMock().
 	Get("/user/12345").
 	RespondWith().
 	Body(`{"name": "jon", "id": "1234"}`).

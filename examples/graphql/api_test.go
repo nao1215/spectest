@@ -4,13 +4,13 @@ import (
 	"net/http"
 	"testing"
 
-	apitest "github.com/go-spectest/spectest"
+	"github.com/go-spectest/spectest"
 	jsonpath "github.com/steinfletcher/apitest-jsonpath"
 	"github.com/steinfletcher/apitest/examples/graphql/graph"
 )
 
 func TestQueryEmpty(t *testing.T) {
-	apitest.New().
+	spectest.New().
 		Handler(graph.NewHandler()).
 		Post("/query").
 		GraphQLQuery(`query {
@@ -35,7 +35,7 @@ func TestQueryEmpty(t *testing.T) {
 func TestQueryWithTodo(t *testing.T) {
 	handler := graph.NewHandler()
 
-	apitest.New().
+	spectest.New().
 		Handler(handler).
 		Post("/query").
 		JSON(`{"query": "mutation { createTodo(input:{text:\"todo\", userId:\"4\"}) { user { id } text done } }"}`).
@@ -44,7 +44,7 @@ func TestQueryWithTodo(t *testing.T) {
 		Assert(jsonpath.Equal("$.data.createTodo.user.id", "4")).
 		End()
 
-	apitest.New().
+	spectest.New().
 		Handler(handler).
 		Post("/query").
 		GraphQLQuery("query { todos { text done user { name } } }").

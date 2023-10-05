@@ -7,20 +7,20 @@ import (
 	"os"
 	"testing"
 
-	apitest "github.com/go-spectest/spectest"
-	apitestdb "github.com/go-spectest/spectest/x/db"
+	"github.com/go-spectest/spectest"
+	"github.com/go-spectest/spectest/x/db"
 	"github.com/jmoiron/sqlx"
 	uuid "github.com/satori/go.uuid"
 )
 
-var recorder *apitest.Recorder
+var recorder *spectest.Recorder
 
 func init() {
-	recorder = apitest.NewTestRecorder()
+	recorder = spectest.NewTestRecorder()
 
 	// Wrap your database driver of choice with a recorder
 	// and register it so you can use it later
-	wrappedDriver := apitestdb.WrapWithRecorder("sqlite3", recorder)
+	wrappedDriver := db.WrapWithRecorder("sqlite3", recorder)
 	sql.Register("wrappedSqlite", wrappedDriver)
 }
 
@@ -72,8 +72,8 @@ func TestPostUserWithDefaultReportFormatter(t *testing.T) {
 		End()
 }
 
-func getUserMock(username string) *apitest.Mock {
-	return apitest.NewMock().
+func getUserMock(username string) *spectest.Mock {
+	return spectest.NewMock().
 		Get("http://users/api/user").
 		Query("id", username).
 		RespondWith().
@@ -82,8 +82,8 @@ func getUserMock(username string) *apitest.Mock {
 		End()
 }
 
-func postUserMock(username string) *apitest.Mock {
-	return apitest.NewMock().
+func postUserMock(username string) *spectest.Mock {
+	return spectest.NewMock().
 		Post("http://users/api/user").
 		Body(fmt.Sprintf(`{"name": "%s"}`, username)).
 		RespondWith().
@@ -91,7 +91,7 @@ func postUserMock(username string) *apitest.Mock {
 		End()
 }
 
-func apiTest(name string) *apitest.APITest {
+func apiTest(name string) *spectest.APITest {
 	dsn := os.Getenv("SQLITE_DSN")
 
 	// Connect using the previously registered driver
@@ -102,8 +102,8 @@ func apiTest(name string) *apitest.APITest {
 
 	app := newApp(testDB)
 
-	return apitest.New(name).
+	return spectest.New(name).
 		Recorder(recorder).
-		Report(apitest.SequenceDiagram()).
+		Report(spectest.SequenceDiagram()).
 		Handler(app.Router)
 }

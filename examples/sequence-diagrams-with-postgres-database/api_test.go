@@ -6,7 +6,7 @@ import (
 	"os"
 	"testing"
 
-	apitest "github.com/go-spectest/spectest"
+	"github.com/go-spectest/spectest"
 	"github.com/go-spectest/spectest/examples/sequence-diagrams-with-postgres-database/test"
 	_ "github.com/go-spectest/spectest/examples/sequence-diagrams-with-postgres-database/test"
 	"github.com/jmoiron/sqlx"
@@ -24,7 +24,7 @@ func TestGetUserWithDefaultReportFormatter(t *testing.T) {
 		db.MustExec(q, username, true)
 	})
 
-	apiTest("gets the user").
+	spectest("gets the user").
 		Mocks(getUserMock(username)).
 		Get("/user").
 		Query("name", username).
@@ -44,7 +44,7 @@ func TestPostUserWithDefaultReportFormatter(t *testing.T) {
 		db.MustExec(q, username, true)
 	})
 
-	apiTest("creates a user").
+	spectest("creates a user").
 		Mocks(postUserMock(username)).
 		Post("/user").
 		Body(fmt.Sprintf(`{"name": "%s", "is_contactable": true}`, username)).
@@ -54,8 +54,8 @@ func TestPostUserWithDefaultReportFormatter(t *testing.T) {
 		End()
 }
 
-func getUserMock(username string) *apitest.Mock {
-	return apitest.NewMock().
+func getUserMock(username string) *spectest.Mock {
+	return spectest.NewMock().
 		Get("http://users/api/user").
 		Query("id", username).
 		RespondWith().
@@ -64,8 +64,8 @@ func getUserMock(username string) *apitest.Mock {
 		End()
 }
 
-func postUserMock(username string) *apitest.Mock {
-	return apitest.NewMock().
+func postUserMock(username string) *spectest.Mock {
+	return spectest.NewMock().
 		Post("http://users/api/user").
 		Body(fmt.Sprintf(`{"name": "%s"}`, username)).
 		RespondWith().
@@ -73,11 +73,11 @@ func postUserMock(username string) *apitest.Mock {
 		End()
 }
 
-func apiTest(name string) *apitest.APITest {
+func apiTest(name string) *spectest.APITest {
 	app := newApp(test.DBConnect())
-	return apitest.New(name).
+	return spectest.New(name).
 		Recorder(test.Recorder).
-		Report(apitest.SequenceDiagram()).
+		Report(spectest.SequenceDiagram()).
 		Handler(app.Router)
 }
 

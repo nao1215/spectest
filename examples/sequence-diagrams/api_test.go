@@ -4,12 +4,12 @@ import (
 	"net/http"
 	"testing"
 
-	apitest "github.com/go-spectest/spectest"
+	"github.com/go-spectest/spectest"
 )
 
 func TestGetUserWithDefaultReportFormatter(t *testing.T) {
-	apitest.New("gets the user 1").
-		Report(apitest.SequenceDiagram()).
+	spectest.New("gets the user 1").
+		Report(spectest.SequenceDiagram()).
 		Meta(map[string]interface{}{"host": "user-service"}).
 		Mocks(getPreferencesMock, getUserMock).
 		Handler(newApp().Router).
@@ -23,9 +23,9 @@ func TestGetUserWithDefaultReportFormatter(t *testing.T) {
 }
 
 func TestGetUserWithDefaultReportFormatterOverridingPath(t *testing.T) {
-	apitest.New("gets the user 2").
+	spectest.New("gets the user 2").
 		Meta(map[string]interface{}{"host": "user-service"}).
-		Report(apitest.SequenceDiagram(".sequence-diagrams")).
+		Report(spectest.SequenceDiagram(".sequence-diagrams")).
 		Mocks(getPreferencesMock, getUserMock).
 		Handler(newApp().Router).
 		Post("/user/search").
@@ -37,14 +37,14 @@ func TestGetUserWithDefaultReportFormatterOverridingPath(t *testing.T) {
 		End()
 }
 
-var getPreferencesMock = apitest.NewMock().
+var getPreferencesMock = spectest.NewMock().
 	Get("http://preferences/api/preferences/12345").
 	RespondWith().
 	Body(`{"is_contactable": true}`).
 	Status(http.StatusOK).
 	End()
 
-var getUserMock = apitest.NewMock().
+var getUserMock = spectest.NewMock().
 	Get("http://users/api/user/12345").
 	RespondWith().
 	Body(`{"name": "jon", "id": "1234"}`).

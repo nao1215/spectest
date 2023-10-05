@@ -46,7 +46,7 @@ func TestGetOptCodes(t *testing.T) {
 		fmt.Fprintf(w, "%s a[%d:%d], (%s) b[%d:%d] (%s)\n", string(op.Tag),
 			op.I1, op.I2, a[op.I1:op.I2], op.J1, op.J2, b[op.J1:op.J2])
 	}
-	result := string(w.Bytes())
+	result := w.String()
 	expected := `d a[0:1], (q) b[0:0] ()
 e a[1:3], (ab) b[0:2] (ab)
 r a[3:4], (x) b[2:3] (y)
@@ -81,7 +81,7 @@ func TestGroupedOpCodes(t *testing.T) {
 				op.I1, op.I2, op.J1, op.J2)
 		}
 	}
-	result := string(w.Bytes())
+	result := w.String()
 	expected := `group
   e, 5, 8, 5, 8
   i, 8, 8, 8, 9
@@ -150,7 +150,7 @@ func TestWithAsciiBJunk(t *testing.T) {
 	assertEqual(t, sm.bJunk, map[string]struct{}{" ": {}, "b": {}})
 }
 
-func TestSFBugsRatioForNullSeqn(t *testing.T) {
+func TestSFBugsRatioForNullSeqN(t *testing.T) {
 	sm := NewMatcher(nil, nil)
 	assertEqual(t, sm.Ratio(), 1.0)
 	assertEqual(t, sm.QuickRatio(), 1.0)
@@ -235,7 +235,7 @@ func TestOutputFormatTabDelimiter(t *testing.T) {
 	})
 }
 
-func TestOutputFormatNoTrailingTabOnEmptyFiledate(t *testing.T) {
+func TestOutputFormatNoTrailingTabOnEmptyFileDate(t *testing.T) {
 	diff := UnifiedDiff{
 		A:        splitChars("one"),
 		B:        splitChars("two"),
