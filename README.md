@@ -43,13 +43,14 @@ go get -u github.com/go-spectest/spectest
 | [sequence diagrams](https://github.com/go-spectest/spectest/tree/master/examples/sequence-diagrams) | generate sequence diagrams from tests |
 | [Ginkgo](https://github.com/go-spectest/spectest/tree/master/examples/ginkgo) | Ginkgo BDD test framework|
 
-### Companion libraries
+### Companion libraries (Side projects)
 
 | Library                                                                 | Comment                                        |
 | ----------------------------------------------------------------------- | -----------------------------------------------|
-| [JSONPath](https://github.com/steinfletcher/apitest-jsonpath)           | JSONPath assertion addons                      |
+| [JSON Path](https://github.com/steinfletcher/apitest-jsonpath)           | JSON Path assertion addons                      |
+| [JOSN Schema](https://github.com/go-spectest/json-schema)               | JSON Schema assertion addons |
 | [CSS Selectors](https://github.com/steinfletcher/apitest-css-selector)  | CSS selector assertion addons                  |
-| [PlantUML](https://github.com/steinfletcher/apitest-plantuml)           | Export sequence diagrams as plantUML           |
+| [PlantUML](https://github.com/go-spectest/plantuml)           | Export sequence diagrams as plantUML           |
 | [DynamoDB](https://github.com/steinfletcher/apitest-dynamodb)           | Add DynamoDB interactions to sequence diagrams |
 
 ### Credits
