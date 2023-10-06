@@ -1281,7 +1281,7 @@ func TestMocksApiTestSupportsObservingMocksWithReport(t *testing.T) {
 	assert.Equal(t, 3, len(observedMocks))
 	assert.True(t, observeMocksCalled)
 	oneSecondInNanoSecs := int64(1000000000)
-	assert.True(t, reporter.capturedRecorder.Meta["duration"].(int64) > oneSecondInNanoSecs)
+	assert.True(t, reporter.capturedRecorder.Meta.Duration > oneSecondInNanoSecs)
 }
 
 func TestMocksApiTestSupportsMultipleMocks(t *testing.T) {

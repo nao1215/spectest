@@ -6,7 +6,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"hash/fnv"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -21,12 +20,6 @@ import (
 	"strings"
 	"time"
 )
-
-// SystemUnderTestDefaultName default name for system under test
-const SystemUnderTestDefaultName = "sut"
-
-// ConsumerDefaultName default consumer name
-const ConsumerDefaultName = "cli"
 
 // APITest is the top level struct holding the test spec
 type APITest struct {
@@ -49,7 +42,7 @@ type APITest struct {
 	httpClient               *http.Client
 	httpRequest              *http.Request
 	transport                *Transport
-	meta                     map[string]interface{}
+	meta                     *Meta
 	started                  time.Time
 	finished                 time.Time
 }
@@ -64,7 +57,7 @@ type RecorderHook func(*Recorder)
 // TODO: not used name[1]〜name[n]. Use it or remove it.
 func New(name ...string) *APITest {
 	apiTest := &APITest{
-		meta: map[string]interface{}{},
+		meta: newMeta(),
 	}
 
 	request := &Request{
@@ -83,7 +76,6 @@ func New(name ...string) *APITest {
 	if len(name) > 0 {
 		apiTest.name = name[0]
 	}
-
 	return apiTest
 }
 
@@ -138,7 +130,12 @@ func (a *APITest) Recorder(recorder *Recorder) *APITest {
 
 // Meta provides a hook to add custom meta data to the test
 // which can be picked up when defining a custom reporter
-func (a *APITest) Meta(meta map[string]interface{}) *APITest {
+//
+// TODO: delete and implement alternative method
+// Deprecated: The method of specifying all metadata is inconvenient for
+// the user. Also, there are some data that we do not want users to change.
+// Therefore, Meta is eliminated and an alternative method is provided.
+func (a *APITest) Meta(meta *Meta) *APITest {
 	a.meta = meta
 	return a
 }
@@ -807,43 +804,21 @@ func (a *APITest) report() *http.Response {
 		return a.recorder.Events[i].GetTime().Before(a.recorder.Events[j].GetTime())
 	})
 
-	meta := map[string]interface{}{}
-
-	for k, v := range a.meta {
-		meta[k] = v
+	meta := newMeta()
+	meta.StatusCode = capturedFinalRes.StatusCode
+	meta.Path = capturedInboundReq.URL.String()
+	meta.Method = capturedInboundReq.Method
+	meta.Duration = a.finished.Sub(a.started).Nanoseconds()
+	meta.Name = a.name
+	if a.meta.Host != "" {
+		meta.Host = a.meta.Host
 	}
-
-	meta["status_code"] = capturedFinalRes.StatusCode
-	meta["path"] = capturedInboundReq.URL.String()
-	meta["method"] = capturedInboundReq.Method
-	meta["name"] = a.name
-	meta["hash"] = createHash(meta)
-	meta["duration"] = a.finished.Sub(a.started).Nanoseconds()
+	meta.setHash()
 
 	a.recorder.AddMeta(meta)
 	a.reporter.Format(a.recorder)
 
 	return res
-}
-
-func createHash(meta map[string]interface{}) string {
-	path := meta["path"]
-	method := meta["method"]
-	name := meta["name"]
-	app := meta["app"]
-
-	prefix := fnv.New32a()
-	_, err := prefix.Write([]byte(fmt.Sprintf("%s%s%s", app, strings.ToUpper(method.(string)), path)))
-	if err != nil {
-		panic(err)
-	}
-
-	suffix := fnv.New32a()
-	_, err = suffix.Write([]byte(name.(string)))
-	if err != nil {
-		panic(err)
-	}
-	return fmt.Sprintf("%d_%d", prefix.Sum32(), suffix.Sum32())
 }
 
 func (r *Response) runTest() *http.Response {

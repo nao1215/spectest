@@ -45,22 +45,71 @@ func TestFormatBodyContentShouldReplaceBody(t *testing.T) {
 }
 
 func TestWebSequenceDiagramGeneratesDSL(t *testing.T) {
-	wsd := webSequenceDiagramDSL{}
-	wsd.addRequestRow("A", "B", "request1")
-	wsd.addRequestRow("B", "C", "request2")
-	wsd.addResponseRow("C", "B", "response1")
-	wsd.addResponseRow("B", "A", "response2")
+	t.Run("should generate a valid web sequence diagram", func(t *testing.T) {
+		wsd := webSequenceDiagramDSL{
+			meta: &Meta{},
+		}
+		wsd.addRequestRow("A", "B", "request1")
+		wsd.addRequestRow("B", "C", "request2")
+		wsd.addResponseRow("C", "B", "response1")
+		wsd.addResponseRow("B", "A", "response2")
 
-	actual := wsd.toString()
+		actual := wsd.toString()
 
-	expected := `"A"->"B": (1) request1
+		expected := `"A"->"B": (1) request1
 "B"->"C": (2) request2
 "C"->>"B": (3) response1
 "B"->>"A": (4) response2
 `
-	if expected != actual {
-		t.Fatalf("expected=%s != \nactual=%s", expected, actual)
-	}
+		if expected != actual {
+			t.Fatalf("expected=%s != \nactual=%s", expected, actual)
+		}
+	})
+
+	t.Run("use custom consumer name and custom testing target name", func(t *testing.T) {
+		wsd := webSequenceDiagramDSL{
+			meta: &Meta{},
+		}
+		wsd.addRequestRow(ConsumerDefaultName, SystemUnderTestDefaultName, "request1")
+		wsd.addRequestRow(SystemUnderTestDefaultName, "C", "request2")
+		wsd.addResponseRow("C", SystemUnderTestDefaultName, "response1")
+		wsd.addResponseRow(SystemUnderTestDefaultName, ConsumerDefaultName, "response2")
+
+		actual := wsd.toString()
+
+		expected := `"cli"->"sut": (1) request1
+"sut"->"C": (2) request2
+"C"->>"sut": (3) response1
+"sut"->>"cli": (4) response2
+`
+		if expected != actual {
+			t.Fatalf("expected=%s != \nactual=%s", expected, actual)
+		}
+	})
+
+	t.Run("use custom consumer name and custom testing target name", func(t *testing.T) {
+		wsd := webSequenceDiagramDSL{
+			meta: &Meta{
+				ConsumerName:      "custom-consumer",
+				TestingTargetName: "custom-testing-target",
+			},
+		}
+		wsd.addRequestRow(ConsumerDefaultName, SystemUnderTestDefaultName, "request1")
+		wsd.addRequestRow(SystemUnderTestDefaultName, "C", "request2")
+		wsd.addResponseRow("C", SystemUnderTestDefaultName, "response1")
+		wsd.addResponseRow(SystemUnderTestDefaultName, ConsumerDefaultName, "response2")
+
+		actual := wsd.toString()
+
+		expected := `"custom-consumer"->"custom-testing-target": (1) request1
+"custom-testing-target"->"C": (2) request2
+"C"->>"custom-testing-target": (3) response1
+"custom-testing-target"->>"custom-consumer": (4) response2
+`
+		if expected != actual {
+			t.Fatalf("expected=%s != \nactual=%s", expected, actual)
+		}
+	})
 }
 
 func TestNewSequenceDiagramFormatterSetsDefaultPath(t *testing.T) {
@@ -81,12 +130,13 @@ func TestRecorderBuilder(t *testing.T) {
 	assert.Equal(t, 4, len(recorder.Events))
 	assert.Equal(t, "title", recorder.Title)
 	assert.Equal(t, "subTitle", recorder.SubTitle)
-	assert.Equal(t, map[string]interface{}{
-		"path":   "/user",
-		"name":   "some test",
-		"host":   "example.com",
-		"method": "GET",
-	}, recorder.Meta)
+	assert.Equal(t,
+		&Meta{
+			Path:   "/user",
+			Name:   "some test",
+			Host:   "example.com",
+			Method: "GET",
+		}, recorder.Meta)
 	assert.Equal(t, "reqSource", recorder.Events[0].(HTTPRequest).Source)
 	assert.Equal(t, "mesReqSource", recorder.Events[1].(MessageRequest).Source)
 	assert.Equal(t, "mesResSource", recorder.Events[2].(MessageResponse).Source)
@@ -124,11 +174,11 @@ func aRecorder() *Recorder {
 		AddMessageRequest(MessageRequest{Header: "A", Body: "B", Source: "mesReqSource"}).
 		AddMessageResponse(MessageResponse{Header: "C", Body: "D", Source: "mesResSource"}).
 		AddHTTPResponse(aResponse()).
-		AddMeta(map[string]interface{}{
-			"path":   "/user",
-			"name":   "some test",
-			"host":   "example.com",
-			"method": "GET",
+		AddMeta(&Meta{
+			Path:   "/user",
+			Name:   "some test",
+			Host:   "example.com",
+			Method: "GET",
 		})
 }
 
