@@ -54,7 +54,6 @@ type Observe func(*http.Response, *http.Request, *APITest)
 type RecorderHook func(*Recorder)
 
 // New creates a new api test. The name is optional and will appear in test reports
-// TODO: not used name[1]〜name[n]. Use it or remove it.
 func New(name ...string) *APITest {
 	apiTest := &APITest{
 		meta: newMeta(),
@@ -90,7 +89,6 @@ func HandlerFunc(handlerFunc http.HandlerFunc) *APITest {
 }
 
 // EnableNetworking will enable networking for provided clients
-// TODO: not used clients[1] 〜 clients[n]. Use it or remove it.
 func (a *APITest) EnableNetworking(clients ...*http.Client) *APITest {
 	a.networkingEnabled = true
 	if len(clients) == 1 {
@@ -128,15 +126,16 @@ func (a *APITest) Recorder(recorder *Recorder) *APITest {
 	return a
 }
 
-// Meta provides a hook to add custom meta data to the test
-// which can be picked up when defining a custom reporter
-//
-// TODO: delete and implement alternative method
-// Deprecated: The method of specifying all metadata is inconvenient for
-// the user. Also, there are some data that we do not want users to change.
-// Therefore, Meta is eliminated and an alternative method is provided.
-func (a *APITest) Meta(meta *Meta) *APITest {
-	a.meta = meta
+// CustomHost set hostname.
+// This method is not change the host in the request. It is only for the report.
+func (a *APITest) CustomHost(host string) *APITest {
+	a.meta.Host = host
+	return a
+}
+
+// CustomReportName allows the consumer to override the default report file name.
+func (a *APITest) CustomReportName(name string) *APITest {
+	a.meta.ReportFileName = name
 	return a
 }
 
@@ -810,10 +809,10 @@ func (a *APITest) report() *http.Response {
 	meta.Method = capturedInboundReq.Method
 	meta.Duration = a.finished.Sub(a.started).Nanoseconds()
 	meta.Name = a.name
+	meta.ReportFileName = a.meta.ReportFileName
 	if a.meta.Host != "" {
 		meta.Host = a.meta.Host
 	}
-	meta.setHash()
 
 	a.recorder.AddMeta(meta)
 	a.reporter.Format(a.recorder)

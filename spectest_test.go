@@ -881,7 +881,7 @@ func TestApiTestReport(t *testing.T) {
 
 	spectest.New("some test").
 		Debug().
-		Meta(&spectest.Meta{Host: "abc.com"}).
+		CustomHost("abc.com").
 		Report(reporter).
 		Mocks(getUser).
 		Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -936,7 +936,7 @@ func TestApiTestRecorder(t *testing.T) {
 	recorder.AddMessageResponse(messageResponse)
 
 	spectest.New("some test").
-		Meta(&spectest.Meta{Host: "abc.com"}).
+		CustomHost("abc.com").
 		Report(reporter).
 		Recorder(recorder).
 		Mocks(getUser).

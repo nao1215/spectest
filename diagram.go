@@ -113,7 +113,7 @@ func (r *SequenceDiagramFormatter) Format(recorder *Recorder) {
 		panic(err)
 	}
 
-	fileName := fmt.Sprintf("%s.html", recorder.Meta.Hash)
+	fileName := fmt.Sprintf("%s.html", recorder.Meta.reportFileName())
 	err = r.fs.mkdirAll(r.storagePath, os.ModePerm)
 	if err != nil {
 		panic(err)
