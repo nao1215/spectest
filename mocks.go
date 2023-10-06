@@ -304,8 +304,8 @@ func NewStandaloneMocks(mocks ...*Mock) *StandaloneMocks {
 	}
 }
 
-// HttpClient use the given http client
-func (r *StandaloneMocks) HttpClient(cli *http.Client) *StandaloneMocks {
+// HTTPClient use the given http client
+func (r *StandaloneMocks) HTTPClient(cli *http.Client) *StandaloneMocks {
 	r.httpClient = cli
 	return r
 }
@@ -358,8 +358,8 @@ func (m *Mock) Debug() *Mock {
 	return m
 }
 
-// HttpClient allows the developer to provide a custom http client when using mocks
-func (m *Mock) HttpClient(cli *http.Client) *Mock {
+// HTTPClient allows the developer to provide a custom http client when using mocks
+func (m *Mock) HTTPClient(cli *http.Client) *Mock {
 	m.httpClient = cli
 	return m
 }

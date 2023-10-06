@@ -1102,7 +1102,7 @@ func TestMocksStandaloneWithContainer(t *testing.T) {
 func TestMocksStandaloneWithCustomHTTPClient(t *testing.T) {
 	httpClient := customCli
 	defer NewMock().
-		HttpClient(httpClient).
+		HTTPClient(httpClient).
 		Post("http://localhost:8080/path").
 		Body(`{"a", 12345}`).
 		RespondWith().
@@ -1120,7 +1120,7 @@ func TestMocksStandaloneWithCustomHTTPClient(t *testing.T) {
 func TestMocksWithHTTPTimeout(t *testing.T) {
 	httpClient := customCli
 	defer NewMock().
-		HttpClient(httpClient).
+		HTTPClient(httpClient).
 		Post("http://localhost:8080/path").
 		Body(`{"a", 12345}`).
 		RespondWith().
