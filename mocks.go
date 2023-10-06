@@ -19,7 +19,7 @@ import (
 	"time"
 
 	"github.com/davecgh/go-spew/spew"
-	"github.com/go-spectest/spectest/difflib"
+	difflib "github.com/go-spectest/diff"
 )
 
 // Transport wraps components used to observe and manipulate the real request and response objects
