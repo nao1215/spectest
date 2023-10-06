@@ -20,10 +20,14 @@ type (
 
 	// Recorder represents all of the report data
 	Recorder struct {
-		Title    string
+		// Title is the title of the report
+		Title string
+		// SubTitle is the subtitle of the report
 		SubTitle string
-		Meta     map[string]interface{}
-		Events   []Event
+		// Meta is the meta data of the report.
+		Meta *Meta
+		// Events is the list of events that occurred during the test
+		Events []Event
 	}
 
 	// MessageRequest represents a request interaction
@@ -115,7 +119,7 @@ func (r *Recorder) AddSubTitle(subTitle string) *Recorder {
 }
 
 // AddMeta add Meta to the recorder
-func (r *Recorder) AddMeta(meta map[string]interface{}) *Recorder {
+func (r *Recorder) AddMeta(meta *Meta) *Recorder {
 	r.Meta = meta
 	return r
 }

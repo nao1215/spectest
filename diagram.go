@@ -49,7 +49,7 @@ type (
 	webSequenceDiagramDSL struct {
 		data  bytes.Buffer
 		count int
-		meta  map[string]interface{}
+		meta  *Meta
 	}
 )
 
@@ -70,18 +70,15 @@ func (r *webSequenceDiagramDSL) addResponseRow(source string, target string, des
 }
 
 func (r *webSequenceDiagramDSL) addRow(operation, source string, target string, description string) {
-	if name, ok := r.meta["consumerName"]; ok {
-		if n, ok := name.(string); ok {
-			source = strings.ReplaceAll(source, ConsumerDefaultName, n)
-			target = strings.ReplaceAll(target, ConsumerDefaultName, n)
-		}
+	if r.meta.ConsumerName != "" {
+		source = strings.ReplaceAll(source, ConsumerDefaultName, r.meta.ConsumerName)
+		target = strings.ReplaceAll(target, ConsumerDefaultName, r.meta.ConsumerName)
 	}
-	if name, ok := r.meta["systemUnderTestName"]; ok {
-		if n, ok := name.(string); ok {
-			source = strings.ReplaceAll(source, SystemUnderTestDefaultName, n)
-			target = strings.ReplaceAll(target, SystemUnderTestDefaultName, n)
-		}
+	if r.meta.TestingTargetName != "" {
+		source = strings.ReplaceAll(source, SystemUnderTestDefaultName, r.meta.TestingTargetName)
+		target = strings.ReplaceAll(target, SystemUnderTestDefaultName, r.meta.TestingTargetName)
 	}
+
 	r.count++
 	r.data.WriteString(fmt.Sprintf("%s%s%s: (%d) %s\n",
 		quoted(source),
@@ -103,7 +100,7 @@ func (r *SequenceDiagramFormatter) Format(recorder *Recorder) {
 		panic(err)
 	}
 
-	tmpl, err := htmlTemplate.New("sequenceDiagram").
+	template, err := htmlTemplate.New("sequenceDiagram").
 		Funcs(*templateFunc).
 		Parse(reportTemplate)
 	if err != nil {
@@ -111,12 +108,12 @@ func (r *SequenceDiagramFormatter) Format(recorder *Recorder) {
 	}
 
 	var out bytes.Buffer
-	err = tmpl.Execute(&out, output)
+	err = template.Execute(&out, output)
 	if err != nil {
 		panic(err)
 	}
 
-	fileName := fmt.Sprintf("%s.html", recorder.Meta["hash"])
+	fileName := fmt.Sprintf("%s.html", recorder.Meta.reportFileName())
 	err = r.fs.mkdirAll(r.storagePath, os.ModePerm)
 	if err != nil {
 		panic(err)

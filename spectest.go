@@ -6,7 +6,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"hash/fnv"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -21,12 +20,6 @@ import (
 	"strings"
 	"time"
 )
-
-// SystemUnderTestDefaultName default name for system under test
-const SystemUnderTestDefaultName = "sut"
-
-// ConsumerDefaultName default consumer name
-const ConsumerDefaultName = "cli"
 
 // APITest is the top level struct holding the test spec
 type APITest struct {
@@ -49,7 +42,7 @@ type APITest struct {
 	httpClient               *http.Client
 	httpRequest              *http.Request
 	transport                *Transport
-	meta                     map[string]interface{}
+	meta                     *Meta
 	started                  time.Time
 	finished                 time.Time
 }
@@ -61,10 +54,9 @@ type Observe func(*http.Response, *http.Request, *APITest)
 type RecorderHook func(*Recorder)
 
 // New creates a new api test. The name is optional and will appear in test reports
-// TODO: not used name[1]〜name[n]. Use it or remove it.
 func New(name ...string) *APITest {
 	apiTest := &APITest{
-		meta: map[string]interface{}{},
+		meta: newMeta(),
 	}
 
 	request := &Request{
@@ -83,7 +75,6 @@ func New(name ...string) *APITest {
 	if len(name) > 0 {
 		apiTest.name = name[0]
 	}
-
 	return apiTest
 }
 
@@ -98,7 +89,6 @@ func HandlerFunc(handlerFunc http.HandlerFunc) *APITest {
 }
 
 // EnableNetworking will enable networking for provided clients
-// TODO: not used clients[1] 〜 clients[n]. Use it or remove it.
 func (a *APITest) EnableNetworking(clients ...*http.Client) *APITest {
 	a.networkingEnabled = true
 	if len(clients) == 1 {
@@ -136,10 +126,16 @@ func (a *APITest) Recorder(recorder *Recorder) *APITest {
 	return a
 }
 
-// Meta provides a hook to add custom meta data to the test
-// which can be picked up when defining a custom reporter
-func (a *APITest) Meta(meta map[string]interface{}) *APITest {
-	a.meta = meta
+// CustomHost set hostname.
+// This method is not change the host in the request. It is only for the report.
+func (a *APITest) CustomHost(host string) *APITest {
+	a.meta.Host = host
+	return a
+}
+
+// CustomReportName allows the consumer to override the default report file name.
+func (a *APITest) CustomReportName(name string) *APITest {
+	a.meta.ReportFileName = name
 	return a
 }
 
@@ -807,43 +803,21 @@ func (a *APITest) report() *http.Response {
 		return a.recorder.Events[i].GetTime().Before(a.recorder.Events[j].GetTime())
 	})
 
-	meta := map[string]interface{}{}
-
-	for k, v := range a.meta {
-		meta[k] = v
+	meta := newMeta()
+	meta.StatusCode = capturedFinalRes.StatusCode
+	meta.Path = capturedInboundReq.URL.String()
+	meta.Method = capturedInboundReq.Method
+	meta.Duration = a.finished.Sub(a.started).Nanoseconds()
+	meta.Name = a.name
+	meta.ReportFileName = a.meta.ReportFileName
+	if a.meta.Host != "" {
+		meta.Host = a.meta.Host
 	}
-
-	meta["status_code"] = capturedFinalRes.StatusCode
-	meta["path"] = capturedInboundReq.URL.String()
-	meta["method"] = capturedInboundReq.Method
-	meta["name"] = a.name
-	meta["hash"] = createHash(meta)
-	meta["duration"] = a.finished.Sub(a.started).Nanoseconds()
 
 	a.recorder.AddMeta(meta)
 	a.reporter.Format(a.recorder)
 
 	return res
-}
-
-func createHash(meta map[string]interface{}) string {
-	path := meta["path"]
-	method := meta["method"]
-	name := meta["name"]
-	app := meta["app"]
-
-	prefix := fnv.New32a()
-	_, err := prefix.Write([]byte(fmt.Sprintf("%s%s%s", app, strings.ToUpper(method.(string)), path)))
-	if err != nil {
-		panic(err)
-	}
-
-	suffix := fnv.New32a()
-	_, err = suffix.Write([]byte(name.(string)))
-	if err != nil {
-		panic(err)
-	}
-	return fmt.Sprintf("%d_%d", prefix.Sum32(), suffix.Sum32())
 }
 
 func (r *Response) runTest() *http.Response {

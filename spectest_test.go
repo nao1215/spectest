@@ -881,7 +881,7 @@ func TestApiTestReport(t *testing.T) {
 
 	spectest.New("some test").
 		Debug().
-		Meta(map[string]interface{}{"host": "abc.com"}).
+		CustomHost("abc.com").
 		Report(reporter).
 		Mocks(getUser).
 		Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -899,12 +899,12 @@ func TestApiTestReport(t *testing.T) {
 	assert.Equal(t, "POST /hello", r.Title)
 	assert.Equal(t, "some test", r.SubTitle)
 	assert.Equal(t, 4, len(r.Events))
-	assert.Equal(t, 200, r.Meta["status_code"])
-	assert.Equal(t, "/hello", r.Meta["path"])
-	assert.Equal(t, "POST", r.Meta["method"])
-	assert.Equal(t, "some test", r.Meta["name"])
-	assert.Equal(t, "abc.com", r.Meta["host"])
-	assert.Equal(t, true, r.Meta["duration"] != nil)
+	assert.Equal(t, http.StatusOK, r.Meta.StatusCode)
+	assert.Equal(t, "/hello", r.Meta.Path)
+	assert.Equal(t, http.MethodPost, r.Meta.Method)
+	assert.Equal(t, "some test", r.Meta.Name)
+	assert.Equal(t, "abc.com", r.Meta.Host)
+	assert.Equal(t, true, r.Meta.Duration != 0)
 }
 
 func TestApiTestRecorder(t *testing.T) {
@@ -936,7 +936,7 @@ func TestApiTestRecorder(t *testing.T) {
 	recorder.AddMessageResponse(messageResponse)
 
 	spectest.New("some test").
-		Meta(map[string]interface{}{"host": "abc.com"}).
+		CustomHost("abc.com").
 		Report(reporter).
 		Recorder(recorder).
 		Mocks(getUser).

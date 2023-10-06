@@ -57,16 +57,12 @@ func TestRecorderAddsSubTitle(t *testing.T) {
 }
 
 func TestRecorderReset(t *testing.T) {
-	meta := map[string]interface{}{
-		"test": "meta",
-	}
 	rec := NewTestRecorder().
 		AddTitle("title").
 		AddSubTitle("subTitle").
-		AddMeta(meta).
+		AddMeta(newMeta()).
 		AddMessageRequest(MessageRequest{})
 
 	rec.Reset()
-
 	assert.Equal(t, &Recorder{}, rec)
 }
