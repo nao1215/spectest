@@ -65,10 +65,10 @@ type (
 	}
 )
 
-// GetTime gets the time of the HttpRequest interaction
+// GetTime gets the time of the HTTPRequest interaction
 func (r HTTPRequest) GetTime() time.Time { return r.Timestamp }
 
-// GetTime gets the time of the HttpResponse interaction
+// GetTime gets the time of the HTTPResponse interaction
 func (r HTTPResponse) GetTime() time.Time { return r.Timestamp }
 
 // GetTime gets the time of the MessageRequest interaction

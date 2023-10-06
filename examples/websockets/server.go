@@ -7,7 +7,8 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-func WsHttpHandler(w http.ResponseWriter, r *http.Request) {
+// WsHTTPHandler is a handler for websockets
+func WsHTTPHandler(w http.ResponseWriter, r *http.Request) {
 	upgrader := &websocket.Upgrader{}
 	c, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
@@ -27,7 +28,7 @@ func WsHttpHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/", WsHttpHandler)
+	http.HandleFunc("/", WsHTTPHandler)
 
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
