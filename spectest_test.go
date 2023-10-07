@@ -434,7 +434,7 @@ func TestApiTestAddsTimedOutContextToRequest(t *testing.T) {
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		if runtime.GOOS == "windows" {
 			// TODO: In Windows environments only, timeouts do not occur.
-			time.Sleep(time.Nanosecond * 30)
+			time.Sleep(time.Nanosecond * 100)
 		} else {
 			time.Sleep(time.Nanosecond * 10)
 		}
