@@ -1,5 +1,6 @@
 [![LinuxUnitTest](https://github.com/go-spectest/spectest/actions/workflows/linux_test.yml/badge.svg)](https://github.com/go-spectest/spectest/actions/workflows/linux_test.yml)
 [![MacUnitTest](https://github.com/go-spectest/spectest/actions/workflows/mac_test.yml/badge.svg)](https://github.com/go-spectest/spectest/actions/workflows/mac_test.yml)
+[![WindowsUnitTest](https://github.com/go-spectest/spectest/actions/workflows/windows_test.yml/badge.svg)](https://github.com/go-spectest/spectest/actions/workflows/windows_test.yml)
 [![Vuluncheck](https://github.com/go-spectest/spectest/actions/workflows/govulncheck.yml/badge.svg)](https://github.com/go-spectest/spectest/actions/workflows/govulncheck.yml)
 [![reviewdog](https://github.com/go-spectest/spectest/actions/workflows/reviewdog.yml/badge.svg)](https://github.com/go-spectest/spectest/actions/workflows/reviewdog.yml)
 ![Coverage](https://github.com/go-spectest/octocovs-central-repo/blob/main//badges/go-spectest/spectest/coverage.svg?raw=true)
@@ -15,6 +16,7 @@ In behavioral tests the internal structure of the app is not known by the tests.
 ## Supported OS
 - Linux
 - Mac
+- Windows (Original [apitest](https://github.com/steinfletcher/apitest) does not support Windows)
 
 ## Installation
 

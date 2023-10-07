@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestMeta_reportFileName(t *testing.T) {
+func TestMetaReportFileName(t *testing.T) {
 	type fields struct {
 		ConsumerName      string
 		Duration          int64
