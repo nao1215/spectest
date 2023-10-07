@@ -46,13 +46,14 @@ go get -u github.com/go-spectest/spectest
 | [Ginkgo](https://github.com/go-spectest/spectest/tree/master/examples/ginkgo) | Ginkgo BDD test framework|
 
 ### Companion libraries (Side projects)
-
+In the original apitest repository, side projects were managed in separate repositories. However, in spectest, these side projects are managed within the same repository. However, the difflib, which operates independently from spectest, and the malfunctioning aws package, are managed in separate repositories.
+  
 | Library                                                                 | Comment                                        |
 | ----------------------------------------------------------------------- | -----------------------------------------------|
-| [JSON Path](https://github.com/go-spectest/jsonpath)           | JSON Path assertion addons                      |
-| [JOSN Schema](https://github.com/go-spectest/jsonschema)               | JSON Schema assertion addons |
-| [CSS Selectors](https://github.com/go-spectest/css-selector)  | CSS selector assertion addons                  |
-| [PlantUML](https://github.com/go-spectest/plantuml)           | Export sequence diagrams as plantUML           |
+| [JSON Path](https://github.com/go-spectest/spectest/jsonpath)           | JSON Path assertion addons                      |
+| [JOSN Schema](https://github.com/go-spectest/spectest/jsonschema)               | JSON Schema assertion addons |
+| [CSS Selectors](https://github.com/go-spectest/spectest/css-selector)  | CSS selector assertion addons                  |
+| [PlantUML](https://github.com/go-spectest/spectest/plantuml)           | Export sequence diagrams as plantUML           |
 | [DynamoDB](https://github.com/go-spectest/aws)           | Add DynamoDB interactions to sequence diagrams |
 
 ### Credits
@@ -82,7 +83,7 @@ func TestApi(t *testing.T) {
 
 #### JSONPath
 
-For asserting on parts of the response body JSONPath may be used. A separate module must be installed which provides these assertions - `go get -u github.com/go-spectest/jsonpath`. This is packaged separately to keep this library dependency free.
+For asserting on parts of the response body JSONPath may be used. A separate module must be installed which provides these assertions - `go get -u github.com/go-spectest/spectest/jsonpath`. This is packaged separately to keep this library dependency free.
 
 Given the response is `{"a": 12345, "b": [{"key": "c", "value": "result"}]}`
 

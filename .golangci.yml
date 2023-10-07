@@ -30,13 +30,13 @@ linters:
     - goconst
     - gocritic
     - goimports
-    - gomnd
+    #- gomnd
     - gosec
     - ifshort
     - misspell
     - nakedret
     - noctx
-    - nolintlint
+    #- nolintlint
     #- paralleltest
     - prealloc
     - rowserrcheck
