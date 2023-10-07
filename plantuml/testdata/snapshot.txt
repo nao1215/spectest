@@ -1,0 +1,28 @@
+{"host":"example.com","method":"GET","name":"some test","path":"/user"}
+@startuml
+skinparam noteFontSize 11
+skinparam monochrome true
+cli->sut-a: (1) GET http://example.com/abcdef 
+note right
+GET http://example.com/abcdef HTTP/1.1
+Content-Type: application/json
+
+
+end note
+sut-a->a: (2) SQL Query 
+note right
+SELECT * FROM users
+end note
+a-->sut-a: (3) SQL Result 
+note left
+Rows count: 122
+end note
+sut-a-->cli: (4) 200 
+note left
+HTTP/1.1 200 OK
+Content-Length: 0
+
+
+end note
+
+@enduml
