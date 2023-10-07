@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/exec"
 	"reflect"
+	"runtime"
 	"strings"
 	"testing"
 	"time"
@@ -431,7 +432,12 @@ func TestApiTestAddsBasicAuthToRequest(t *testing.T) {
 func TestApiTestAddsTimedOutContextToRequest(t *testing.T) {
 	handler := http.NewServeMux()
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
-		time.Sleep(time.Nanosecond * 10)
+		if runtime.GOOS == "windows" {
+			// TODO: In Windows environments only, timeouts do not occur.
+			time.Sleep(time.Nanosecond * 30)
+		} else {
+			time.Sleep(time.Nanosecond * 10)
+		}
 		if r.Context().Err() == context.DeadlineExceeded {
 			w.WriteHeader(http.StatusRequestTimeout)
 		}
