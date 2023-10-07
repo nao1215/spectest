@@ -885,6 +885,7 @@ func TestApiTestReport(t *testing.T) {
 		Report(reporter).
 		Mocks(getUser).
 		Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			time.Sleep(time.Millisecond * 100)
 			getUserData()
 			w.WriteHeader(http.StatusOK)
 		})).
