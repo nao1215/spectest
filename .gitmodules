@@ -1,15 +1,3 @@
-[submodule "jsonpath"]
-	path = jsonpath
-	url = git@github.com:go-spectest/jsonpath.git
-[submodule "css-selector"]
-	path = css-selector
-	url = git@github.com:go-spectest/css-selector.git
 [submodule "aws"]
-	path = aws
-	url = git@github.com:go-spectest/aws.git
-[submodule "jsonschema"]
-	path = jsonschema
-	url = git@github.com:go-spectest/jsonschema.git
-[submodule "plantuml"]
-	path = plantuml
-	url = git@github.com:go-spectest/plantuml.git
+path = aws
+url = git@github.com:go-spectest/aws.git
