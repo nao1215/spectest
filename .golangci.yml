@@ -36,7 +36,7 @@ linters:
     - misspell
     - nakedret
     - noctx
-    - nolintlint
+    #- nolintlint
     #- paralleltest
     - prealloc
     - rowserrcheck

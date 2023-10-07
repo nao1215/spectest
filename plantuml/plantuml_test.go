@@ -35,13 +35,12 @@ func TestNewFormatter(t *testing.T) {
 
 	NewFormatter(capture).Format(recorder)
 
-	actual := capture.captured
 	expected, err := os.ReadFile("testdata/snapshot.txt")
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if normalize(string(expected)) != normalize(capture.captured) {
+	if actual := capture.captured; normalize(string(expected)) != normalize(actual) {
 		t.Errorf("Expected '%s'\nReceived '%s'\n", string(expected), actual)
 	}
 }
