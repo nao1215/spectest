@@ -3,7 +3,6 @@ package plantuml
 import (
 	"bufio"
 	"bytes"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -25,7 +24,7 @@ func TestWritesTheMeta(t *testing.T) {
 		panic(err)
 	}
 
-	if `{"host":"example.com","method":"GET","name":"some test","path":"/user"}` != string(firstLine) {
+	if string(firstLine) != `{"host":"example.com","method":"GET","name":"some test","path":"/user"}` {
 		t.Fail()
 	}
 }
@@ -37,11 +36,13 @@ func TestNewFormatter(t *testing.T) {
 	NewFormatter(capture).Format(recorder)
 
 	actual := capture.captured
-	expected, _ := os.ReadFile("testdata/snapshot.txt")
+	expected, err := os.ReadFile("testdata/snapshot.txt")
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	if normalize(string(expected)) != normalize(actual) {
-		fmt.Printf("Expected '%s'\nReceived '%s'\n", string(expected), actual)
-		t.Fail()
+	if normalize(string(expected)) != normalize(capture.captured) {
+		t.Errorf("Expected '%s'\nReceived '%s'\n", string(expected), actual)
 	}
 }
 

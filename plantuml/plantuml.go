@@ -1,3 +1,4 @@
+// Package plantuml write plantuml markup to a writer
 package plantuml
 
 import (
@@ -61,7 +62,9 @@ func (r *Formatter) Format(recorder *spectest.Recorder) {
 	var sb strings.Builder
 
 	meta, err := json.Marshal(recorder.Meta)
-
+	if err != nil {
+		panic(err)
+	}
 	markup, err := buildMarkup(recorder)
 	if err != nil {
 		panic(err)

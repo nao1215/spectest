@@ -141,7 +141,7 @@ func JSONPath(reader io.Reader, expression string) (interface{}, error) {
 
 	value, err := jsonpath.Get(expression, v)
 	if err != nil {
-		return nil, fmt.Errorf("evaluating '%s' resulted in error: '%s'", expression, err)
+		return nil, fmt.Errorf("evaluating '%s' resulted in error: '%w'", expression, err)
 	}
 	return value, nil
 }
@@ -207,7 +207,7 @@ func isEmpty(object interface{}) bool {
 
 	objValue := reflect.ValueOf(object)
 
-	switch objValue.Kind() {
+	switch objValue.Kind() { //nolint:exhaustive
 	case reflect.Array, reflect.Chan, reflect.Map, reflect.Slice:
 		return objValue.Len() == 0
 	case reflect.Ptr:

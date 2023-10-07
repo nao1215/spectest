@@ -79,7 +79,7 @@ func Matches(expression string, regexp string) func(*http.Response, *http.Reques
 			return fmt.Errorf("no match for pattern: '%s'", expression)
 		}
 		kind := reflect.ValueOf(value).Kind()
-		switch kind {
+		switch kind { //nolint:exhaustive
 		case reflect.Bool,
 			reflect.Int,
 			reflect.Int8,

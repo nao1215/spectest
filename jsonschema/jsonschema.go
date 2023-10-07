@@ -1,3 +1,4 @@
+// Pacakage jsonschema provides a spectest.Assert function to validate the http response body against the provided json schema
 package jsonschema
 
 import (

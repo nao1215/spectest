@@ -64,7 +64,7 @@ func base64Decode(src string) ([]byte, error) {
 
 	decoded, err := base64.URLEncoding.DecodeString(src)
 	if err != nil {
-		errMsg := fmt.Errorf("decoding Error %s", err)
+		errMsg := fmt.Errorf("decoding Error %w", err)
 		return nil, errMsg
 	}
 	return decoded, nil

@@ -19,7 +19,7 @@ func DataTestID(value string) string {
 }
 
 // FirstTextValue returns a function that asserts the first element matching the selection has the expected text value
-func FirstTextValue(selection string, expectedTextValue string) func(*http.Response, *http.Request) error {
+func FirstTextValue(selection string, expectedTextValue string) func(*http.Response, *http.Request) error { //nolint
 	return newAssertSelection(selection, func(i int, selection *goquery.Selection) bool {
 		if i == 0 {
 			if selection.Text() == expectedTextValue {
@@ -31,7 +31,7 @@ func FirstTextValue(selection string, expectedTextValue string) func(*http.Respo
 }
 
 // NthTextValue returns a function that asserts the nth element matching the selection has the expected text value
-func NthTextValue(n int, selection string, expectedTextValue string) func(*http.Response, *http.Request) error {
+func NthTextValue(n int, selection string, expectedTextValue string) func(*http.Response, *http.Request) error { //nolint
 	return newAssertSelection(selection, func(i int, selection *goquery.Selection) bool {
 		if i == n {
 			if selection.Text() == expectedTextValue {
@@ -43,12 +43,9 @@ func NthTextValue(n int, selection string, expectedTextValue string) func(*http.
 }
 
 // ContainsTextValue returns a function that asserts the first element matching the selection contains the expected text value
-func ContainsTextValue(selection string, expectedTextValue string) func(*http.Response, *http.Request) error {
+func ContainsTextValue(selection string, expectedTextValue string) func(*http.Response, *http.Request) error { //nolint
 	return newAssertSelection(selection, func(i int, selection *goquery.Selection) bool {
-		if strings.Contains(selection.Text(), expectedTextValue) {
-			return true
-		}
-		return false
+		return strings.Contains(selection.Text(), expectedTextValue)
 	})
 }
 
