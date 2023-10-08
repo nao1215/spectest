@@ -2,6 +2,7 @@
 [![MacUnitTest](https://github.com/go-spectest/spectest/actions/workflows/mac_test.yml/badge.svg)](https://github.com/go-spectest/spectest/actions/workflows/mac_test.yml)
 [![WindowsUnitTest](https://github.com/go-spectest/spectest/actions/workflows/windows_test.yml/badge.svg)](https://github.com/go-spectest/spectest/actions/workflows/windows_test.yml)
 [![Vuluncheck](https://github.com/go-spectest/spectest/actions/workflows/govulncheck.yml/badge.svg)](https://github.com/go-spectest/spectest/actions/workflows/govulncheck.yml)
+[![UnitTestExampleCodes](https://github.com/go-spectest/spectest/actions/workflows/test-examples.yml/badge.svg)](https://github.com/go-spectest/spectest/actions/workflows/test-examples.yml)
 [![reviewdog](https://github.com/go-spectest/spectest/actions/workflows/reviewdog.yml/badge.svg)](https://github.com/go-spectest/spectest/actions/workflows/reviewdog.yml)
 ![Coverage](https://github.com/go-spectest/octocovs-central-repo/blob/main//badges/go-spectest/spectest/coverage.svg?raw=true)
 
@@ -34,16 +35,17 @@ go get -u github.com/go-spectest/spectest
 
 | Example                                                                                              | Comment                                                                                                    |
 | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| [gin](https://github.com/go-spectest/spectest/tree/master/examples/gin)                             | popular martini-like web framework                                                                         |
-| [graphql](https://github.com/go-spectest/spectest/tree/master/examples/graphql)                     | using gqlgen.com to generate a graphql server                                                              |
-| [gorilla](https://github.com/go-spectest/spectest/tree/master/examples/gorilla)                     | the gorilla web toolkit                                                                                    |
-| [iris](https://github.com/go-spectest/spectest/tree/master/examples/iris)                           | iris web framework                                                                                         |
-| [echo](https://github.com/go-spectest/spectest/tree/master/examples/echo)                           | High performance, extensible, minimalist Go web framework                                                  |
-| [fiber](https://github.com/go-spectest/spectest/tree/master/examples/fiber)                         | Express inspired web framework written in Go                                                               |
-| [httprouter](https://github.com/go-spectest/spectest/tree/master/examples/httprouter)               | High performance HTTP request router that scales well                                                      |
-| [mocks](https://github.com/go-spectest/spectest/tree/master/examples/mocks)                         | example mocking out external http calls                                                                    |
-| [sequence diagrams](https://github.com/go-spectest/spectest/tree/master/examples/sequence-diagrams) | generate sequence diagrams from tests |
-| [Ginkgo](https://github.com/go-spectest/spectest/tree/master/examples/ginkgo) | Ginkgo BDD test framework|
+| [gin](https://github.com/go-spectest/spectest/tree/main/examples/gin)                             | popular martini-like web framework                                                                         |
+| [graphql (broken)](https://github.com/go-spectest/spectest/tree/main/examples/graphql)                     | using gqlgen.com to generate a graphql server                                                              |
+| [gorilla](https://github.com/go-spectest/spectest/tree/main/examples/gorilla)                     | the gorilla web toolkit                                                                                    |
+| [iris (broken)](https://github.com/go-spectest/spectest/tree/main/examples/iris)                           | iris web framework                                                                                         |
+| [echo](https://github.com/go-spectest/spectest/tree/main/examples/echo)                           | High performance, extensible, minimalist Go web framework                                                  |
+| [fiber](https://github.com/go-spectest/spectest/tree/main/examples/fiber)                         | Express inspired web framework written in Go                                                               |
+| [httprouter](https://github.com/go-spectest/spectest/tree/main/examples/httprouter)               | High performance HTTP request router that scales well                                                      |
+| [mocks](https://github.com/go-spectest/spectest/tree/main/examples/mocks)                         | example mocking out external http calls                                                                    |
+| [sequence diagrams](https://github.com/go-spectest/spectest/tree/main/examples/sequence-diagrams) | generate sequence diagrams from tests |
+| [Ginkgo](https://github.com/go-spectest/spectest/tree/main/examples/ginkgo) | Ginkgo BDD test framework|
+| [plantuml](https://github.com/go-spectest/spectest/tree/main/examples/plantuml) | wxample generating plantuml|
 
 ### Companion libraries (Side projects)
 In the original apitest repository, side projects were managed in separate repositories. However, in spectest, these side projects are managed within the same repository. However, the difflib, which operates independently from spectest, and the malfunctioning aws package, are managed in separate repositories.
@@ -54,7 +56,7 @@ In the original apitest repository, side projects were managed in separate repos
 | [JOSN Schema](https://github.com/go-spectest/spectest/jsonschema)               | JSON Schema assertion addons |
 | [CSS Selectors](https://github.com/go-spectest/spectest/css-selector)  | CSS selector assertion addons                  |
 | [PlantUML](https://github.com/go-spectest/spectest/plantuml)           | Export sequence diagrams as plantUML           |
-| [DynamoDB](https://github.com/go-spectest/aws)           | Add DynamoDB interactions to sequence diagrams |
+| [DynamoDB (broken)](https://github.com/go-spectest/aws)           | Add DynamoDB interactions to sequence diagrams |
 
 ### Credits
 
