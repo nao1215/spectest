@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.0.2, Unreleased] - 2023-XX-XX
+## [0.0.2] - 2023-10-08
 
 ### Added
 - GitHub Actions
