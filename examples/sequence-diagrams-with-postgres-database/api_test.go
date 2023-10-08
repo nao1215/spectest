@@ -24,7 +24,7 @@ func TestGetUserWithDefaultReportFormatter(t *testing.T) {
 		db.MustExec(q, username, true)
 	})
 
-	spectest("gets the user").
+	spectest.New("gets the user").
 		Mocks(getUserMock(username)).
 		Get("/user").
 		Query("name", username).
@@ -44,7 +44,7 @@ func TestPostUserWithDefaultReportFormatter(t *testing.T) {
 		db.MustExec(q, username, true)
 	})
 
-	spectest("creates a user").
+	spectest.New("creates a user").
 		Mocks(postUserMock(username)).
 		Post("/user").
 		Body(fmt.Sprintf(`{"name": "%s", "is_contactable": true}`, username)).

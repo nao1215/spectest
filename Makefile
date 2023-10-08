@@ -4,8 +4,7 @@ test: ## Run unit tests
 	go test ./... -v -covermode=atomic -coverprofile=coverage.out
 
 test-examples: ## Run unit tests for examples directory
-	cd examples && go test -v ./... && \
-	cd sequence-diagrams-with-sqlite-database && make test && cd ..
+	make -C examples test
 
 .DEFAULT_GOAL := help
 help:  ## Show this help

@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"github.com/go-spectest/spectest"
-	jsonpath "github.com/steinfletcher/apitest-jsonpath"
-	"github.com/steinfletcher/apitest/examples/graphql/graph"
+	"github.com/go-spectest/spectest/examples/graphql/graph"
+	"github.com/go-spectest/spectest/jsonpath"
 )
 
 func TestQueryEmpty(t *testing.T) {

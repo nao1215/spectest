@@ -4,10 +4,10 @@ import (
 	"net/http"
 
 	"github.com/go-spectest/spectest"
+	server "github.com/go-spectest/spectest/examples/ginkgo"
+	"github.com/go-spectest/spectest/jsonpath"
 	"github.com/gorilla/mux"
 	. "github.com/onsi/ginkgo"
-	jsonpath "github.com/steinfletcher/apitest-jsonpath"
-	server "github.com/steinfletcher/apitest/examples/ginkgo"
 )
 
 var _ = Describe("Ginkgo/Server", func() {
