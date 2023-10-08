@@ -431,7 +431,9 @@ func TestApiTestAddsBasicAuthToRequest(t *testing.T) {
 func TestApiTestAddsTimedOutContextToRequest(t *testing.T) {
 	handler := http.NewServeMux()
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
-		time.Sleep(time.Microsecond * 10)
+		// TODO: Sleep time is temporarily extended because the sleep time is not timed out
+		// unless the sleep time is significantly extended in a windows environment
+		time.Sleep(time.Microsecond * 100)
 		if r.Context().Err() == context.DeadlineExceeded {
 			w.WriteHeader(http.StatusRequestTimeout)
 		}
