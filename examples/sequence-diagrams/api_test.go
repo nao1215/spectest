@@ -10,7 +10,7 @@ import (
 func TestGetUserWithDefaultReportFormatter(t *testing.T) {
 	spectest.New("gets the user 1").
 		Report(spectest.SequenceDiagram()).
-		Meta(map[string]interface{}{"host": "user-service"}).
+		CustomHost("user-service").
 		Mocks(getPreferencesMock, getUserMock).
 		Handler(newApp().Router).
 		Post("/user/search").
@@ -24,7 +24,7 @@ func TestGetUserWithDefaultReportFormatter(t *testing.T) {
 
 func TestGetUserWithDefaultReportFormatterOverridingPath(t *testing.T) {
 	spectest.New("gets the user 2").
-		Meta(map[string]interface{}{"host": "user-service"}).
+		CustomHost("user-service").
 		Report(spectest.SequenceDiagram(".sequence-diagrams")).
 		Mocks(getPreferencesMock, getUserMock).
 		Handler(newApp().Router).

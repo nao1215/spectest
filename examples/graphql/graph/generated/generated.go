@@ -1769,7 +1769,7 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
+	out.Dispatch(ctx)
 	if invalids > 0 {
 		return graphql.Null
 	}

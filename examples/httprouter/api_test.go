@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/go-spectest/spectest"
-	jsonpath "github.com/steinfletcher/apitest-jsonpath"
+	"github.com/go-spectest/spectest/jsonpath"
 )
 
 func TestGetUserCookieMatching(t *testing.T) {

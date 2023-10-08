@@ -6,8 +6,8 @@ import (
 	"testing"
 
 	"github.com/go-spectest/spectest"
+	"github.com/go-spectest/spectest/jsonpath"
 	"github.com/gofiber/fiber/v2"
-	jsonpath "github.com/steinfletcher/apitest-jsonpath"
 )
 
 func TestGetUserCookieMatching(t *testing.T) {
