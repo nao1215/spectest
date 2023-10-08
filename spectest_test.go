@@ -433,14 +433,14 @@ func TestApiTestAddsTimedOutContextToRequest(t *testing.T) {
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		// TODO: Sleep time is temporarily extended because the sleep time is not timed out
 		// unless the sleep time is significantly extended in a windows environment
-		time.Sleep(time.Microsecond * 100)
+		time.Sleep(time.Second * 3)
 		if r.Context().Err() == context.DeadlineExceeded {
 			w.WriteHeader(http.StatusRequestTimeout)
 		}
 		w.WriteHeader(http.StatusOK)
 	})
 
-	timeoutCtx, cancel := context.WithTimeout(context.Background(), time.Microsecond*1)
+	timeoutCtx, cancel := context.WithTimeout(context.Background(), time.Second*1)
 	defer cancel()
 
 	spectest.New("test with timed out context").
