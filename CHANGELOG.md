@@ -1,6 +1,9 @@
 # Changelog
 
 ## [0.0.3, Unreleased] - 2023-XX-XX
+### Added
+- supprt more http methods; HEAD, OPTIONS, CONNECT, TRACE
+
 ### Fixed
 - Broken example codes. However, some examples are still broken (iris, qraphql).
 - Broken unit test; `TestRealNetworking()` had a case where API calls could be made before the server was started.

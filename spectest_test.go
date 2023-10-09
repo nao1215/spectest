@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/exec"
 	"reflect"
+	"sort"
 	"strings"
 	"testing"
 	"time"
@@ -18,6 +19,8 @@ import (
 	"github.com/go-spectest/spectest"
 	"github.com/go-spectest/spectest/mocks"
 )
+
+var assert = spectest.DefaultVerifier{}
 
 func TestApiTestResponseBody(t *testing.T) {
 	spectest.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -1396,4 +1399,158 @@ func getUserData() []byte {
 	return data
 }
 
-var assert = spectest.DefaultVerifier{}
+func TestHTTPMethodHEAD(t *testing.T) {
+	t.Run("success case: test Head()", func(t *testing.T) {
+		handler := http.NewServeMux()
+		handler.HandleFunc("/head", func(w http.ResponseWriter, r *http.Request) {
+			if r.Method != http.MethodHead {
+				t.Fatalf("expected method to be HEAD, got %s", r.Method)
+			}
+			w.Header().Set("Content-Length", "10")
+			w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+			w.WriteHeader(http.StatusOK)
+		})
+
+		spectest.New().
+			Handler(handler).
+			Head("/head").
+			Expect(t).
+			Status(http.StatusOK).
+			Header("Content-Length", "10").
+			Header("Content-Type", "text/plain; charset=utf-8").
+			Body(""). // Body is empty for HEAD requests
+			End()
+	})
+
+	t.Run("success case: test Headf()", func(t *testing.T) {
+		handler := http.NewServeMux()
+		handler.HandleFunc("/head/123", func(w http.ResponseWriter, r *http.Request) {
+			if r.Method != http.MethodHead {
+				t.Fatalf("expected method to be HEAD, got %s", r.Method)
+			}
+			w.Header().Set("Content-Length", "10")
+			w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+			w.WriteHeader(http.StatusOK)
+		})
+
+		spectest.New().
+			Handler(handler).
+			Headf("/head/%d", 123).
+			Expect(t).
+			Status(http.StatusOK).
+			Header("Content-Length", "10").
+			Header("Content-Type", "text/plain; charset=utf-8").
+			Body(""). // Body is empty for HEAD requests
+			End()
+	})
+}
+
+func TestHTTPMethodConnect(t *testing.T) {
+	t.Run("success case: test Connect()", func(t *testing.T) {
+		handler := http.NewServeMux()
+		handler.HandleFunc("/connect", func(w http.ResponseWriter, r *http.Request) {
+			if r.Method != http.MethodConnect {
+				t.Fatalf("expected method to be CONNECT, got %s", r.Method)
+			}
+			w.WriteHeader(http.StatusOK)
+		})
+
+		spectest.New().
+			Handler(handler).
+			Connect("/connect").
+			Expect(t).
+			Status(http.StatusOK).
+			End()
+	})
+
+	t.Run("success case: test Connectf()", func(t *testing.T) {
+		handler := http.NewServeMux()
+		handler.HandleFunc("/connect/123", func(w http.ResponseWriter, r *http.Request) {
+			if r.Method != http.MethodConnect {
+				t.Fatalf("expected method to be CONNECT, got %s", r.Method)
+			}
+			w.WriteHeader(http.StatusOK)
+		})
+
+		spectest.New().
+			Handler(handler).
+			Connectf("/connect/%d", 123).
+			Expect(t).
+			Status(http.StatusOK).
+			End()
+	})
+}
+
+func TestHTTPMethodOptions(t *testing.T) {
+	t.Run("success case: test Options()", func(t *testing.T) {
+		handler := http.NewServeMux()
+		handler.HandleFunc("/options", func(w http.ResponseWriter, r *http.Request) {
+			if r.Method != http.MethodOptions {
+				t.Fatalf("expected method to be OPTIONS, got %s", r.Method)
+			}
+			w.Header().Set("Allow", "GET, HEAD, OPTIONS")
+			w.WriteHeader(http.StatusOK)
+		})
+
+		spectest.New().
+			Handler(handler).
+			Options("/options").
+			Expect(t).
+			Header("Allow", "GET, HEAD, OPTIONS").
+			Status(http.StatusOK).
+			End()
+	})
+
+	t.Run("success case: test Optionsf()", func(t *testing.T) {
+		handler := http.NewServeMux()
+		handler.HandleFunc("/options/123", func(w http.ResponseWriter, r *http.Request) {
+			if r.Method != http.MethodOptions {
+				t.Fatalf("expected method to be OPTIONS, got %s", r.Method)
+			}
+			w.Header().Set("Allow", "GET, HEAD, OPTIONS")
+			w.WriteHeader(http.StatusOK)
+		})
+
+		spectest.New().
+			Handler(handler).
+			Optionsf("/options/%d", 123).
+			Expect(t).
+			Header("Allow", "GET, HEAD, OPTIONS").
+			Status(http.StatusOK).
+			End()
+	})
+}
+
+func TestHTTPMethodTrace(t *testing.T) {
+	t.Run("success  case: test Trace()", func(t *testing.T) {
+		handler := http.NewServeMux()
+		handler.HandleFunc("/trace", func(w http.ResponseWriter, r *http.Request) {
+			if r.Method != http.MethodTrace {
+				t.Fatalf("expected method to be TRACE, got %s", r.Method)
+			}
+
+			// write response header to response body after sorting the header keys
+			keys := make([]string, 0, len(r.Header))
+			for k := range r.Header {
+				keys = append(keys, k)
+			}
+			sort.Strings(keys)
+			for _, k := range keys {
+				for _, v := range r.Header[k] {
+					fmt.Fprintf(w, "%s: %s\n", k, v)
+				}
+			}
+			w.WriteHeader(http.StatusOK)
+		})
+
+		spectest.New().
+			Handler(handler).
+			Trace("/trace").
+			Header("User-Agent", "Go-http-client/1.1").
+			Header("Keep-Alive", "timeout=5, max=1000").
+			Expect(t).
+			Body("Keep-Alive: timeout=5, max=1000\nUser-Agent: Go-http-client/1.1\n").
+			Status(http.StatusOK).
+			End()
+	})
+}
