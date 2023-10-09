@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.0.3, Unreleased] - 2023-XX-XX
+## [0.0.3, Unreleased] - 2023-10-09
 ### Added
 - supprt more http methods; HEAD, OPTIONS, CONNECT, TRACE
 
