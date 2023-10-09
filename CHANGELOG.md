@@ -1,6 +1,10 @@
 # Changelog
 
-## [0.0.3, Unreleased] - 2023-10-09
+## [0.0.4, Unreleased] - 2023-XX-XX
+### Changed
+- Dependabot update go.mod in example codes.
+
+## [0.0.3] - 2023-10-09
 ### Added
 - supprt more http methods; HEAD, OPTIONS, CONNECT, TRACE
 
