@@ -20,8 +20,6 @@ import (
 	"github.com/go-spectest/spectest/mocks"
 )
 
-var assert = spectest.DefaultVerifier{}
-
 func TestApiTestResponseBody(t *testing.T) {
 	spectest.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write([]byte(`{"id": "1234", "name": "Andy"}`))
@@ -111,7 +109,7 @@ func TestApiTestRequestURLFormat(t *testing.T) {
 	spectest.New().
 		HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
-			assert.Equal(t, "/user/1234", r.URL.Path)
+			spectest.DefaultVerifier{}.Equal(t, "/user/1234", r.URL.Path)
 		}).
 		Getf("/user/%s", "1234").
 		Expect(t).
@@ -121,7 +119,7 @@ func TestApiTestRequestURLFormat(t *testing.T) {
 	spectest.New().
 		HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
-			assert.Equal(t, "/user/1234", r.URL.Path)
+			spectest.DefaultVerifier{}.Equal(t, "/user/1234", r.URL.Path)
 		}).
 		Putf("/user/%s", "1234").
 		Expect(t).
@@ -131,7 +129,7 @@ func TestApiTestRequestURLFormat(t *testing.T) {
 	spectest.New().
 		HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
-			assert.Equal(t, "/user/1234", r.URL.Path)
+			spectest.DefaultVerifier{}.Equal(t, "/user/1234", r.URL.Path)
 		}).
 		Patchf("/user/%s", "1234").
 		Expect(t).
@@ -141,7 +139,7 @@ func TestApiTestRequestURLFormat(t *testing.T) {
 	spectest.New().
 		HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
-			assert.Equal(t, "/user/1234", r.URL.Path)
+			spectest.DefaultVerifier{}.Equal(t, "/user/1234", r.URL.Path)
 		}).
 		Postf("/user/%s", "1234").
 		Expect(t).
@@ -151,7 +149,7 @@ func TestApiTestRequestURLFormat(t *testing.T) {
 	spectest.New().
 		HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
-			assert.Equal(t, "/user/1234", r.URL.Path)
+			spectest.DefaultVerifier{}.Equal(t, "/user/1234", r.URL.Path)
 		}).
 		Deletef("/user/%s", "1234").
 		Expect(t).
@@ -161,7 +159,7 @@ func TestApiTestRequestURLFormat(t *testing.T) {
 	spectest.New().
 		HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
-			assert.Equal(t, "/user/1234", r.URL.Path)
+			spectest.DefaultVerifier{}.Equal(t, "/user/1234", r.URL.Path)
 		}).
 		Method(http.MethodGet).
 		URLf("/user/%d", 1234).
@@ -196,7 +194,7 @@ func TestApiTestJSONBody(t *testing.T) {
 			handler := http.NewServeMux()
 			handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 				data, _ := io.ReadAll(r.Body)
-				assert.JSONEq(t, `{"a": 12345}`, string(data))
+				spectest.DefaultVerifier{}.JSONEq(t, `{"a": 12345}`, string(data))
 				if r.Header.Get("Content-Type") != "application/json" {
 					w.WriteHeader(http.StatusBadRequest)
 					return
@@ -490,7 +488,7 @@ func TestApiTestGraphQLQuery(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assert.Equal(t, spectest.GraphQLRequestBody{
+			spectest.DefaultVerifier{}.Equal(t, spectest.GraphQLRequestBody{
 				Query: `query { todos { text } }`,
 			}, req)
 
@@ -525,7 +523,7 @@ func TestApiTestGraphQLRequest(t *testing.T) {
 				},
 			}
 
-			assert.Equal(t, expected, req)
+			spectest.DefaultVerifier{}.Equal(t, expected, req)
 
 			w.WriteHeader(http.StatusOK)
 		}).
@@ -587,7 +585,7 @@ func TestApiTestMatchesJSONBodyFromFile(t *testing.T) {
 	handler := http.NewServeMux()
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		data, _ := io.ReadAll(r.Body)
-		assert.JSONEq(t, `{"a": 12345}`, string(data))
+		spectest.DefaultVerifier{}.JSONEq(t, `{"a": 12345}`, string(data))
 
 		w.WriteHeader(http.StatusCreated)
 		w.Header().Set("Content-Type", "application/json")
@@ -611,7 +609,7 @@ func TestApiTestMatchesBodyFromFile(t *testing.T) {
 	handler := http.NewServeMux()
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		data, _ := io.ReadAll(r.Body)
-		assert.JSONEq(t, `{"a": 12345}`, string(data))
+		spectest.DefaultVerifier{}.JSONEq(t, `{"a": 12345}`, string(data))
 
 		w.WriteHeader(http.StatusCreated)
 		w.Header().Set("Content-Type", "application/json")
@@ -830,7 +828,7 @@ func TestApiTestEndReturnsTheResult(t *testing.T) {
 		End().
 		JSON(&r)
 
-	assert.Equal(t, "hi", r.B)
+	spectest.DefaultVerifier{}.Equal(t, "hi", r.B)
 }
 
 func TestApiTestCustomAssert(t *testing.T) {
@@ -855,8 +853,8 @@ func TestApiTestVerifierCapturesTheTestMessage(t *testing.T) {
 			return true
 		}
 		args := msgAndArgs[0].([]interface{})
-		assert.Equal(t, 2, len(args))
-		assert.Equal(t, "expected header 'Abc' not present in response", args[0].(string))
+		spectest.DefaultVerifier{}.Equal(t, 2, len(args))
+		spectest.DefaultVerifier{}.Equal(t, "expected header 'Abc' not present in response", args[0].(string))
 		return true
 	}
 
@@ -902,15 +900,15 @@ func TestApiTestReport(t *testing.T) {
 		End()
 
 	r := reporter.capturedRecorder
-	assert.Equal(t, "POST /hello", r.Title)
-	assert.Equal(t, "some test", r.SubTitle)
-	assert.Equal(t, 4, len(r.Events))
-	assert.Equal(t, http.StatusOK, r.Meta.StatusCode)
-	assert.Equal(t, "/hello", r.Meta.Path)
-	assert.Equal(t, http.MethodPost, r.Meta.Method)
-	assert.Equal(t, "some test", r.Meta.Name)
-	assert.Equal(t, "abc.com", r.Meta.Host)
-	assert.Equal(t, true, r.Meta.Duration != 0)
+	spectest.DefaultVerifier{}.Equal(t, "POST /hello", r.Title)
+	spectest.DefaultVerifier{}.Equal(t, "some test", r.SubTitle)
+	spectest.DefaultVerifier{}.Equal(t, 4, len(r.Events))
+	spectest.DefaultVerifier{}.Equal(t, http.StatusOK, r.Meta.StatusCode)
+	spectest.DefaultVerifier{}.Equal(t, "/hello", r.Meta.Path)
+	spectest.DefaultVerifier{}.Equal(t, http.MethodPost, r.Meta.Method)
+	spectest.DefaultVerifier{}.Equal(t, "some test", r.Meta.Name)
+	spectest.DefaultVerifier{}.Equal(t, "abc.com", r.Meta.Host)
+	spectest.DefaultVerifier{}.Equal(t, true, r.Meta.Duration != 0)
 }
 
 func TestApiTestRecorder(t *testing.T) {
@@ -958,9 +956,9 @@ func TestApiTestRecorder(t *testing.T) {
 		End()
 
 	r := reporter.capturedRecorder
-	assert.Equal(t, 6, len(r.Events))
-	assert.Equal(t, messageRequest, r.Events[0])
-	assert.Equal(t, messageResponse, r.Events[1])
+	spectest.DefaultVerifier{}.Equal(t, 6, len(r.Events))
+	spectest.DefaultVerifier{}.Equal(t, messageRequest, r.Events[0])
+	spectest.DefaultVerifier{}.Equal(t, messageResponse, r.Events[1])
 }
 
 func TestApiTestObserve(t *testing.T) {
@@ -973,8 +971,8 @@ func TestApiTestObserve(t *testing.T) {
 	spectest.New("observe test").
 		Observe(func(res *http.Response, req *http.Request, apiTest *spectest.APITest) {
 			observeCalled = true
-			assert.Equal(t, http.StatusOK, res.StatusCode)
-			assert.Equal(t, "/hello", req.URL.Path)
+			spectest.DefaultVerifier{}.Equal(t, http.StatusOK, res.StatusCode)
+			spectest.DefaultVerifier{}.Equal(t, "/hello", req.URL.Path)
 		}).
 		Handler(handler).
 		Get("/hello").
@@ -982,7 +980,7 @@ func TestApiTestObserve(t *testing.T) {
 		Status(http.StatusOK).
 		End()
 
-	assert.Equal(t, true, observeCalled)
+	spectest.DefaultVerifier{}.Equal(t, true, observeCalled)
 }
 
 func TestApiTestObserveDumpsTheHttpRequestAndResponse(t *testing.T) {
@@ -1018,8 +1016,8 @@ func TestApiTestObserveWithReport(t *testing.T) {
 		Report(reporter).
 		Observe(func(res *http.Response, req *http.Request, apiTest *spectest.APITest) {
 			observeCalled = true
-			assert.Equal(t, http.StatusOK, res.StatusCode)
-			assert.Equal(t, "/hello", req.URL.Path)
+			spectest.DefaultVerifier{}.Equal(t, http.StatusOK, res.StatusCode)
+			spectest.DefaultVerifier{}.Equal(t, "/hello", req.URL.Path)
 		}).
 		Handler(handler).
 		Get("/hello").
@@ -1027,7 +1025,7 @@ func TestApiTestObserveWithReport(t *testing.T) {
 		Status(http.StatusOK).
 		End()
 
-	assert.Equal(t, true, observeCalled)
+	spectest.DefaultVerifier{}.Equal(t, true, observeCalled)
 }
 
 func TestApiTestIntercept(t *testing.T) {
@@ -1061,8 +1059,8 @@ func TestApiTestIntercept(t *testing.T) {
 func TestApiTestExposesRequestAndResponse(t *testing.T) {
 	apiTest := spectest.New()
 
-	assert.Equal(t, true, apiTest.Request() != nil)
-	assert.Equal(t, true, apiTest.Response() != nil)
+	spectest.DefaultVerifier{}.Equal(t, true, apiTest.Request() != nil)
+	spectest.DefaultVerifier{}.Equal(t, true, apiTest.Response() != nil)
 }
 
 func TestApiTestRequestContextIsPreserved(t *testing.T) {
@@ -1259,7 +1257,7 @@ func TestApiTestAddsMultipartFormData(t *testing.T) {
 			},
 		} {
 			for _, file := range r.MultipartForm.File[exp.filename] {
-				assert.Equal(t, exp.filename+".json", file.Filename)
+				spectest.DefaultVerifier{}.Equal(t, exp.filename+".json", file.Filename)
 
 				f, err := file.Open()
 				if err != nil {
@@ -1269,7 +1267,7 @@ func TestApiTestAddsMultipartFormData(t *testing.T) {
 				if err != nil {
 					t.Fatal(err)
 				}
-				assert.JSONEq(t, exp.data, string(data))
+				spectest.DefaultVerifier{}.JSONEq(t, exp.data, string(data))
 			}
 		}
 
@@ -1336,7 +1334,7 @@ func TestApiTestErrorIfMockInvocationsDoNotMatchTimes(t *testing.T) {
 
 	verifier := mocks.NewVerifier()
 	verifier.FailFn = func(t spectest.TestingT, failureMessage string, msgAndArgs ...interface{}) bool {
-		assert.Equal(t, "mock was not invoked expected times", failureMessage)
+		spectest.DefaultVerifier{}.Equal(t, "mock was not invoked expected times", failureMessage)
 		return true
 	}
 
@@ -1353,8 +1351,8 @@ func TestApiTestErrorIfMockInvocationsDoNotMatchTimes(t *testing.T) {
 		End()
 
 	unmatchedMocks := res.UnmatchedMocks()
-	assert.Equal(t, true, len(unmatchedMocks) > 0)
-	assert.Equal(t, "http://localhost:8080", unmatchedMocks[0].URL.String())
+	spectest.DefaultVerifier{}.Equal(t, true, len(unmatchedMocks) > 0)
+	spectest.DefaultVerifier{}.Equal(t, "http://localhost:8080", unmatchedMocks[0].URL.String())
 }
 
 func TestApiTestMatchesTimes(t *testing.T) {
@@ -1376,7 +1374,7 @@ func TestApiTestMatchesTimes(t *testing.T) {
 		Status(http.StatusOK).
 		End()
 
-	assert.Equal(t, 0, len(res.UnmatchedMocks()))
+	spectest.DefaultVerifier{}.Equal(t, 0, len(res.UnmatchedMocks()))
 }
 
 type RecorderCaptor struct {
