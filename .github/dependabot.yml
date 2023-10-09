@@ -6,6 +6,85 @@ updates:
       interval: daily
       time: "20:00"
     open-pull-requests-limit: 10
+  - package-ecosystem: gomod
+    directory: "/examples/echo"
+    schedule:
+      interval: daily
+      time: "20:00"
+    open-pull-requests-limit: 10
+  - package-ecosystem: gomod
+    directory: "/examples/fiber"
+    schedule:
+      interval: daily
+      time: "20:00"
+    open-pull-requests-limit: 10
+  - package-ecosystem: gomod
+    directory: "/examples/gin"
+    schedule:
+      interval: daily
+      time: "20:00"
+    open-pull-requests-limit: 10
+  - package-ecosystem: gomod
+    directory: "/examples/ginkgo"
+    schedule:
+      interval: daily
+      time: "20:00"
+    open-pull-requests-limit: 10
+  - package-ecosystem: gomod
+    directory: "/examples/gorilla"
+    schedule:
+      interval: daily
+      time: "20:00"
+    open-pull-requests-limit: 10
+  - package-ecosystem: gomod
+    directory: "/examples/httprouter"
+    schedule:
+      interval: daily
+      time: "20:00"
+    open-pull-requests-limit: 10
+  - package-ecosystem: gomod
+    directory: "/examples/mocks"
+    schedule:
+      interval: daily
+      time: "20:00"
+    open-pull-requests-limit: 10
+  - package-ecosystem: gomod
+    directory: "/examples/plantuml"
+    schedule:
+      interval: daily
+      time: "20:00"
+    open-pull-requests-limit: 10
+  - package-ecosystem: gomod
+    directory: "/examples/sequence-diagrams"
+    schedule:
+      interval: daily
+      time: "20:00"
+    open-pull-requests-limit: 10
+  - package-ecosystem: gomod
+    directory: "/examples/sequence-diagrams-with-mysql-database"
+    schedule:
+      interval: daily
+      time: "20:00"
+    open-pull-requests-limit: 10
+  - package-ecosystem: gomod
+    directory: "/examples/sequence-diagrams-with-postgres-database"
+    schedule:
+      interval: daily
+      time: "20:00"
+    open-pull-requests-limit: 10
+  - package-ecosystem: gomod
+    directory: "/examples/sequence-diagrams-with-sqlite-database"
+    schedule:
+      interval: daily
+      time: "20:00"
+    open-pull-requests-limit: 10
+  - package-ecosystem: gomod
+    directory: "/examples/websockets"
+    schedule:
+      interval: daily
+      time: "20:00"
+    open-pull-requests-limit: 10
+
   # Maintain dependencies for GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
