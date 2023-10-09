@@ -8,11 +8,9 @@
 
 ## What is spectest?
 
-**This project is forked from [steinfletcher/apitest](https://github.com/steinfletcher/apitest)** apitest was functionally complete. However, I wanted more features, so I decided to fork it to actively develop it further. I will mainly enhance document generation and integration with AWS."
+A simple and extensible behavioral testing library. Supports mocking external http calls and renders sequence diagrams on completion. In behavioral tests the internal structure of the app is not known by the tests. Data is input to the system and the outputs are expected to meet certain conditions.
 
-A simple and extensible behavioral testing library. Supports mocking external http calls and renders sequence diagrams on completion.
-
-In behavioral tests the internal structure of the app is not known by the tests. Data is input to the system and the outputs are expected to meet certain conditions.
+**This project is forked from [steinfletcher/apitest](https://github.com/steinfletcher/apitest)** apitest was functionally complete. However, I wanted more features, so I decided to fork it to actively develop it further. I will mainly enhance document generation and integration with AWS. There are no plans for compatibility between apitest and spectest. Therefore, future development will include BREAKING CHANGES. 
 
 ## Supported OS
 - Linux
