@@ -740,7 +740,7 @@ func TestApiTestMatchesResponseHttpCookies(t *testing.T) {
 		End()
 }
 
-func TestApiTestMatchesResponseHttpCookies_OnlySuppliedFields(t *testing.T) {
+func TestApiTestMatchesResponseHttpCookiesOnlySuppliedFields(t *testing.T) {
 	parsedDateTime, err := time.Parse(time.RFC3339, "2019-01-26T23:19:02Z")
 	if err != nil {
 		t.Fatalf("%s", err)
@@ -1108,7 +1108,6 @@ func TestApiTestNoopVerifier(t *testing.T) {
 // validates the token. A cookie jar is used to verify session persistence across multiple spectest instances
 func TestRealNetworking(t *testing.T) {
 	srv := &http.Server{Addr: "localhost:9876"}
-	finish := make(chan struct{})
 	tokenValue := "ABCDEF"
 	http.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
 		http.SetCookie(w, &http.Cookie{Name: "Token", Value: tokenValue})
@@ -1136,7 +1135,9 @@ func TestRealNetworking(t *testing.T) {
 			panic(err)
 		}
 	}()
+	time.Sleep(time.Millisecond * 100) // TODO: find a better way to wait for the server to start
 
+	finish := make(chan struct{})
 	go func() {
 		defer func() {
 			if r := recover(); r != nil {

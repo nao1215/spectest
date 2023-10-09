@@ -8,12 +8,10 @@ import (
 	htmlTemplate "html/template"
 	"io"
 	"net/http"
-	"net/http/httputil"
 	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
-	"time"
 )
 
 type (
@@ -25,12 +23,6 @@ type (
 		LogEntries     []LogEntry
 		WebSequenceDSL string
 		MetaJSON       htmlTemplate.JS
-	}
-
-	LogEntry struct {
-		Header    string
-		Body      string
-		Timestamp time.Time
 	}
 
 	// SequenceDiagramFormatter implementation of a ReportFormatter
@@ -227,34 +219,6 @@ func newHTMLTemplateModel(r *Recorder) (htmlTemplateModel, error) {
 		BadgeClass:     badgeCSSClass(status),
 		MetaJSON:       htmlTemplate.JS(jsonMeta),
 	}, nil
-}
-
-func NewHTTPRequestLogEntry(req *http.Request) (LogEntry, error) {
-	reqHeader, err := httputil.DumpRequest(req, false)
-	if err != nil {
-		return LogEntry{}, err
-	}
-	body, err := formatBodyContent(req.Body, func(replacementBody io.ReadCloser) {
-		req.Body = replacementBody
-	})
-	if err != nil {
-		return LogEntry{}, err
-	}
-	return LogEntry{Header: string(reqHeader), Body: body}, err
-}
-
-func NewHTTPResponseLogEntry(res *http.Response) (LogEntry, error) {
-	resDump, err := httputil.DumpResponse(res, false)
-	if err != nil {
-		return LogEntry{}, err
-	}
-	body, err := formatBodyContent(res.Body, func(replacementBody io.ReadCloser) {
-		res.Body = replacementBody
-	})
-	if err != nil {
-		return LogEntry{}, err
-	}
-	return LogEntry{Header: string(resDump), Body: body}, err
 }
 
 func formatBodyContent(bodyReadCloser io.ReadCloser, replaceBody func(replacementBody io.ReadCloser)) (string, error) {

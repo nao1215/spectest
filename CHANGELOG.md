@@ -3,6 +3,12 @@
 ## [0.0.3, Unreleased] - 2023-XX-XX
 ### Fixed
 - Broken example codes. However, some examples are still broken (iris, qraphql).
+- Broken unit test; `TestRealNetworking()` had a case where API calls could be made before the server was started.
+
+### Changed
+- Refactoring
+  - The processing was heavily written in one file, so I split the file into multiple parts.
+
 
 ## [0.0.2] - 2023-10-08
 

@@ -3,18 +3,13 @@ package spectest
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"fmt"
 	"io"
-	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
 	"net/http/httputil"
-	"net/textproto"
 	"net/url"
-	"os"
-	"path/filepath"
 	"runtime/debug"
 	"sort"
 	"strings"
@@ -23,28 +18,35 @@ import (
 
 // APITest is the top level struct holding the test spec
 type APITest struct {
-	debugEnabled             bool
+	// debugEnabled will log the http wire representation of all http interactions
+	debugEnabled bool
+	// mockResponseDelayEnabled will turn on mock response delays (defaults to OFF)
 	mockResponseDelayEnabled bool
-	networkingEnabled        bool
-	networkingHTTPClient     *http.Client
-	reporter                 ReportFormatter
-	verifier                 Verifier
-	recorder                 *Recorder
-	handler                  http.Handler
-	name                     string
-	request                  *Request
-	response                 *Response
-	observers                []Observe
-	mocksObservers           []Observe
-	recorderHook             RecorderHook
-	mocks                    []*Mock
-	t                        TestingT
-	httpClient               *http.Client
-	httpRequest              *http.Request
-	transport                *Transport
-	meta                     *Meta
-	started                  time.Time
-	finished                 time.Time
+	// networkingEnabled will enable networking for provided clients
+	networkingEnabled bool
+	// networkingHTTPClient is the http client used when networking is enabled
+	networkingHTTPClient *http.Client
+	// reporter is the report formatter.
+	reporter ReportFormatter
+	// verifier is the assertion implementation
+	verifier       Verifier
+	recorder       *Recorder
+	handler        http.Handler
+	name           string
+	request        *Request
+	response       *Response
+	observers      []Observe
+	mocksObservers []Observe
+	recorderHook   RecorderHook
+	mocks          []*Mock
+	t              TestingT
+	httpClient     *http.Client
+	httpRequest    *http.Request
+	transport      *Transport
+	// meta is the meta data for the test report.
+	meta     *Meta
+	started  time.Time
+	finished time.Time
 }
 
 // Observe will be called by with the request and response on completion
@@ -202,24 +204,6 @@ func (a *APITest) Response() *Response {
 	return a.response
 }
 
-// Request is the user defined request that will be invoked on the handler under test
-type Request struct {
-	interceptor     Intercept
-	method          string
-	url             string
-	body            string
-	query           map[string][]string
-	queryCollection map[string][]string
-	headers         map[string][]string
-	formData        map[string][]string
-	multipartBody   *bytes.Buffer
-	multipart       *multipart.Writer
-	cookies         []*Cookie
-	basicAuth       string
-	context         context.Context
-	apiTest         *APITest
-}
-
 // Intercept will be called before the request is made.
 // Updates to the request will be reflected in the test
 type Intercept func(*http.Request)
@@ -313,408 +297,6 @@ func (a *APITest) Patch(url string) *Request {
 // Patchf is a convenience method that adds formatting support to Patch
 func (a *APITest) Patchf(format string, args ...interface{}) *Request {
 	return a.Patch(fmt.Sprintf(format, args...))
-}
-
-// URL is a builder method for setting the url of the request
-func (r *Request) URL(url string) *Request {
-	r.url = url
-	return r
-}
-
-// URLf is a builder method for setting the url of the request and supports a formatter
-func (r *Request) URLf(format string, args ...interface{}) *Request {
-	r.url = fmt.Sprintf(format, args...)
-	return r
-}
-
-// Body is a builder method to set the request body
-func (r *Request) Body(b string) *Request {
-	r.body = b
-	return r
-}
-
-// Bodyf sets the request body and supports a formatter
-func (r *Request) Bodyf(format string, args ...interface{}) *Request {
-	r.body = fmt.Sprintf(format, args...)
-	return r
-}
-
-// BodyFromFile is a builder method to set the request body
-func (r *Request) BodyFromFile(f string) *Request {
-	b, err := os.ReadFile(f)
-	if err != nil {
-		r.apiTest.t.Fatal(err)
-	}
-	r.body = string(b)
-	return r
-}
-
-// JSON is a convenience method for setting the request body and content type header as "application/json".
-// If v is not a string or []byte it will marshall the provided variable as json
-func (r *Request) JSON(v interface{}) *Request {
-	switch x := v.(type) {
-	case string:
-		r.body = x
-	case []byte:
-		r.body = string(x)
-	default:
-		asJSON, err := json.Marshal(x)
-		if err != nil {
-			r.apiTest.t.Fatal(err)
-			return nil
-		}
-		r.body = string(asJSON)
-	}
-	r.ContentType("application/json")
-	return r
-}
-
-// JSONFromFile is a convenience method for setting the request body and content type header as "application/json"
-func (r *Request) JSONFromFile(f string) *Request {
-	r.BodyFromFile(f)
-	r.ContentType("application/json")
-	return r
-}
-
-// GraphQLQuery is a convenience method for building a graphql POST request
-func (r *Request) GraphQLQuery(query string, variables ...map[string]interface{}) *Request {
-	q := GraphQLRequestBody{
-		Query: query,
-	}
-
-	if len(variables) > 0 {
-		q.Variables = variables[0]
-	}
-
-	return r.GraphQLRequest(q)
-}
-
-// GraphQLRequest builds a graphql POST request
-func (r *Request) GraphQLRequest(body GraphQLRequestBody) *Request {
-	r.ContentType("application/json")
-
-	data, err := json.Marshal(body)
-	if err != nil {
-		r.apiTest.t.Fatal(err)
-	}
-	r.body = string(data)
-	return r
-}
-
-// GraphQLRequestBody represents the POST request body as per the GraphQL spec
-type GraphQLRequestBody struct {
-	Query         string                 `json:"query"`
-	Variables     map[string]interface{} `json:"variables,omitempty"`
-	OperationName string                 `json:"operationName,omitempty"`
-}
-
-// Query is a convenience method to add a query parameter to the request.
-func (r *Request) Query(key, value string) *Request {
-	r.query[key] = append(r.query[key], value)
-	return r
-}
-
-// QueryParams is a builder method to set the request query parameters.
-// This can be used in combination with request.QueryCollection
-func (r *Request) QueryParams(params map[string]string) *Request {
-	for k, v := range params {
-		r.query[k] = append(r.query[k], v)
-	}
-	return r
-}
-
-// QueryCollection is a builder method to set the request query parameters
-// This can be used in combination with request.Query
-func (r *Request) QueryCollection(q map[string][]string) *Request {
-	r.queryCollection = q
-	return r
-}
-
-// Header is a builder method to set the request headers
-func (r *Request) Header(key, value string) *Request {
-	normalizedKey := textproto.CanonicalMIMEHeaderKey(key)
-	r.headers[normalizedKey] = append(r.headers[normalizedKey], value)
-	return r
-}
-
-// Headers is a builder method to set the request headers
-func (r *Request) Headers(headers map[string]string) *Request {
-	for k, v := range headers {
-		normalizedKey := textproto.CanonicalMIMEHeaderKey(k)
-		r.headers[normalizedKey] = append(r.headers[normalizedKey], v)
-	}
-	return r
-}
-
-// ContentType is a builder method to set the Content-Type header of the request
-func (r *Request) ContentType(contentType string) *Request {
-	normalizedKey := textproto.CanonicalMIMEHeaderKey("Content-Type")
-	r.headers[normalizedKey] = []string{contentType}
-	return r
-}
-
-// Cookie is a convenience method for setting a single request cookies by name and value
-func (r *Request) Cookie(name, value string) *Request {
-	r.cookies = append(r.cookies, &Cookie{name: &name, value: &value})
-	return r
-}
-
-// Cookies is a builder method to set the request cookies
-func (r *Request) Cookies(c ...*Cookie) *Request {
-	r.cookies = append(r.cookies, c...)
-	return r
-}
-
-// BasicAuth is a builder method to sets basic auth on the request.
-func (r *Request) BasicAuth(username, password string) *Request {
-	r.basicAuth = fmt.Sprintf("%s:%s", username, password)
-	return r
-}
-
-// WithContext is a builder method to set a context on the request
-func (r *Request) WithContext(ctx context.Context) *Request {
-	r.context = ctx
-	return r
-}
-
-// FormData is a builder method to set the body form data
-// Also sets the content type of the request to application/x-www-form-urlencoded
-func (r *Request) FormData(name string, values ...string) *Request {
-	defer r.checkCombineFormDataWithMultipart()
-
-	r.ContentType("application/x-www-form-urlencoded")
-	r.formData[name] = append(r.formData[name], values...)
-	return r
-}
-
-// MultipartFormData is a builder method to set the field in multipart form data
-// Also sets the content type of the request to multipart/form-data
-func (r *Request) MultipartFormData(name string, values ...string) *Request {
-	defer r.checkCombineFormDataWithMultipart()
-	r.setMultipartWriter()
-
-	for _, value := range values {
-		if err := r.multipart.WriteField(name, value); err != nil {
-			r.apiTest.t.Fatal(err)
-		}
-	}
-	return r
-}
-
-// MultipartFile is a builder method to set the file in multipart form data
-// Also sets the content type of the request to multipart/form-data
-func (r *Request) MultipartFile(name string, ff ...string) *Request {
-	defer r.checkCombineFormDataWithMultipart()
-
-	r.setMultipartWriter()
-
-	for _, f := range ff {
-		func() {
-			file, err := os.Open(f)
-			if err != nil {
-				r.apiTest.t.Fatal(err)
-			}
-			defer file.Close()
-
-			part, err := r.multipart.CreateFormFile(name, filepath.Base(file.Name()))
-			if err != nil {
-				r.apiTest.t.Fatal(err)
-			}
-
-			if _, err = io.Copy(part, file); err != nil {
-				r.apiTest.t.Fatal(err)
-			}
-		}()
-	}
-
-	return r
-}
-
-func (r *Request) setMultipartWriter() {
-	if r.multipart == nil {
-		r.multipartBody = &bytes.Buffer{}
-		r.multipart = multipart.NewWriter(r.multipartBody)
-	}
-}
-
-func (r *Request) checkCombineFormDataWithMultipart() {
-	if r.multipart != nil && len(r.formData) > 0 {
-		r.apiTest.t.Fatal("FormData (application/x-www-form-urlencoded) and MultiPartFormData(multipart/form-data) cannot be combined")
-	}
-}
-
-// Expect marks the request spec as complete and following code will define the expected response
-func (r *Request) Expect(t TestingT) *Response {
-	r.apiTest.t = t
-	return r.apiTest.response
-}
-
-// Response is the user defined expected response from the application under test
-type Response struct {
-	status            int
-	body              string
-	headers           map[string][]string
-	headersPresent    []string
-	headersNotPresent []string
-	cookies           []*Cookie
-	cookiesPresent    []string
-	cookiesNotPresent []string
-	apiTest           *APITest
-	assert            []Assert
-}
-
-// Assert is a user defined custom assertion function
-type Assert func(*http.Response, *http.Request) error
-
-// Body is the expected response body
-func (r *Response) Body(b string) *Response {
-	r.body = b
-	return r
-}
-
-// Bodyf is the expected response body that supports a formatter
-func (r *Response) Bodyf(format string, args ...interface{}) *Response {
-	r.body = fmt.Sprintf(format, args...)
-	return r
-}
-
-// BodyFromFile reads the given file and uses the content as the expected response body
-func (r *Response) BodyFromFile(f string) *Response {
-	b, err := os.ReadFile(f)
-	if err != nil {
-		r.apiTest.t.Fatal(err)
-	}
-	r.body = string(b)
-	return r
-}
-
-// Cookies is the expected response cookies
-func (r *Response) Cookies(cookies ...*Cookie) *Response {
-	r.cookies = append(r.cookies, cookies...)
-	return r
-}
-
-// Cookie is used to match on an individual cookie name/value pair in the expected response cookies
-func (r *Response) Cookie(name, value string) *Response {
-	r.cookies = append(r.cookies, NewCookie(name).Value(value))
-	return r
-}
-
-// CookiePresent is used to assert that a cookie is present in the response,
-// regardless of its value
-func (r *Response) CookiePresent(cookieName string) *Response {
-	r.cookiesPresent = append(r.cookiesPresent, cookieName)
-	return r
-}
-
-// CookieNotPresent is used to assert that a cookie is not present in the response
-func (r *Response) CookieNotPresent(cookieName string) *Response {
-	r.cookiesNotPresent = append(r.cookiesNotPresent, cookieName)
-	return r
-}
-
-// Header is a builder method to set the request headers
-func (r *Response) Header(key, value string) *Response {
-	normalizedName := textproto.CanonicalMIMEHeaderKey(key)
-	r.headers[normalizedName] = append(r.headers[normalizedName], value)
-	return r
-}
-
-// HeaderPresent is a builder method to set the request headers that should be present in the response
-func (r *Response) HeaderPresent(name string) *Response {
-	normalizedName := textproto.CanonicalMIMEHeaderKey(name)
-	r.headersPresent = append(r.headersPresent, normalizedName)
-	return r
-}
-
-// HeaderNotPresent is a builder method to set the request headers that should not be present in the response
-func (r *Response) HeaderNotPresent(name string) *Response {
-	normalizedName := textproto.CanonicalMIMEHeaderKey(name)
-	r.headersNotPresent = append(r.headersNotPresent, normalizedName)
-	return r
-}
-
-// Headers is a builder method to set the request headers
-func (r *Response) Headers(headers map[string]string) *Response {
-	for name, value := range headers {
-		normalizedName := textproto.CanonicalMIMEHeaderKey(name)
-		r.headers[normalizedName] = append(r.headers[textproto.CanonicalMIMEHeaderKey(normalizedName)], value)
-	}
-	return r
-}
-
-// Status is the expected response http status code
-func (r *Response) Status(s int) *Response {
-	r.status = s
-	return r
-}
-
-// Assert allows the consumer to provide a user defined function containing their own
-// custom assertions
-func (r *Response) Assert(fn func(*http.Response, *http.Request) error) *Response {
-	r.assert = append(r.assert, fn)
-	return r.apiTest.response
-}
-
-// End runs the test returning the result to the caller
-func (r *Response) End() Result {
-	apiTest := r.apiTest
-	defer func() {
-		if apiTest.debugEnabled {
-			apiTest.finished = time.Now()
-			fmt.Printf("Duration: %s\n", apiTest.finished.Sub(apiTest.started))
-		}
-	}()
-
-	if apiTest.handler == nil && !apiTest.networkingEnabled {
-		apiTest.t.Fatal("either define a http.Handler or enable networking")
-	}
-
-	apiTest.started = time.Now()
-	var res *http.Response
-	if apiTest.reporter != nil {
-		res = apiTest.report()
-	} else {
-		res = r.runTest()
-	}
-
-	var unmatchedMocks []UnmatchedMock
-	for _, m := range r.apiTest.mocks {
-		if !m.isUsed {
-			unmatchedMocks = append(unmatchedMocks, UnmatchedMock{
-				URL: *m.request.url,
-			})
-			break
-		}
-	}
-
-	return Result{
-		Response:       res,
-		unmatchedMocks: unmatchedMocks,
-	}
-}
-
-// Result provides the final result
-type Result struct {
-	Response       *http.Response
-	unmatchedMocks []UnmatchedMock
-}
-
-// UnmatchedMocks returns any mocks that were not used, e.g. there was not a matching http Request for the mock
-func (r Result) UnmatchedMocks() []UnmatchedMock {
-	return r.unmatchedMocks
-}
-
-// JSON unmarshal the result response body to a valid struct
-func (r Result) JSON(t interface{}) {
-	data, err := io.ReadAll(r.Response.Body)
-	if err != nil {
-		panic(err)
-	}
-	err = json.Unmarshal(data, t)
-	if err != nil {
-		panic(err)
-	}
 }
 
 type mockInteraction struct {
@@ -820,43 +402,6 @@ func (a *APITest) report() *http.Response {
 	return res
 }
 
-func (r *Response) runTest() *http.Response {
-	a := r.apiTest
-	if len(a.mocks) > 0 {
-		a.transport = newTransport(
-			a.mocks,
-			a.httpClient,
-			a.debugEnabled,
-			a.mockResponseDelayEnabled,
-			a.mocksObservers,
-			r.apiTest,
-		)
-		defer a.transport.Reset()
-		a.transport.Hijack()
-	}
-	res, req := a.doRequest()
-
-	defer func() {
-		if len(a.observers) > 0 {
-			for _, observe := range a.observers {
-				observe(res, req, a)
-			}
-		}
-	}()
-
-	if a.verifier == nil {
-		a.verifier = DefaultVerifier{}
-	}
-
-	a.assertMocks()
-	a.assertResponse(res)
-	a.assertHeaders(res)
-	a.assertCookies(res)
-	a.assertFunc(res, req)
-
-	return copyHTTPResponse(res)
-}
-
 func (a *APITest) assertMocks() {
 	for _, mock := range a.mocks {
 		if !mock.isUsed && mock.timesSet {
@@ -920,98 +465,6 @@ func (a *APITest) serveHTTP(res *httptest.ResponseRecorder, req *http.Request) {
 	}()
 
 	a.handler.ServeHTTP(res, req)
-}
-
-func (a *APITest) buildRequest() *http.Request {
-	if a.httpRequest != nil {
-		return a.httpRequest
-	}
-
-	if len(a.request.formData) > 0 {
-		form := url.Values{}
-		for k := range a.request.formData {
-			for _, value := range a.request.formData[k] {
-				form.Add(k, value)
-			}
-		}
-		a.request.Body(form.Encode())
-	}
-
-	if a.request.multipart != nil {
-		err := a.request.multipart.Close()
-		if err != nil {
-			a.request.apiTest.t.Fatal(err)
-		}
-
-		a.request.Header("Content-Type", a.request.multipart.FormDataContentType())
-		a.request.Body(a.request.multipartBody.String())
-	}
-
-	req, _ := http.NewRequest(a.request.method, a.request.url, bytes.NewBufferString(a.request.body))
-	if a.request.context != nil {
-		req = req.WithContext(a.request.context)
-	}
-
-	req.URL.RawQuery = formatQuery(a.request)
-	req.Host = SystemUnderTestDefaultName
-	if a.networkingEnabled {
-		req.Host = req.URL.Host
-	}
-
-	for k, v := range a.request.headers {
-		for _, headerValue := range v {
-			req.Header.Add(k, headerValue)
-		}
-	}
-
-	for _, cookie := range a.request.cookies {
-		req.AddCookie(cookie.ToHTTPCookie())
-	}
-
-	if a.request.basicAuth != "" {
-		parts := strings.Split(a.request.basicAuth, ":")
-		req.SetBasicAuth(parts[0], parts[1])
-	}
-
-	return req
-}
-
-func formatQuery(request *Request) string {
-	var out url.Values = map[string][]string{}
-
-	if request.queryCollection != nil {
-		for _, param := range buildQueryCollection(request.queryCollection) {
-			out.Add(param.l, param.r)
-		}
-	}
-
-	if request.query != nil {
-		for k, v := range request.query {
-			for _, p := range v {
-				out.Add(k, p)
-			}
-		}
-	}
-
-	if len(out) > 0 {
-		return out.Encode()
-	}
-
-	return ""
-}
-
-func buildQueryCollection(params map[string][]string) []pair {
-	if len(params) == 0 {
-		return []pair{}
-	}
-
-	var pairs []pair
-	for k, v := range params {
-		for _, paramValue := range v {
-			pairs = append(pairs, pair{l: k, r: paramValue})
-		}
-	}
-	return pairs
 }
 
 func (a *APITest) assertResponse(res *http.Response) {
@@ -1111,37 +564,95 @@ func (a *APITest) assertHeaders(res *http.Response) {
 	}
 }
 
-func debugLog(prefix, header, msg string) {
-	fmt.Printf("\n%s %s\n%s\n", prefix, header, msg)
+func (a *APITest) buildRequest() *http.Request {
+	if a.httpRequest != nil {
+		return a.httpRequest
+	}
+
+	if len(a.request.formData) > 0 {
+		form := url.Values{}
+		for k := range a.request.formData {
+			for _, value := range a.request.formData[k] {
+				form.Add(k, value)
+			}
+		}
+		a.request.Body(form.Encode())
+	}
+
+	if a.request.multipart != nil {
+		err := a.request.multipart.Close()
+		if err != nil {
+			a.request.apiTest.t.Fatal(err)
+		}
+
+		a.request.Header("Content-Type", a.request.multipart.FormDataContentType())
+		a.request.Body(a.request.multipartBody.String())
+	}
+
+	req, _ := http.NewRequest(a.request.method, a.request.url, bytes.NewBufferString(a.request.body))
+	if a.request.context != nil {
+		req = req.WithContext(a.request.context)
+	}
+
+	req.URL.RawQuery = formatQuery(a.request)
+	req.Host = SystemUnderTestDefaultName
+	if a.networkingEnabled {
+		req.Host = req.URL.Host
+	}
+
+	for k, v := range a.request.headers {
+		for _, headerValue := range v {
+			req.Header.Add(k, headerValue)
+		}
+	}
+
+	for _, cookie := range a.request.cookies {
+		req.AddCookie(cookie.ToHTTPCookie())
+	}
+
+	if a.request.basicAuth != "" {
+		parts := strings.Split(a.request.basicAuth, ":")
+		req.SetBasicAuth(parts[0], parts[1])
+	}
+
+	return req
 }
 
-func copyHTTPResponse(response *http.Response) *http.Response {
-	if response == nil {
-		return nil
+func formatQuery(request *Request) string {
+	var out url.Values = map[string][]string{}
+
+	if request.queryCollection != nil {
+		for _, param := range buildQueryCollection(request.queryCollection) {
+			out.Add(param.l, param.r)
+		}
 	}
 
-	var resBodyBytes []byte
-	if response.Body != nil {
-		resBodyBytes, _ = io.ReadAll(response.Body)
-		response.Body = io.NopCloser(bytes.NewBuffer(resBodyBytes))
+	if request.query != nil {
+		for k, v := range request.query {
+			for _, p := range v {
+				out.Add(k, p)
+			}
+		}
 	}
 
-	resCopy := &http.Response{
-		Header:        map[string][]string{},
-		StatusCode:    response.StatusCode,
-		Status:        response.Status,
-		Body:          io.NopCloser(bytes.NewBuffer(resBodyBytes)),
-		Proto:         response.Proto,
-		ProtoMinor:    response.ProtoMinor,
-		ProtoMajor:    response.ProtoMajor,
-		ContentLength: response.ContentLength,
+	if len(out) > 0 {
+		return out.Encode()
+	}
+	return ""
+}
+
+func buildQueryCollection(params map[string][]string) []pair {
+	if len(params) == 0 {
+		return []pair{}
 	}
 
-	for name, values := range response.Header {
-		resCopy.Header[name] = values
+	var pairs []pair
+	for k, v := range params {
+		for _, paramValue := range v {
+			pairs = append(pairs, pair{l: k, r: paramValue})
+		}
 	}
-
-	return resCopy
+	return pairs
 }
 
 func copyHTTPRequest(request *http.Request) *http.Request {
@@ -1177,12 +688,4 @@ func copyHTTPRequest(request *http.Request) *http.Request {
 	resCopy.Header = headers
 
 	return resCopy
-}
-
-func requestDebugPrefix() string {
-	return fmt.Sprintf("%s>", strings.Repeat("-", 10))
-}
-
-func responseDebugPrefix() string {
-	return fmt.Sprintf("<%s", strings.Repeat("-", 10))
 }
