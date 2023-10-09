@@ -251,10 +251,9 @@ func (a *APITest) Getf(format string, args ...interface{}) *Request {
 
 // Post is a convenience method for setting the request as http.MethodPost
 func (a *APITest) Post(url string) *Request {
-	r := a.request
-	r.method = http.MethodPost
-	r.url = url
-	return r
+	a.request.method = http.MethodPost
+	a.request.url = url
+	return a.request
 }
 
 // Postf is a convenience method that adds formatting support to Post
@@ -264,10 +263,9 @@ func (a *APITest) Postf(format string, args ...interface{}) *Request {
 
 // Put is a convenience method for setting the request as http.MethodPut
 func (a *APITest) Put(url string) *Request {
-	r := a.request
-	r.method = http.MethodPut
-	r.url = url
-	return r
+	a.request.method = http.MethodPut
+	a.request.url = url
+	return a.request
 }
 
 // Putf is a convenience method that adds formatting support to Put
@@ -297,6 +295,54 @@ func (a *APITest) Patch(url string) *Request {
 // Patchf is a convenience method that adds formatting support to Patch
 func (a *APITest) Patchf(format string, args ...interface{}) *Request {
 	return a.Patch(fmt.Sprintf(format, args...))
+}
+
+// Head is a convenience method for setting the request as http.MethodHead
+func (a *APITest) Head(url string) *Request {
+	a.request.method = http.MethodHead
+	a.request.url = url
+	return a.request
+}
+
+// Headf is a convenience method that adds formatting support to Head
+func (a *APITest) Headf(format string, args ...interface{}) *Request {
+	return a.Head(fmt.Sprintf(format, args...))
+}
+
+// Options is a convenience method for setting the request as http.MethodOptions
+func (a *APITest) Options(url string) *Request {
+	a.request.method = http.MethodOptions
+	a.request.url = url
+	return a.request
+}
+
+// Optionsf is a convenience method that adds formatting support to Options
+func (a *APITest) Optionsf(format string, args ...interface{}) *Request {
+	return a.Options(fmt.Sprintf(format, args...))
+}
+
+// Connect is a convenience method for setting the request as http.MethodConnect
+func (a *APITest) Connect(url string) *Request {
+	a.request.method = http.MethodConnect
+	a.request.url = url
+	return a.request
+}
+
+// Connectf is a convenience method that adds formatting support to Connect
+func (a *APITest) Connectf(format string, args ...interface{}) *Request {
+	return a.Connect(fmt.Sprintf(format, args...))
+}
+
+// Trace is a convenience method for setting the request as http.MethodTrace
+func (a *APITest) Trace(url string) *Request {
+	a.request.method = http.MethodTrace
+	a.request.url = url
+	return a.request
+}
+
+// Tracef is a convenience method that adds formatting support to Trace
+func (a *APITest) Tracef(format string, args ...interface{}) *Request {
+	return a.Trace(fmt.Sprintf(format, args...))
 }
 
 type mockInteraction struct {
