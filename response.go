@@ -96,6 +96,8 @@ func (r *Response) HeaderNotPresent(name string) *Response {
 func (r *Response) Headers(headers map[string]string) *Response {
 	for name, value := range headers {
 		normalizedName := textproto.CanonicalMIMEHeaderKey(name)
+		// TODO: BUG ?
+		// appendAssign: append result not assigned to the same slice (gocritic)
 		r.headers[normalizedName] = append(r.headers[textproto.CanonicalMIMEHeaderKey(normalizedName)], value)
 	}
 	return r

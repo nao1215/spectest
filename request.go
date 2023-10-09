@@ -34,7 +34,7 @@ type Request struct {
 type GraphQLRequestBody struct {
 	Query         string                 `json:"query"`
 	Variables     map[string]interface{} `json:"variables,omitempty"`
-	OperationName string                 `json:"operationName,omitempty"`
+	OperationName string                 `json:"operation_name,omitempty"`
 }
 
 // URL is a builder method for setting the url of the request
@@ -229,7 +229,7 @@ func (r *Request) MultipartFile(name string, ff ...string) *Request {
 			if err != nil {
 				r.apiTest.t.Fatal(err)
 			}
-			defer file.Close()
+			defer file.Close() //nolint
 
 			part, err := r.multipart.CreateFormFile(name, filepath.Base(file.Name()))
 			if err != nil {
