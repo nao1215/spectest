@@ -40,7 +40,6 @@ func newTransport(
 	mockResponseDelayEnabled bool,
 	observers []Observe,
 	apiTest *SpecTest) *Transport {
-
 	t := &Transport{
 		mocks:                    mocks,
 		httpClient:               httpClient,
