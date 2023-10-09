@@ -9,8 +9,8 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/go-spectest/diff v0.0.0-20231006143314-ce490574d4a9 h1:I05FIUaZLNe9Jo6ZCvODDGBqHMk3TYd7V/wV9dZhwXk=
 github.com/go-spectest/diff v0.0.0-20231006143314-ce490574d4a9/go.mod h1:wWRXl4ClWLDIPkL/lS8SSxojHRg1cGngvPcya/mYhf0=
-github.com/go-spectest/spectest v0.0.2 h1:R8NaGr1gbt++M2wW3Rn3v1i1OaSLoXsOc6zvODU6Fhc=
-github.com/go-spectest/spectest v0.0.2/go.mod h1:wo+cAOMIWZXTQvvfVXgvnn+WhB3U0WVhlYwhX/ZarD8=
+github.com/go-spectest/spectest v0.0.3 h1:XbzxsdLTzmYPiIy/xWmTSuYb1UzbtlT+/2QFbrlgdLM=
+github.com/go-spectest/spectest v0.0.3/go.mod h1:3/pUHRcBF5QWBP3KOpvpoEw4QzYXV14d7/VhMIXfwSo=
 github.com/gofiber/fiber/v2 v2.49.2 h1:ONEN3/Vc+dUCxxDgZZwpqvhISgHqb+bu+isBiEyKEQs=
 github.com/gofiber/fiber/v2 v2.49.2/go.mod h1:gNsKnyrmfEWFpJxQAV0qvW6l70K1dZGno12oLtukcts=
 github.com/google/go-cmp v0.5.9 h1:O2Tfq5qg4qc4AmwVlvv0oLiVAGB7enBSJ2x2DqQFi38=
