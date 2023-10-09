@@ -50,7 +50,7 @@ func (p *fileWriter) Write(data []byte) (int, error) {
 	return -1, nil
 }
 
-func apiTest(name string) *spectest.APITest {
+func apiTest(name string) *spectest.SpecTest {
 	return spectest.New(name).
 		Report(plantuml.NewFormatter(&fileWriter{})).
 		Handler(newApp().Router)

@@ -11,7 +11,7 @@
 ### Changed
 - Refactoring
   - The processing was heavily written in one file, so I split the file into multiple parts.
-
+  - Rename public struct name; APITest to SpecTest
 
 ## [0.0.2] - 2023-10-08
 

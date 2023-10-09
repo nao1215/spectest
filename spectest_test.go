@@ -969,7 +969,7 @@ func TestApiTestObserve(t *testing.T) {
 	observeCalled := false
 
 	spectest.New("observe test").
-		Observe(func(res *http.Response, req *http.Request, apiTest *spectest.APITest) {
+		Observe(func(res *http.Response, req *http.Request, apiTest *spectest.SpecTest) {
 			observeCalled = true
 			spectest.DefaultVerifier{}.Equal(t, http.StatusOK, res.StatusCode)
 			spectest.DefaultVerifier{}.Equal(t, "/hello", req.URL.Path)
@@ -1014,7 +1014,7 @@ func TestApiTestObserveWithReport(t *testing.T) {
 
 	spectest.New("observe test").
 		Report(reporter).
-		Observe(func(res *http.Response, req *http.Request, apiTest *spectest.APITest) {
+		Observe(func(res *http.Response, req *http.Request, apiTest *spectest.SpecTest) {
 			observeCalled = true
 			spectest.DefaultVerifier{}.Equal(t, http.StatusOK, res.StatusCode)
 			spectest.DefaultVerifier{}.Equal(t, "/hello", req.URL.Path)

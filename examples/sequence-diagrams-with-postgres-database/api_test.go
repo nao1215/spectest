@@ -73,7 +73,7 @@ func postUserMock(username string) *spectest.Mock {
 		End()
 }
 
-func apiTest(name string) *spectest.APITest {
+func apiTest(name string) *spectest.SpecTest {
 	app := newApp(test.DBConnect())
 	return spectest.New(name).
 		Recorder(test.Recorder).
