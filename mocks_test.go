@@ -1196,7 +1196,7 @@ func TestMocksApiTestSupportsObservingMocks(t *testing.T) {
 		End()
 
 	New().
-		ObserveMocks(func(res *http.Response, req *http.Request, a *APITest) {
+		ObserveMocks(func(res *http.Response, req *http.Request, a *SpecTest) {
 			if res == nil || req == nil || a == nil {
 				t.Fatal("expected request and response to be defined")
 			}
@@ -1250,7 +1250,7 @@ func TestMocksApiTestSupportsObservingMocksWithReport(t *testing.T) {
 	New().
 		Report(reporter).
 		EnableMockResponseDelay().
-		ObserveMocks(func(res *http.Response, req *http.Request, a *APITest) {
+		ObserveMocks(func(res *http.Response, req *http.Request, a *SpecTest) {
 			observeMocksCalled = true
 			if res == nil || req == nil || a == nil {
 				t.Fatal("expected request and response to be defined")

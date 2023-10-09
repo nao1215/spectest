@@ -27,7 +27,7 @@ type Request struct {
 	cookies         []*Cookie
 	basicAuth       string
 	context         context.Context
-	apiTest         *APITest
+	apiTest         *SpecTest
 }
 
 // GraphQLRequestBody represents the POST request body as per the GraphQL spec

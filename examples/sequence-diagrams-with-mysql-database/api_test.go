@@ -96,7 +96,7 @@ func postUserMock(username string) *spectest.Mock {
 		End()
 }
 
-func apiTest(name string) *spectest.APITest {
+func apiTest(name string) *spectest.SpecTest {
 	dsn := os.Getenv("MYSQL_DSN")
 
 	// Connect using the previously registered driver

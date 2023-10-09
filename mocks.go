@@ -30,7 +30,7 @@ type Transport struct {
 	nativeTransport          http.RoundTripper
 	httpClient               *http.Client
 	observers                []Observe
-	apiTest                  *APITest
+	apiTest                  *SpecTest
 }
 
 func newTransport(
@@ -39,7 +39,7 @@ func newTransport(
 	debugEnabled bool,
 	mockResponseDelayEnabled bool,
 	observers []Observe,
-	apiTest *APITest) *Transport {
+	apiTest *SpecTest) *Transport {
 
 	t := &Transport{
 		mocks:                    mocks,
@@ -352,7 +352,7 @@ func NewMock() *Mock {
 }
 
 // Debug is used to set debug mode for mocks in standalone mode.
-// This is overridden by the debug setting in the `APITest` struct
+// This is overridden by the debug setting in the `SpecTest` struct
 func (m *Mock) Debug() *Mock {
 	m.debugStandalone = true
 	return m
@@ -701,7 +701,7 @@ func (r *MockResponse) Status(statusCode int) *MockResponse {
 }
 
 // FixedDelay will return the response after the given number of milliseconds.
-// APITest::EnableMockResponseDelay must be set for this to take effect.
+// SpecTest::EnableMockResponseDelay must be set for this to take effect.
 // If Timeout is set this has no effect.
 func (r *MockResponse) FixedDelay(delay int64) *MockResponse {
 	r.fixedDelayMillis = delay
@@ -1186,4 +1186,18 @@ func typeAndKind(v interface{}) (reflect.Type, reflect.Kind) {
 		k = t.Kind()
 	}
 	return t, k
+}
+
+type mockInteraction struct {
+	request   *http.Request
+	response  *http.Response
+	timestamp time.Time
+}
+
+func (r *mockInteraction) GetRequestHost() string {
+	host := r.request.Host
+	if host == "" {
+		host = r.request.URL.Host
+	}
+	return host
 }

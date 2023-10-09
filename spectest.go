@@ -16,8 +16,8 @@ import (
 	"time"
 )
 
-// APITest is the top level struct holding the test spec
-type APITest struct {
+// SpecTest is the top level struct holding the test spec
+type SpecTest struct {
 	// debugEnabled will log the http wire representation of all http interactions
 	debugEnabled bool
 	// mockResponseDelayEnabled will turn on mock response delays (defaults to OFF)
@@ -50,14 +50,14 @@ type APITest struct {
 }
 
 // Observe will be called by with the request and response on completion
-type Observe func(*http.Response, *http.Request, *APITest)
+type Observe func(*http.Response, *http.Request, *SpecTest)
 
 // RecorderHook used to implement a custom interaction recorder
 type RecorderHook func(*Recorder)
 
 // New creates a new api test. The name is optional and will appear in test reports
-func New(name ...string) *APITest {
-	apiTest := &APITest{
+func New(name ...string) *SpecTest {
+	apiTest := &SpecTest{
 		meta: newMeta(),
 	}
 
@@ -81,80 +81,80 @@ func New(name ...string) *APITest {
 }
 
 // Handler is a convenience method for creating a new spectest with a handler
-func Handler(handler http.Handler) *APITest {
+func Handler(handler http.Handler) *SpecTest {
 	return New().Handler(handler)
 }
 
 // HandlerFunc is a convenience method for creating a new spectest with a handler func
-func HandlerFunc(handlerFunc http.HandlerFunc) *APITest {
+func HandlerFunc(handlerFunc http.HandlerFunc) *SpecTest {
 	return New().HandlerFunc(handlerFunc)
 }
 
 // EnableNetworking will enable networking for provided clients
-func (a *APITest) EnableNetworking(clients ...*http.Client) *APITest {
-	a.networkingEnabled = true
+func (s *SpecTest) EnableNetworking(clients ...*http.Client) *SpecTest {
+	s.networkingEnabled = true
 	if len(clients) == 1 {
-		a.networkingHTTPClient = clients[0]
-		return a
+		s.networkingHTTPClient = clients[0]
+		return s
 	}
-	a.networkingHTTPClient = http.DefaultClient
-	return a
+	s.networkingHTTPClient = http.DefaultClient
+	return s
 }
 
 // EnableMockResponseDelay turns on mock response delays (defaults to OFF)
-func (a *APITest) EnableMockResponseDelay() *APITest {
-	a.mockResponseDelayEnabled = true
-	return a
+func (s *SpecTest) EnableMockResponseDelay() *SpecTest {
+	s.mockResponseDelayEnabled = true
+	return s
 }
 
 // Debug logs to the console the http wire representation of all http interactions
 // that are intercepted by spectest. This includes the inbound request to the application
 // under test, the response returned by the application and any interactions that are
 // intercepted by the mock server.
-func (a *APITest) Debug() *APITest {
-	a.debugEnabled = true
-	return a
+func (s *SpecTest) Debug() *SpecTest {
+	s.debugEnabled = true
+	return s
 }
 
 // Report provides a hook to add custom formatting to the output of the test
-func (a *APITest) Report(reporter ReportFormatter) *APITest {
-	a.reporter = reporter
-	return a
+func (s *SpecTest) Report(reporter ReportFormatter) *SpecTest {
+	s.reporter = reporter
+	return s
 }
 
 // Recorder provides a hook to add a recorder to the test
-func (a *APITest) Recorder(recorder *Recorder) *APITest {
-	a.recorder = recorder
-	return a
+func (s *SpecTest) Recorder(recorder *Recorder) *SpecTest {
+	s.recorder = recorder
+	return s
 }
 
 // CustomHost set hostname.
 // This method is not change the host in the request. It is only for the report.
-func (a *APITest) CustomHost(host string) *APITest {
-	a.meta.Host = host
-	return a
+func (s *SpecTest) CustomHost(host string) *SpecTest {
+	s.meta.Host = host
+	return s
 }
 
 // CustomReportName allows the consumer to override the default report file name.
-func (a *APITest) CustomReportName(name string) *APITest {
-	a.meta.ReportFileName = name
-	return a
+func (s *SpecTest) CustomReportName(name string) *SpecTest {
+	s.meta.ReportFileName = name
+	return s
 }
 
 // Handler defines the http handler that is invoked when the test is run
-func (a *APITest) Handler(handler http.Handler) *APITest {
-	a.handler = handler
-	return a
+func (s *SpecTest) Handler(handler http.Handler) *SpecTest {
+	s.handler = handler
+	return s
 }
 
 // HandlerFunc defines the http handler that is invoked when the test is run
-func (a *APITest) HandlerFunc(handlerFunc http.HandlerFunc) *APITest {
-	a.handler = handlerFunc
-	return a
+func (s *SpecTest) HandlerFunc(handlerFunc http.HandlerFunc) *SpecTest {
+	s.handler = handlerFunc
+	return s
 }
 
 // Mocks is a builder method for setting the mocks
-func (a *APITest) Mocks(mocks ...*Mock) *APITest {
+func (s *SpecTest) Mocks(mocks ...*Mock) *SpecTest {
 	var m []*Mock
 	for i := range mocks {
 		times := mocks[i].response.mock.times
@@ -164,44 +164,44 @@ func (a *APITest) Mocks(mocks ...*Mock) *APITest {
 			m = append(m, mockCopy)
 		}
 	}
-	a.mocks = m
-	return a
+	s.mocks = m
+	return s
 }
 
 // HTTPClient allows the developer to provide a custom http client when using mocks
-func (a *APITest) HTTPClient(client *http.Client) *APITest {
-	a.httpClient = client
-	return a
+func (s *SpecTest) HTTPClient(client *http.Client) *SpecTest {
+	s.httpClient = client
+	return s
 }
 
 // Observe is a builder method for setting the observers
-func (a *APITest) Observe(observers ...Observe) *APITest {
-	a.observers = observers
-	return a
+func (s *SpecTest) Observe(observers ...Observe) *SpecTest {
+	s.observers = observers
+	return s
 }
 
 // ObserveMocks is a builder method for setting the mocks observers
-func (a *APITest) ObserveMocks(observer Observe) *APITest {
-	a.mocksObservers = append(a.mocksObservers, observer)
-	return a
+func (s *SpecTest) ObserveMocks(observer Observe) *SpecTest {
+	s.mocksObservers = append(s.mocksObservers, observer)
+	return s
 }
 
 // RecorderHook allows the consumer to provider a function that will receive the recorder instance before the
 // test runs. This can be used to inject custom events which can then be rendered in diagrams
 // Deprecated: use Recorder() instead
-func (a *APITest) RecorderHook(hook RecorderHook) *APITest {
-	a.recorderHook = hook
-	return a
+func (s *SpecTest) RecorderHook(hook RecorderHook) *SpecTest {
+	s.recorderHook = hook
+	return s
 }
 
 // Request returns the request spec
-func (a *APITest) Request() *Request {
-	return a.request
+func (s *SpecTest) Request() *Request {
+	return s.request
 }
 
 // Response returns the expected response
-func (a *APITest) Response() *Response {
-	return a.response
+func (s *SpecTest) Response() *Response {
+	return s.response
 }
 
 // Intercept will be called before the request is made.
@@ -214,157 +214,143 @@ type pair struct {
 }
 
 // Intercept is a builder method for setting the request interceptor
-func (a *APITest) Intercept(interceptor Intercept) *APITest {
-	a.request.interceptor = interceptor
-	return a
+func (s *SpecTest) Intercept(interceptor Intercept) *SpecTest {
+	s.request.interceptor = interceptor
+	return s
 }
 
 // Verifier allows consumers to override the verification implementation.
-func (a *APITest) Verifier(v Verifier) *APITest {
-	a.verifier = v
-	return a
+func (s *SpecTest) Verifier(v Verifier) *SpecTest {
+	s.verifier = v
+	return s
 }
 
 // Method is a builder method for setting the http method of the request
-func (a *APITest) Method(method string) *Request {
-	a.request.method = method
-	return a.request
+func (s *SpecTest) Method(method string) *Request {
+	s.request.method = method
+	return s.request
 }
 
 // HTTPRequest defines the native `http.Request`
-func (a *APITest) HTTPRequest(req *http.Request) *Request {
-	a.httpRequest = req
-	return a.request
+func (s *SpecTest) HTTPRequest(req *http.Request) *Request {
+	s.httpRequest = req
+	return s.request
 }
 
 // Get is a convenience method for setting the request as http.MethodGet
-func (a *APITest) Get(url string) *Request {
-	a.request.method = http.MethodGet
-	a.request.url = url
-	return a.request
+func (s *SpecTest) Get(url string) *Request {
+	s.request.method = http.MethodGet
+	s.request.url = url
+	return s.request
 }
 
 // Getf is a convenience method that adds formatting support to Get
-func (a *APITest) Getf(format string, args ...interface{}) *Request {
-	return a.Get(fmt.Sprintf(format, args...))
+func (s *SpecTest) Getf(format string, args ...interface{}) *Request {
+	return s.Get(fmt.Sprintf(format, args...))
 }
 
 // Post is a convenience method for setting the request as http.MethodPost
-func (a *APITest) Post(url string) *Request {
-	a.request.method = http.MethodPost
-	a.request.url = url
-	return a.request
+func (s *SpecTest) Post(url string) *Request {
+	s.request.method = http.MethodPost
+	s.request.url = url
+	return s.request
 }
 
 // Postf is a convenience method that adds formatting support to Post
-func (a *APITest) Postf(format string, args ...interface{}) *Request {
-	return a.Post(fmt.Sprintf(format, args...))
+func (s *SpecTest) Postf(format string, args ...interface{}) *Request {
+	return s.Post(fmt.Sprintf(format, args...))
 }
 
 // Put is a convenience method for setting the request as http.MethodPut
-func (a *APITest) Put(url string) *Request {
-	a.request.method = http.MethodPut
-	a.request.url = url
-	return a.request
+func (s *SpecTest) Put(url string) *Request {
+	s.request.method = http.MethodPut
+	s.request.url = url
+	return s.request
 }
 
 // Putf is a convenience method that adds formatting support to Put
-func (a *APITest) Putf(format string, args ...interface{}) *Request {
-	return a.Put(fmt.Sprintf(format, args...))
+func (s *SpecTest) Putf(format string, args ...interface{}) *Request {
+	return s.Put(fmt.Sprintf(format, args...))
 }
 
 // Delete is a convenience method for setting the request as http.MethodDelete
-func (a *APITest) Delete(url string) *Request {
-	a.request.method = http.MethodDelete
-	a.request.url = url
-	return a.request
+func (s *SpecTest) Delete(url string) *Request {
+	s.request.method = http.MethodDelete
+	s.request.url = url
+	return s.request
 }
 
 // Deletef is a convenience method that adds formatting support to Delete
-func (a *APITest) Deletef(format string, args ...interface{}) *Request {
-	return a.Delete(fmt.Sprintf(format, args...))
+func (s *SpecTest) Deletef(format string, args ...interface{}) *Request {
+	return s.Delete(fmt.Sprintf(format, args...))
 }
 
 // Patch is a convenience method for setting the request as http.MethodPatch
-func (a *APITest) Patch(url string) *Request {
-	a.request.method = http.MethodPatch
-	a.request.url = url
-	return a.request
+func (s *SpecTest) Patch(url string) *Request {
+	s.request.method = http.MethodPatch
+	s.request.url = url
+	return s.request
 }
 
 // Patchf is a convenience method that adds formatting support to Patch
-func (a *APITest) Patchf(format string, args ...interface{}) *Request {
-	return a.Patch(fmt.Sprintf(format, args...))
+func (s *SpecTest) Patchf(format string, args ...interface{}) *Request {
+	return s.Patch(fmt.Sprintf(format, args...))
 }
 
 // Head is a convenience method for setting the request as http.MethodHead
-func (a *APITest) Head(url string) *Request {
-	a.request.method = http.MethodHead
-	a.request.url = url
-	return a.request
+func (s *SpecTest) Head(url string) *Request {
+	s.request.method = http.MethodHead
+	s.request.url = url
+	return s.request
 }
 
 // Headf is a convenience method that adds formatting support to Head
-func (a *APITest) Headf(format string, args ...interface{}) *Request {
-	return a.Head(fmt.Sprintf(format, args...))
+func (s *SpecTest) Headf(format string, args ...interface{}) *Request {
+	return s.Head(fmt.Sprintf(format, args...))
 }
 
 // Options is a convenience method for setting the request as http.MethodOptions
-func (a *APITest) Options(url string) *Request {
-	a.request.method = http.MethodOptions
-	a.request.url = url
-	return a.request
+func (s *SpecTest) Options(url string) *Request {
+	s.request.method = http.MethodOptions
+	s.request.url = url
+	return s.request
 }
 
 // Optionsf is a convenience method that adds formatting support to Options
-func (a *APITest) Optionsf(format string, args ...interface{}) *Request {
-	return a.Options(fmt.Sprintf(format, args...))
+func (s *SpecTest) Optionsf(format string, args ...interface{}) *Request {
+	return s.Options(fmt.Sprintf(format, args...))
 }
 
 // Connect is a convenience method for setting the request as http.MethodConnect
-func (a *APITest) Connect(url string) *Request {
-	a.request.method = http.MethodConnect
-	a.request.url = url
-	return a.request
+func (s *SpecTest) Connect(url string) *Request {
+	s.request.method = http.MethodConnect
+	s.request.url = url
+	return s.request
 }
 
 // Connectf is a convenience method that adds formatting support to Connect
-func (a *APITest) Connectf(format string, args ...interface{}) *Request {
-	return a.Connect(fmt.Sprintf(format, args...))
+func (s *SpecTest) Connectf(format string, args ...interface{}) *Request {
+	return s.Connect(fmt.Sprintf(format, args...))
 }
 
 // Trace is a convenience method for setting the request as http.MethodTrace
-func (a *APITest) Trace(url string) *Request {
-	a.request.method = http.MethodTrace
-	a.request.url = url
-	return a.request
+func (s *SpecTest) Trace(url string) *Request {
+	s.request.method = http.MethodTrace
+	s.request.url = url
+	return s.request
 }
 
 // Tracef is a convenience method that adds formatting support to Trace
-func (a *APITest) Tracef(format string, args ...interface{}) *Request {
-	return a.Trace(fmt.Sprintf(format, args...))
+func (s *SpecTest) Tracef(format string, args ...interface{}) *Request {
+	return s.Trace(fmt.Sprintf(format, args...))
 }
 
-type mockInteraction struct {
-	request   *http.Request
-	response  *http.Response
-	timestamp time.Time
-}
-
-func (r *mockInteraction) GetRequestHost() string {
-	host := r.request.Host
-	if host == "" {
-		host = r.request.URL.Host
-	}
-	return host
-}
-
-func (a *APITest) report() *http.Response {
+func (s *SpecTest) report() *http.Response {
 	var capturedInboundReq *http.Request
 	var capturedFinalRes *http.Response
 	var capturedMockInteractions []*mockInteraction
 
-	a.observers = append(a.observers, func(finalRes *http.Response, inboundReq *http.Request, a *APITest) {
+	s.observers = append(s.observers, func(finalRes *http.Response, inboundReq *http.Request, a *SpecTest) {
 		capturedFinalRes = copyHTTPResponse(finalRes)
 		defer func() {
 			capturedFinalRes.Body.Close() //nolint errcheck TODO:
@@ -372,7 +358,7 @@ func (a *APITest) report() *http.Response {
 		capturedInboundReq = copyHTTPRequest(inboundReq)
 	})
 
-	a.mocksObservers = append(a.mocksObservers, func(mockRes *http.Response, mockReq *http.Request, a *APITest) {
+	s.mocksObservers = append(s.mocksObservers, func(mockRes *http.Response, mockReq *http.Request, a *SpecTest) {
 		capturedMockInteractions = append(capturedMockInteractions, &mockInteraction{
 			request:   copyHTTPRequest(mockReq),
 			response:  copyHTTPResponse(mockRes),
@@ -380,38 +366,38 @@ func (a *APITest) report() *http.Response {
 		})
 	})
 
-	if a.recorder == nil {
-		a.recorder = NewTestRecorder()
+	if s.recorder == nil {
+		s.recorder = NewTestRecorder()
 	}
-	defer a.recorder.Reset()
+	defer s.recorder.Reset()
 
-	if a.recorderHook != nil {
-		a.recorderHook(a.recorder)
+	if s.recorderHook != nil {
+		s.recorderHook(s.recorder)
 	}
 
-	a.started = time.Now()
-	res := a.response.runTest()
-	a.finished = time.Now()
+	s.started = time.Now()
+	res := s.response.runTest()
+	s.finished = time.Now()
 
-	a.recorder.
+	s.recorder.
 		AddTitle(fmt.Sprintf("%s %s", capturedInboundReq.Method, capturedInboundReq.URL.String())).
-		AddSubTitle(a.name).
+		AddSubTitle(s.name).
 		AddHTTPRequest(HTTPRequest{
 			Source:    ConsumerDefaultName,
 			Target:    SystemUnderTestDefaultName,
 			Value:     capturedInboundReq,
-			Timestamp: a.started,
+			Timestamp: s.started,
 		})
 
 	for _, interaction := range capturedMockInteractions {
-		a.recorder.AddHTTPRequest(HTTPRequest{
+		s.recorder.AddHTTPRequest(HTTPRequest{
 			Source:    SystemUnderTestDefaultName,
 			Target:    interaction.GetRequestHost(),
 			Value:     interaction.request,
 			Timestamp: interaction.timestamp,
 		})
 		if interaction.response != nil {
-			a.recorder.AddHTTPResponse(HTTPResponse{
+			s.recorder.AddHTTPResponse(HTTPResponse{
 				Source:    interaction.GetRequestHost(),
 				Target:    SystemUnderTestDefaultName,
 				Value:     interaction.response,
@@ -420,61 +406,61 @@ func (a *APITest) report() *http.Response {
 		}
 	}
 
-	a.recorder.AddHTTPResponse(HTTPResponse{
+	s.recorder.AddHTTPResponse(HTTPResponse{
 		Source:    SystemUnderTestDefaultName,
 		Target:    ConsumerDefaultName,
 		Value:     capturedFinalRes,
-		Timestamp: a.finished,
+		Timestamp: s.finished,
 	})
 
-	sort.Slice(a.recorder.Events, func(i, j int) bool {
-		return a.recorder.Events[i].GetTime().Before(a.recorder.Events[j].GetTime())
+	sort.Slice(s.recorder.Events, func(i, j int) bool {
+		return s.recorder.Events[i].GetTime().Before(s.recorder.Events[j].GetTime())
 	})
 
 	meta := newMeta()
 	meta.StatusCode = capturedFinalRes.StatusCode
 	meta.Path = capturedInboundReq.URL.String()
 	meta.Method = capturedInboundReq.Method
-	meta.Duration = a.finished.Sub(a.started).Nanoseconds()
-	meta.Name = a.name
-	meta.ReportFileName = a.meta.ReportFileName
-	if a.meta.Host != "" {
-		meta.Host = a.meta.Host
+	meta.Duration = s.finished.Sub(s.started).Nanoseconds()
+	meta.Name = s.name
+	meta.ReportFileName = s.meta.ReportFileName
+	if s.meta.Host != "" {
+		meta.Host = s.meta.Host
 	}
 
-	a.recorder.AddMeta(meta)
-	a.reporter.Format(a.recorder)
+	s.recorder.AddMeta(meta)
+	s.reporter.Format(s.recorder)
 
 	return res
 }
 
-func (a *APITest) assertMocks() {
-	for _, mock := range a.mocks {
+func (s *SpecTest) assertMocks() {
+	for _, mock := range s.mocks {
 		if !mock.isUsed && mock.timesSet {
-			a.verifier.Fail(a.t, "mock was not invoked expected times", failureMessageArgs{Name: a.name})
+			s.verifier.Fail(s.t, "mock was not invoked expected times", failureMessageArgs{Name: s.name})
 		}
 	}
 }
 
-func (a *APITest) assertFunc(res *http.Response, req *http.Request) {
-	if len(a.response.assert) > 0 {
-		for _, assertFn := range a.response.assert {
+func (s *SpecTest) assertFunc(res *http.Response, req *http.Request) {
+	if len(s.response.assert) > 0 {
+		for _, assertFn := range s.response.assert {
 			err := assertFn(copyHTTPResponse(res), copyHTTPRequest(req))
 			if err != nil {
-				a.verifier.NoError(a.t, err, failureMessageArgs{Name: a.name})
+				s.verifier.NoError(s.t, err, failureMessageArgs{Name: s.name})
 			}
 		}
 	}
 }
 
-func (a *APITest) doRequest() (*http.Response, *http.Request) {
-	req := a.buildRequest()
-	if a.request.interceptor != nil {
-		a.request.interceptor(req)
+func (s *SpecTest) doRequest() (*http.Response, *http.Request) {
+	req := s.buildRequest()
+	if s.request.interceptor != nil {
+		s.request.interceptor(req)
 	}
 	resRecorder := httptest.NewRecorder()
 
-	if a.debugEnabled {
+	if s.debugEnabled {
 		requestDump, err := httputil.DumpRequest(req, true)
 		if err == nil {
 			debugLog(requestDebugPrefix(), "inbound http request", string(requestDump))
@@ -483,17 +469,17 @@ func (a *APITest) doRequest() (*http.Response, *http.Request) {
 
 	var res *http.Response
 	var err error
-	if !a.networkingEnabled {
-		a.serveHTTP(resRecorder, copyHTTPRequest(req))
+	if !s.networkingEnabled {
+		s.serveHTTP(resRecorder, copyHTTPRequest(req))
 		res = resRecorder.Result()
 	} else {
-		res, err = a.networkingHTTPClient.Do(copyHTTPRequest(req))
+		res, err = s.networkingHTTPClient.Do(copyHTTPRequest(req))
 		if err != nil {
-			a.t.Fatal(err)
+			s.t.Fatal(err)
 		}
 	}
 
-	if a.debugEnabled {
+	if s.debugEnabled {
 		responseDump, err := httputil.DumpResponse(res, true)
 		if err == nil {
 			debugLog(responseDebugPrefix(), "final response", string(responseDump))
@@ -503,38 +489,38 @@ func (a *APITest) doRequest() (*http.Response, *http.Request) {
 	return res, req
 }
 
-func (a *APITest) serveHTTP(res *httptest.ResponseRecorder, req *http.Request) {
+func (s *SpecTest) serveHTTP(res *httptest.ResponseRecorder, req *http.Request) {
 	defer func() {
 		if err := recover(); err != nil {
-			a.t.Fatalf("%s: %s", err, debug.Stack())
+			s.t.Fatalf("%s: %s", err, debug.Stack())
 		}
 	}()
 
-	a.handler.ServeHTTP(res, req)
+	s.handler.ServeHTTP(res, req)
 }
 
-func (a *APITest) assertResponse(res *http.Response) {
-	if a.response.status != 0 {
-		a.verifier.Equal(a.t, a.response.status, res.StatusCode, fmt.Sprintf("Status code %d not equal to %d", res.StatusCode, a.response.status), failureMessageArgs{Name: a.name})
+func (s *SpecTest) assertResponse(res *http.Response) {
+	if s.response.status != 0 {
+		s.verifier.Equal(s.t, s.response.status, res.StatusCode, fmt.Sprintf("Status code %d not equal to %d", res.StatusCode, s.response.status), failureMessageArgs{Name: s.name})
 	}
 
-	if a.response.body != "" {
+	if s.response.body != "" {
 		var resBodyBytes []byte
 		if res.Body != nil {
 			resBodyBytes, _ = io.ReadAll(res.Body)
 			res.Body = io.NopCloser(bytes.NewBuffer(resBodyBytes))
 		}
-		if json.Valid([]byte(a.response.body)) {
-			a.verifier.JSONEq(a.t, a.response.body, string(resBodyBytes), failureMessageArgs{Name: a.name})
+		if json.Valid([]byte(s.response.body)) {
+			s.verifier.JSONEq(s.t, s.response.body, string(resBodyBytes), failureMessageArgs{Name: s.name})
 		} else {
-			a.verifier.Equal(a.t, a.response.body, string(resBodyBytes), failureMessageArgs{Name: a.name})
+			s.verifier.Equal(s.t, s.response.body, string(resBodyBytes), failureMessageArgs{Name: s.name})
 		}
 	}
 }
 
-func (a *APITest) assertCookies(response *http.Response) {
-	if len(a.response.cookies) > 0 {
-		for _, expectedCookie := range a.response.cookies {
+func (s *SpecTest) assertCookies(response *http.Response) {
+	if len(s.response.cookies) > 0 {
+		for _, expectedCookie := range s.response.cookies {
 			var mismatchedFields []string
 			foundCookie := false
 			for _, actualCookie := range response.Cookies() {
@@ -544,40 +530,40 @@ func (a *APITest) assertCookies(response *http.Response) {
 					mismatchedFields = append(mismatchedFields, errors...)
 				}
 			}
-			a.verifier.Equal(a.t, true, foundCookie, "ExpectedCookie not found - "+*expectedCookie.name, failureMessageArgs{Name: a.name})
-			a.verifier.Equal(a.t, 0, len(mismatchedFields), strings.Join(mismatchedFields, ","), failureMessageArgs{Name: a.name})
+			s.verifier.Equal(s.t, true, foundCookie, "ExpectedCookie not found - "+*expectedCookie.name, failureMessageArgs{Name: s.name})
+			s.verifier.Equal(s.t, 0, len(mismatchedFields), strings.Join(mismatchedFields, ","), failureMessageArgs{Name: s.name})
 		}
 	}
 
-	if len(a.response.cookiesPresent) > 0 {
-		for _, cookieName := range a.response.cookiesPresent {
+	if len(s.response.cookiesPresent) > 0 {
+		for _, cookieName := range s.response.cookiesPresent {
 			foundCookie := false
 			for _, cookie := range response.Cookies() {
 				if cookie.Name == cookieName {
 					foundCookie = true
 				}
 			}
-			a.verifier.Equal(a.t, true, foundCookie, "ExpectedCookie not found - "+cookieName, failureMessageArgs{Name: a.name})
+			s.verifier.Equal(s.t, true, foundCookie, "ExpectedCookie not found - "+cookieName, failureMessageArgs{Name: s.name})
 		}
 	}
 
-	if len(a.response.cookiesNotPresent) > 0 {
-		for _, cookieName := range a.response.cookiesNotPresent {
+	if len(s.response.cookiesNotPresent) > 0 {
+		for _, cookieName := range s.response.cookiesNotPresent {
 			foundCookie := false
 			for _, cookie := range response.Cookies() {
 				if cookie.Name == cookieName {
 					foundCookie = true
 				}
 			}
-			a.verifier.Equal(a.t, false, foundCookie, "ExpectedCookie found - "+cookieName, failureMessageArgs{Name: a.name})
+			s.verifier.Equal(s.t, false, foundCookie, "ExpectedCookie found - "+cookieName, failureMessageArgs{Name: s.name})
 		}
 	}
 }
 
-func (a *APITest) assertHeaders(res *http.Response) {
-	for expectedHeader, expectedValues := range a.response.headers {
+func (s *SpecTest) assertHeaders(res *http.Response) {
+	for expectedHeader, expectedValues := range s.response.headers {
 		resHeaderValues, foundHeader := res.Header[expectedHeader]
-		a.verifier.Equal(a.t, true, foundHeader, fmt.Sprintf("expected header '%s' not present in response", expectedHeader), failureMessageArgs{Name: a.name})
+		s.verifier.Equal(s.t, true, foundHeader, fmt.Sprintf("expected header '%s' not present in response", expectedHeader), failureMessageArgs{Name: s.name})
 
 		if foundHeader {
 			for _, expectedValue := range expectedValues {
@@ -588,76 +574,76 @@ func (a *APITest) assertHeaders(res *http.Response) {
 						break
 					}
 				}
-				a.verifier.Equal(a.t, true, foundValue, fmt.Sprintf("mismatched values for header '%s'. Expected %s but received %s", expectedHeader, expectedValue, strings.Join(resHeaderValues, ",")), failureMessageArgs{Name: a.name})
+				s.verifier.Equal(s.t, true, foundValue, fmt.Sprintf("mismatched values for header '%s'. Expected %s but received %s", expectedHeader, expectedValue, strings.Join(resHeaderValues, ",")), failureMessageArgs{Name: s.name})
 			}
 		}
 	}
 
-	if len(a.response.headersPresent) > 0 {
-		for _, expectedName := range a.response.headersPresent {
+	if len(s.response.headersPresent) > 0 {
+		for _, expectedName := range s.response.headersPresent {
 			if res.Header.Get(expectedName) == "" {
-				a.verifier.Fail(a.t, fmt.Sprintf("expected header '%s' not present in response", expectedName), failureMessageArgs{Name: a.name})
+				s.verifier.Fail(s.t, fmt.Sprintf("expected header '%s' not present in response", expectedName), failureMessageArgs{Name: s.name})
 			}
 		}
 	}
 
-	if len(a.response.headersNotPresent) > 0 {
-		for _, name := range a.response.headersNotPresent {
+	if len(s.response.headersNotPresent) > 0 {
+		for _, name := range s.response.headersNotPresent {
 			if res.Header.Get(name) != "" {
-				a.verifier.Fail(a.t, fmt.Sprintf("did not expect header '%s' in response", name), failureMessageArgs{Name: a.name})
+				s.verifier.Fail(s.t, fmt.Sprintf("did not expect header '%s' in response", name), failureMessageArgs{Name: s.name})
 			}
 		}
 	}
 }
 
-func (a *APITest) buildRequest() *http.Request {
-	if a.httpRequest != nil {
-		return a.httpRequest
+func (s *SpecTest) buildRequest() *http.Request {
+	if s.httpRequest != nil {
+		return s.httpRequest
 	}
 
-	if len(a.request.formData) > 0 {
+	if len(s.request.formData) > 0 {
 		form := url.Values{}
-		for k := range a.request.formData {
-			for _, value := range a.request.formData[k] {
+		for k := range s.request.formData {
+			for _, value := range s.request.formData[k] {
 				form.Add(k, value)
 			}
 		}
-		a.request.Body(form.Encode())
+		s.request.Body(form.Encode())
 	}
 
-	if a.request.multipart != nil {
-		err := a.request.multipart.Close()
+	if s.request.multipart != nil {
+		err := s.request.multipart.Close()
 		if err != nil {
-			a.request.apiTest.t.Fatal(err)
+			s.request.apiTest.t.Fatal(err)
 		}
 
-		a.request.Header("Content-Type", a.request.multipart.FormDataContentType())
-		a.request.Body(a.request.multipartBody.String())
+		s.request.Header("Content-Type", s.request.multipart.FormDataContentType())
+		s.request.Body(s.request.multipartBody.String())
 	}
 
-	req, _ := http.NewRequest(a.request.method, a.request.url, bytes.NewBufferString(a.request.body))
-	if a.request.context != nil {
-		req = req.WithContext(a.request.context)
+	req, _ := http.NewRequest(s.request.method, s.request.url, bytes.NewBufferString(s.request.body))
+	if s.request.context != nil {
+		req = req.WithContext(s.request.context)
 	}
 
-	req.URL.RawQuery = formatQuery(a.request)
+	req.URL.RawQuery = formatQuery(s.request)
 	req.Host = SystemUnderTestDefaultName
-	if a.networkingEnabled {
+	if s.networkingEnabled {
 		req.Host = req.URL.Host
 	}
 
-	for k, v := range a.request.headers {
+	for k, v := range s.request.headers {
 		for _, headerValue := range v {
 			req.Header.Add(k, headerValue)
 		}
 	}
 
-	for _, cookie := range a.request.cookies {
+	for _, cookie := range s.request.cookies {
 		req.AddCookie(cookie.ToHTTPCookie())
 	}
 
-	if a.request.basicAuth != "" {
-		parts := strings.Split(a.request.basicAuth, ":")
+	if s.request.basicAuth != "" {
+		parts := strings.Split(s.request.basicAuth, ":")
 		req.SetBasicAuth(parts[0], parts[1])
 	}
 

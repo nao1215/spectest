@@ -20,7 +20,7 @@ type Response struct {
 	cookies           []*Cookie
 	cookiesPresent    []string
 	cookiesNotPresent []string
-	apiTest           *APITest
+	apiTest           *SpecTest
 	assert            []Assert
 }
 
