@@ -3,7 +3,7 @@ module github.com/go-spectest/spectest/examples/httprouter
 go 1.18
 
 require (
-	github.com/go-spectest/spectest v0.0.2
+	github.com/go-spectest/spectest v0.0.3
 	github.com/julienschmidt/httprouter v1.3.0
 )
 
