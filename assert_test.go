@@ -11,12 +11,12 @@ func TestApiTestAssertStatusCodes(t *testing.T) {
 		assertFunc     Assert
 		isSuccess      bool
 	}{
-		{[]int{200, 312, 399}, IsSuccess, true},
-		{[]int{400, 404, 499}, IsClientError, true},
-		{[]int{500, 503}, IsServerError, true},
-		{[]int{400, 500}, IsSuccess, false},
-		{[]int{200, 500}, IsClientError, false},
-		{[]int{200, 400}, IsServerError, false},
+		{[]int{http.StatusOK, 312., 399}, IsSuccess, true},
+		{[]int{http.StatusBadRequest, http.StatusNotFound, 499}, IsClientError, true},
+		{[]int{http.StatusInternalServerError, http.StatusServiceUnavailable}, IsServerError, true},
+		{[]int{http.StatusBadRequest, http.StatusInternalServerError}, IsSuccess, false},
+		{[]int{http.StatusOK, http.StatusInternalServerError}, IsClientError, false},
+		{[]int{http.StatusOK, http.StatusBadRequest}, IsServerError, false},
 	}
 	for _, test := range tests {
 		for _, status := range test.responseStatus {
