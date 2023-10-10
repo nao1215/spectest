@@ -1,6 +1,7 @@
 /bin/
 .idea/
 coverage.out
+coverage.html
 resources/_gen/images/
 .DS_Store
 .sequence

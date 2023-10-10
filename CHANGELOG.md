@@ -3,6 +3,7 @@
 ## [0.0.4, Unreleased] - 2023-XX-XX
 ### Changed
 - Dependabot update go.mod in example codes.
+- Introduce `Interval` struct for caluculating interval time.
 
 ### Removed
 - `SpecTest.RecorderHook` is deprecated since apitest package era.
