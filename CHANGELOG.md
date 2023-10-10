@@ -1,6 +1,10 @@
 # Changelog
 
 ## [0.0.4, Unreleased] - 2023-XX-XX
+### Added
+- Generate code coverage report with `make coverage`. 
+  - The coverage report name is `coverage.html`.
+
 ### Changed
 - Dependabot update go.mod in example codes.
 - Introduce `Interval` struct for caluculating interval time.

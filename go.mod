@@ -10,6 +10,7 @@ require (
 	github.com/google/go-cmp v0.5.9
 	github.com/gorilla/websocket v1.5.0
 	github.com/stretchr/testify v1.8.4
+	github.com/tenntenn/testtime v0.2.2
 	github.com/xeipuuv/gojsonschema v1.2.0
 )
 

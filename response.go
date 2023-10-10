@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"net/textproto"
 	"os"
-	"time"
 )
 
 // Response is the user defined expected response from the application under test
@@ -20,7 +19,7 @@ type Response struct {
 	cookies           []*Cookie
 	cookiesPresent    []string
 	cookiesNotPresent []string
-	apiTest           *SpecTest
+	specTest          *SpecTest
 	assert            []Assert
 }
 
@@ -40,7 +39,7 @@ func (r *Response) Bodyf(format string, args ...interface{}) *Response {
 func (r *Response) BodyFromFile(f string) *Response {
 	b, err := os.ReadFile(f)
 	if err != nil {
-		r.apiTest.t.Fatal(err)
+		r.specTest.t.Fatal(err)
 	}
 	r.body = string(b)
 	return r
@@ -113,33 +112,33 @@ func (r *Response) Status(s int) *Response {
 // custom assertions
 func (r *Response) Assert(fn func(*http.Response, *http.Request) error) *Response {
 	r.assert = append(r.assert, fn)
-	return r.apiTest.response
+	return r.specTest.response
 }
 
 // End runs the test returning the result to the caller
 func (r *Response) End() Result {
-	apiTest := r.apiTest
+	specTest := r.specTest
 	defer func() {
-		if apiTest.debugEnabled {
-			apiTest.finished = time.Now()
-			fmt.Printf("Duration: %s\n", apiTest.finished.Sub(apiTest.started))
+		if specTest.debugEnabled {
+			specTest.interval.End()
+			fmt.Printf("Duration: %s\n", specTest.interval.Duration())
 		}
 	}()
 
-	if apiTest.handler == nil && !apiTest.networkingEnabled {
-		apiTest.t.Fatal("either define a http.Handler or enable networking")
+	if specTest.handler == nil && !specTest.networkingEnabled {
+		specTest.t.Fatal("either define a http.Handler or enable networking")
 	}
 
-	apiTest.started = time.Now()
+	specTest.interval.Start()
 	var res *http.Response
-	if apiTest.reporter != nil {
-		res = apiTest.report()
+	if specTest.reporter != nil {
+		res = specTest.report()
 	} else {
 		res = r.runTest()
 	}
 
 	var unmatchedMocks []UnmatchedMock
-	for _, m := range r.apiTest.mocks {
+	for _, m := range r.specTest.mocks {
 		if !m.isUsed {
 			unmatchedMocks = append(unmatchedMocks, UnmatchedMock{
 				URL: *m.request.url,
@@ -155,7 +154,7 @@ func (r *Response) End() Result {
 }
 
 func (r *Response) runTest() *http.Response {
-	a := r.apiTest
+	a := r.specTest
 	if len(a.mocks) > 0 {
 		a.transport = newTransport(
 			a.mocks,
@@ -163,7 +162,7 @@ func (r *Response) runTest() *http.Response {
 			a.debugEnabled,
 			a.mockResponseDelayEnabled,
 			a.mocksObservers,
-			r.apiTest,
+			r.specTest,
 		)
 		defer a.transport.Reset()
 		a.transport.Hijack()
