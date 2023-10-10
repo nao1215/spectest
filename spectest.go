@@ -55,11 +55,12 @@ type SpecTest struct {
 	httpClient *http.Client
 	// httpRequest is the native `http.Request`
 	httpRequest *http.Request
-	transport   *Transport
+	// transport is the http transport used when networking is enabled
+	transport *Transport
 	// meta is the meta data for the test report.
-	meta     *Meta
-	started  time.Time
-	finished time.Time
+	meta *Meta
+	// interval is the time interval for the test report.
+	interval *Interval
 }
 
 // Observe will be called by with the request and response on completion
@@ -67,27 +68,29 @@ type Observe func(*http.Response, *http.Request, *SpecTest)
 
 // New creates a new api test. The name is optional and will appear in test reports
 func New(name ...string) *SpecTest {
-	apiTest := &SpecTest{
+	specTest := &SpecTest{
 		meta: newMeta(),
 	}
 
 	request := &Request{
-		apiTest:  apiTest,
+		apiTest:  specTest,
 		headers:  map[string][]string{},
 		query:    map[string][]string{},
 		formData: map[string][]string{},
 	}
 	response := &Response{
-		apiTest: apiTest,
-		headers: map[string][]string{},
+		specTest: specTest,
+		headers:  map[string][]string{},
 	}
-	apiTest.request = request
-	apiTest.response = response
+	specTest.request = request
+	specTest.response = response
 
 	if len(name) > 0 {
-		apiTest.name = name[0]
+		specTest.name = name[0]
 	}
-	return apiTest
+	specTest.interval = NewInterval()
+
+	return specTest
 }
 
 // Handler is a convenience method for creating a new spectest with a handler
@@ -373,9 +376,9 @@ func (s *SpecTest) report() *http.Response {
 	}
 	defer s.recorder.Reset()
 
-	s.started = time.Now()
+	s.interval.Start()
 	res := s.response.runTest()
-	s.finished = time.Now()
+	s.interval.End()
 
 	s.recorder.
 		AddTitle(fmt.Sprintf("%s %s", capturedInboundReq.Method, capturedInboundReq.URL.String())).
@@ -384,7 +387,7 @@ func (s *SpecTest) report() *http.Response {
 			Source:    ConsumerDefaultName,
 			Target:    SystemUnderTestDefaultName,
 			Value:     capturedInboundReq,
-			Timestamp: s.started,
+			Timestamp: s.interval.Started,
 		})
 
 	for _, interaction := range capturedMockInteractions {
@@ -408,7 +411,7 @@ func (s *SpecTest) report() *http.Response {
 		Source:    SystemUnderTestDefaultName,
 		Target:    ConsumerDefaultName,
 		Value:     capturedFinalRes,
-		Timestamp: s.finished,
+		Timestamp: s.interval.Finished,
 	})
 
 	sort.Slice(s.recorder.Events, func(i, j int) bool {
@@ -419,7 +422,7 @@ func (s *SpecTest) report() *http.Response {
 	meta.StatusCode = capturedFinalRes.StatusCode
 	meta.Path = capturedInboundReq.URL.String()
 	meta.Method = capturedInboundReq.Method
-	meta.Duration = s.finished.Sub(s.started).Nanoseconds()
+	meta.Duration = s.interval.Duration().Nanoseconds()
 	meta.Name = s.name
 	meta.ReportFileName = s.meta.ReportFileName
 	if s.meta.Host != "" {
