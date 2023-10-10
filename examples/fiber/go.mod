@@ -3,7 +3,7 @@ module github.com/go-spectest/spectest/examples/fiber
 go 1.18
 
 require (
-	github.com/go-spectest/spectest v0.0.3
+	github.com/go-spectest/spectest v0.0.4
 	github.com/gofiber/fiber/v2 v2.49.2
 )
 
@@ -19,6 +19,7 @@ require (
 	github.com/mattn/go-isatty v0.0.19 // indirect
 	github.com/mattn/go-runewidth v0.0.15 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
+	github.com/tenntenn/testtime v0.2.2 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.49.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
