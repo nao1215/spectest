@@ -1405,3 +1405,29 @@ func (r *RecorderCaptor) Format(recorder *Recorder) {
 }
 
 var assert = DefaultVerifier{}
+
+func TestMockMethodSetup(t *testing.T) {
+	t.Run("success Mock.Headf()", func(t *testing.T) {
+		mock := NewMock().Headf("/user/%d", 1)
+		assert.Equal(t, "/user/1", mock.mock.request.url.Path)
+		assert.Equal(t, "HEAD", mock.mock.request.method)
+	})
+
+	t.Run("success Mock.Connectf()", func(t *testing.T) {
+		mock := NewMock().Connectf("/user/%d", 1)
+		assert.Equal(t, "/user/1", mock.mock.request.url.Path)
+		assert.Equal(t, "CONNECT", mock.mock.request.method)
+	})
+
+	t.Run("success Mock.Optionsf()", func(t *testing.T) {
+		mock := NewMock().Optionsf("/user/%d", 1)
+		assert.Equal(t, "/user/1", mock.mock.request.url.Path)
+		assert.Equal(t, "OPTIONS", mock.mock.request.method)
+	})
+
+	t.Run("success Mock.Tracef()", func(t *testing.T) {
+		mock := NewMock().Tracef("/user/%d", 1)
+		assert.Equal(t, "/user/1", mock.mock.request.url.Path)
+		assert.Equal(t, "TRACE", mock.mock.request.method)
+	})
+}

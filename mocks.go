@@ -375,13 +375,6 @@ func (m *Mock) Getf(format string, args ...interface{}) *MockRequest {
 	return m.Get(fmt.Sprintf(format, args...))
 }
 
-// Head configures the mock to match http method HEAD
-func (m *Mock) Head(u string) *MockRequest {
-	m.parseURL(u)
-	m.request.method = http.MethodHead
-	return m.request
-}
-
 // Put configures the mock to match http method PUT
 func (m *Mock) Put(u string) *MockRequest {
 	m.parseURL(u)
@@ -430,18 +423,67 @@ func (m *Mock) Patchf(format string, args ...interface{}) *MockRequest {
 	return m.Patch(fmt.Sprintf(format, args...))
 }
 
-func (m *Mock) parseURL(u string) {
-	parsed, err := url.Parse(u)
-	if err != nil {
-		panic(err)
-	}
-	m.request.url = parsed
+// Head configures the mock to match http method HEAD
+func (m *Mock) Head(u string) *MockRequest {
+	m.parseURL(u)
+	m.request.method = http.MethodHead
+	return m.request
+}
+
+// Headf configures the mock to match http method HEAD and supports formatting
+func (m *Mock) Headf(format string, args ...interface{}) *MockRequest {
+	return m.Head(fmt.Sprintf(format, args...))
+}
+
+// Connect configures the mock to match http method CONNECT
+func (m *Mock) Connect(u string) *MockRequest {
+	m.parseURL(u)
+	m.request.method = http.MethodConnect
+	return m.request
+}
+
+// Connectf configures the mock to match http method CONNECT and supports formatting
+func (m *Mock) Connectf(format string, args ...interface{}) *MockRequest {
+	return m.Connect(fmt.Sprintf(format, args...))
+}
+
+// Options configures the mock to match http method OPTIONS
+func (m *Mock) Options(u string) *MockRequest {
+	m.parseURL(u)
+	m.request.method = http.MethodOptions
+	return m.request
+}
+
+// Optionsf configures the mock to match http method OPTIONS and supports formatting
+func (m *Mock) Optionsf(format string, args ...interface{}) *MockRequest {
+	return m.Options(fmt.Sprintf(format, args...))
+}
+
+// Trace configures the mock to match http method TRACE
+func (m *Mock) Trace(u string) *MockRequest {
+	m.parseURL(u)
+	m.request.method = http.MethodTrace
+	return m.request
+}
+
+// Tracef configures the mock to match http method TRACE and supports formatting
+func (m *Mock) Tracef(format string, args ...interface{}) *MockRequest {
+	return m.Trace(fmt.Sprintf(format, args...))
 }
 
 // Method configures mock to match given http method
 func (m *Mock) Method(method string) *MockRequest {
 	m.request.method = method
 	return m.request
+}
+
+// parseURL parses the given url and sets it on the mock request
+func (m *Mock) parseURL(u string) {
+	parsed, err := url.Parse(u)
+	if err != nil {
+		panic(err)
+	}
+	m.request.url = parsed
 }
 
 func matches(req *http.Request, mocks []*Mock) (*MockResponse, error) {
