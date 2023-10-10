@@ -12,8 +12,8 @@ github.com/fsnotify/fsnotify v1.4.9/go.mod h1:znqG4EE+3YCdAaPaxE2ZRY/06pZUdp0tY4
 github.com/go-logr/logr v1.2.4 h1:g01GSCwiDw2xSZfjJ2/T9M+S6pFdcNtFYsp+Y43HYDQ=
 github.com/go-spectest/diff v0.0.0-20231006143314-ce490574d4a9 h1:I05FIUaZLNe9Jo6ZCvODDGBqHMk3TYd7V/wV9dZhwXk=
 github.com/go-spectest/diff v0.0.0-20231006143314-ce490574d4a9/go.mod h1:wWRXl4ClWLDIPkL/lS8SSxojHRg1cGngvPcya/mYhf0=
-github.com/go-spectest/spectest v0.0.3 h1:XbzxsdLTzmYPiIy/xWmTSuYb1UzbtlT+/2QFbrlgdLM=
-github.com/go-spectest/spectest v0.0.3/go.mod h1:3/pUHRcBF5QWBP3KOpvpoEw4QzYXV14d7/VhMIXfwSo=
+github.com/go-spectest/spectest v0.0.4 h1:3emVbe3bwbqpdETH8l3NOIBCp+TD/xIPGt7qpzEsUiQ=
+github.com/go-spectest/spectest v0.0.4/go.mod h1:ZXac1xZ+WMcxUzf/hFKJnx55R+9BZdRrhys7F2dZZvk=
 github.com/go-task/slim-sprig v0.0.0-20210107165309-348f09dbbbc0/go.mod h1:fyg7847qk6SyHyPtNmDHnmrv/HOrqktSC+C9fM+CJOE=
 github.com/go-task/slim-sprig v0.0.0-20230315185526-52ccab3ef572 h1:tfuBGBXKqDEevZMzYi5KSi8KkcZtzBcTgAUUtapy0OI=
 github.com/golang/protobuf v1.2.0/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=
@@ -50,6 +50,8 @@ github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZN
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/testify v1.5.1/go.mod h1:5W2xD1RspED5o8YsWQXVCued0rvSQ+mT+I5cxcmMvtA=
 github.com/stretchr/testify v1.8.4 h1:CcVxjf3Q8PM0mHUKJCdn+eZZtm5yQwehR5yeSVQQcUk=
+github.com/tenntenn/testtime v0.2.2 h1:y6K00BUNg7cRE9WpkBX/Bn+WgmV5/a3hsw7xGNyF2p0=
+github.com/tenntenn/testtime v0.2.2/go.mod h1:gXZpxnMoBEV+JZwooprQ65lIbR2Kzk5PpP/deHMn+Is=
 github.com/yuin/goldmark v1.2.1/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
 golang.org/x/crypto v0.0.0-20191011191535-87dc89f01550/go.mod h1:yigFU9vqHzYiE8UmvKecakEJjdnWj3jj499lnFckfCI=
