@@ -1,4 +1,5 @@
-// Package spectest is simple and extensible behavioral testing library for Go. You can use api test to simplify REST API, HTTP handler and e2e tests. (forked from steinfletcher/apitest)
+// Package spectest is simple and extensible behavioral testing library for Go. You can use api test to simplify REST API,
+// HTTP handler and e2e tests. (forked from steinfletcher/apitest)
 package spectest
 
 import (
@@ -28,21 +29,33 @@ type SpecTest struct {
 	networkingHTTPClient *http.Client
 	// reporter is the report formatter.
 	reporter ReportFormatter
-	// verifier is the assertion implementation
-	verifier       Verifier
-	recorder       *Recorder
-	handler        http.Handler
-	name           string
-	request        *Request
-	response       *Response
-	observers      []Observe
+	// verifier is the assertion implementation. Default is DefaultVerifier.
+	verifier Verifier
+	// recorder is the test result recorder.
+	recorder *Recorder
+	// handler is the http handler that is invoked when the test is run
+	handler http.Handler
+	// name is the name of the test. It will appear in the test report as sub title.
+	name string
+	// request is the request spec. It is called by the test runner to build the request.
+	request *Request
+	// response is the expected response. It is called by the test runner to assert the response.
+	response *Response
+	// observers is a list of functions that will be called on completion of the test.
+	// It is used to capture the inbound request and final response.
+	observers []Observe
+	// mocksObservers is a list of functions that will be called on completion of the test.
+	// It is used to capture the mock request and response.
 	mocksObservers []Observe
-	recorderHook   RecorderHook
-	mocks          []*Mock
-	t              TestingT
-	httpClient     *http.Client
-	httpRequest    *http.Request
-	transport      *Transport
+	// mocks is a list of mocks that will be used to intercept the request.
+	mocks []*Mock
+	// t is the testing.T instance.
+	t TestingT
+	// httpClient is the http client used when networking is enabled
+	httpClient *http.Client
+	// httpRequest is the native `http.Request`
+	httpRequest *http.Request
+	transport   *Transport
 	// meta is the meta data for the test report.
 	meta     *Meta
 	started  time.Time
@@ -51,9 +64,6 @@ type SpecTest struct {
 
 // Observe will be called by with the request and response on completion
 type Observe func(*http.Response, *http.Request, *SpecTest)
-
-// RecorderHook used to implement a custom interaction recorder
-type RecorderHook func(*Recorder)
 
 // New creates a new api test. The name is optional and will appear in test reports
 func New(name ...string) *SpecTest {
@@ -183,14 +193,6 @@ func (s *SpecTest) Observe(observers ...Observe) *SpecTest {
 // ObserveMocks is a builder method for setting the mocks observers
 func (s *SpecTest) ObserveMocks(observer Observe) *SpecTest {
 	s.mocksObservers = append(s.mocksObservers, observer)
-	return s
-}
-
-// RecorderHook allows the consumer to provider a function that will receive the recorder instance before the
-// test runs. This can be used to inject custom events which can then be rendered in diagrams
-// Deprecated: use Recorder() instead
-func (s *SpecTest) RecorderHook(hook RecorderHook) *SpecTest {
-	s.recorderHook = hook
 	return s
 }
 
@@ -370,10 +372,6 @@ func (s *SpecTest) report() *http.Response {
 		s.recorder = NewTestRecorder()
 	}
 	defer s.recorder.Reset()
-
-	if s.recorderHook != nil {
-		s.recorderHook(s.recorder)
-	}
 
 	s.started = time.Now()
 	res := s.response.runTest()
