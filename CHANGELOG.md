@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.0.4, Unreleased] - 2023-10-10
+## [0.0.4] - 2023-10-10
 ### Added
 - Generate code coverage report with `make coverage`. 
   - The coverage report name is `coverage.html`.
