@@ -1,9 +1,10 @@
 # Changelog
 
-## [0.0.4, Unreleased] - 2023-XX-XX
+## [0.0.4, Unreleased] - 2023-10-10
 ### Added
 - Generate code coverage report with `make coverage`. 
   - The coverage report name is `coverage.html`.
+- Support more http mock methods; HEAD, OPTIONS, CONNECT, TRACE
 
 ### Changed
 - Dependabot update go.mod in example codes.
@@ -14,7 +15,7 @@
 
 ## [0.0.3] - 2023-10-09
 ### Added
-- support more http methods; HEAD, OPTIONS, CONNECT, TRACE
+- Support more http methods; HEAD, OPTIONS, CONNECT, TRACE
 
 ### Fixed
 - Broken example codes. However, some examples are still broken (iris, qraphql).
