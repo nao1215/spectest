@@ -1,3 +1,4 @@
+[![Go Reference](https://pkg.go.dev/badge/github.com/go-spectest/spectest.svg)](https://pkg.go.dev/github.com/go-spectest/spectest)
 [![LinuxUnitTest](https://github.com/go-spectest/spectest/actions/workflows/linux_test.yml/badge.svg)](https://github.com/go-spectest/spectest/actions/workflows/linux_test.yml)
 [![MacUnitTest](https://github.com/go-spectest/spectest/actions/workflows/mac_test.yml/badge.svg)](https://github.com/go-spectest/spectest/actions/workflows/mac_test.yml)
 [![WindowsUnitTest](https://github.com/go-spectest/spectest/actions/workflows/windows_test.yml/badge.svg)](https://github.com/go-spectest/spectest/actions/workflows/windows_test.yml)
