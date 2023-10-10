@@ -1,9 +1,11 @@
-package spectest
+package spectest_test
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
+	"github.com/go-spectest/spectest"
 	"github.com/tenntenn/testtime"
 )
 
@@ -37,15 +39,15 @@ func TestIntervalDuration(t *testing.T) {
 	for _, tt := range tests {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			interval := NewInterval()
+			interval := spectest.NewInterval()
 
 			if !testtime.SetTime(t, tt.fields.start) {
-				t.Fatal("start time should not be set")
+				t.Fatal("failed to set start time")
 			}
 			interval.Start()
 
 			if !testtime.SetTime(t, tt.fields.end) {
-				t.Fatal("end time should not be set")
+				t.Fatal("failed to set end time")
 			}
 			interval.End()
 
@@ -54,4 +56,25 @@ func TestIntervalDuration(t *testing.T) {
 			}
 		})
 	}
+}
+
+// nolint
+func ExampleInterval_Duration() {
+	t := &testing.T{}
+	interval := spectest.NewInterval()
+
+	// Set started time. Usually, you don't need to set the time. You only call Start() method.
+	if !testtime.SetTime(t, time.Date(2023, 1, 1, 0, 0, 0, 0, time.UTC)) {
+		t.Fatal("failed to set start time")
+	}
+	interval.Start()
+
+	// Set finished time. Usually, you don't need to set the time. You only call End() method.
+	if !testtime.SetTime(t, time.Date(2023, 1, 1, 0, 0, 1, 0, time.UTC)) {
+		t.Fatal("failed to set end time")
+	}
+	interval.End()
+
+	fmt.Printf("duration=%f[s]", interval.Duration().Seconds())
+	// Output: duration=1.000000[s]
 }
