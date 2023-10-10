@@ -21,14 +21,18 @@ type Assert func(*http.Response, *http.Request) error
 // TestingT is an interface to wrap the native *testing.T interface, this allows integration with GinkgoT() interface
 // GinkgoT interface defined in https://github.com/onsi/ginkgo/blob/55c858784e51c26077949c81b6defb6b97b76944/ginkgo_dsl.go#L91
 type TestingT interface {
+	// Errorf is equivalent to Log followed by Fail
 	Errorf(format string, args ...interface{})
+	// Fatal is equivalent to Log followed by FailNow
 	Fatal(args ...interface{})
+	// Fatalf is equivalent to Log followed by FailNow
 	Fatalf(format string, args ...interface{})
 }
 
 // failureMessageArgs are passed to the verifier but get stripped out from the user facing error message that gets printed
 // it allows the test to pass additional info about the failure such as the test name.
 type failureMessageArgs struct {
+	// Name is the name of the test. It's is `SpecTest.name``
 	Name string
 }
 

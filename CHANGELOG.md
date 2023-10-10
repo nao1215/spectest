@@ -4,9 +4,12 @@
 ### Changed
 - Dependabot update go.mod in example codes.
 
+### Removed
+- `SpecTest.RecorderHook` is deprecated since apitest package era.
+
 ## [0.0.3] - 2023-10-09
 ### Added
-- supprt more http methods; HEAD, OPTIONS, CONNECT, TRACE
+- support more http methods; HEAD, OPTIONS, CONNECT, TRACE
 
 ### Fixed
 - Broken example codes. However, some examples are still broken (iris, qraphql).
