@@ -146,7 +146,11 @@ func TestRecorderBuilder(t *testing.T) {
 func TestNewHTMLTemplateModelErrorsIfNoEventsDefined(t *testing.T) {
 	recorder := NewTestRecorder()
 
-	_, err := newHTMLTemplateModel(recorder)
+	s := SequenceDiagramFormatter{
+		storagePath: ".sequence",
+		fs:          &FS{},
+	}
+	_, err := s.newHTMLTemplateModel(recorder)
 
 	assert.Equal(t, "no events are defined", err.Error())
 }
@@ -154,7 +158,11 @@ func TestNewHTMLTemplateModelErrorsIfNoEventsDefined(t *testing.T) {
 func TestNewHTMLTemplateModelSuccess(t *testing.T) {
 	recorder := aRecorder()
 
-	model, err := newHTMLTemplateModel(recorder)
+	s := SequenceDiagramFormatter{
+		storagePath: ".sequence",
+		fs:          &FS{},
+	}
+	model, err := s.newHTMLTemplateModel(recorder)
 
 	assert.True(t, err == nil)
 	assert.Equal(t, 4, len(model.LogEntries))
@@ -265,4 +273,213 @@ func (m *FS) create(name string) (*os.File, error) {
 func (m *FS) mkdirAll(path string, _ os.FileMode) error {
 	m.CapturedMkdirAllPath = path
 	return nil
+}
+
+func TestExtractContentType(t *testing.T) {
+	tests := []struct {
+		name    string
+		headers string
+		want    string
+	}{
+		{
+			name:    "should extract content type",
+			headers: "GET /path HTTP/1.1\r\nHost: example.com\r\nContent-Type: application/json\r\n\r\n",
+			want:    "application/json",
+		},
+		{
+			name:    "should return empty string if content type is not found",
+			headers: "GET /path HTTP/1.1\r\nHost: example.com\r\n\r\n",
+			want:    "",
+		},
+		{
+			name:    "should return empty string if headers is empty",
+			headers: "",
+			want:    "",
+		},
+	}
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			if got := extractContentType(tt.headers); got != tt.want {
+				t.Errorf("extractContentType() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestIsImage(t *testing.T) {
+	tests := []struct {
+		name        string
+		contentType string
+		want        bool
+	}{
+		{
+			name:        "should return true if content type is image/jpeg",
+			contentType: "image/jpeg",
+			want:        true,
+		},
+		{
+			name:        "should return true if content type is image/png",
+			contentType: "image/png",
+			want:        true,
+		},
+		{
+			name:        "should return true if content type is image/gif",
+			contentType: "image/gif",
+			want:        true,
+		},
+		{
+			name:        "should return true if content type is image/svg+xml",
+			contentType: "image/svg+xml",
+			want:        true,
+		},
+		{
+			name:        "should return true if content type is image/bmp",
+			contentType: "image/bmp",
+			want:        true,
+		},
+		{
+			name:        "should return true if content type is image/webp",
+			contentType: "image/webp",
+			want:        true,
+		},
+		{
+			name:        "should return true if content type is image/tiff",
+			contentType: "image/tiff",
+			want:        true,
+		},
+		{
+			name:        "should return true if content type is image/x-icon",
+			contentType: "image/x-icon",
+			want:        true,
+		},
+		{
+			name:        "should return false if content type is not an image",
+			contentType: "application/json",
+			want:        false,
+		},
+	}
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			if got := isImage(tt.contentType); got != tt.want {
+				t.Errorf("isImage() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_imagePath(t *testing.T) {
+	type args struct {
+		dir         string
+		name        string
+		contentType string
+		index       int
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			name: "should return image path",
+			args: args{
+				dir:         "/tmp",
+				name:        "image",
+				contentType: "image/png",
+				index:       1,
+			},
+			want: "/tmp/image_1.png",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := imagePath(tt.args.dir, tt.args.name, tt.args.contentType, tt.args.index); got != tt.want {
+				t.Errorf("imagePath() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_toImageExt(t *testing.T) {
+	type args struct {
+		contentType string
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			name: "image/png should return png",
+			args: args{
+				contentType: "image/png",
+			},
+			want: "png",
+		},
+		{
+			name: "image/jpeg should return jpeg",
+			args: args{
+				contentType: "image/jpeg",
+			},
+			want: "jpeg",
+		},
+		{
+			name: "image/gif should return gif",
+			args: args{
+				contentType: "image/gif",
+			},
+			want: "gif",
+		},
+		{
+			name: "image/svg+xml should return svg",
+			args: args{
+				contentType: "image/svg+xml",
+			},
+			want: "svg",
+		},
+		{
+			name: "image/bmp should return bmp",
+			args: args{
+				contentType: "image/bmp",
+			},
+			want: "bmp",
+		},
+		{
+			name: "image/webp should return webp",
+			args: args{
+				contentType: "image/webp",
+			},
+			want: "webp",
+		},
+		{
+			name: "image/tiff should return tiff",
+			args: args{
+				contentType: "image/tiff",
+			},
+			want: "tiff",
+		},
+		{
+			name: "image/x-icon should return ico",
+			args: args{
+				contentType: "image/x-icon",
+			},
+			want: "ico",
+		},
+		{
+			name: "application/json should return empty string",
+			args: args{
+				contentType: "application/json",
+			},
+			want: "",
+		},
+	}
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			if got := toImageExt(tt.args.contentType); got != tt.want {
+				t.Errorf("toImageExt() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }

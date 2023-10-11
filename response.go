@@ -130,7 +130,6 @@ func (r *Response) End() Result {
 		specTest.t.Fatal("either define a http.Handler or enable networking")
 	}
 
-	specTest.interval.Start()
 	var res *http.Response
 	if specTest.reporter != nil {
 		res = specTest.report()
@@ -156,6 +155,9 @@ func (r *Response) End() Result {
 
 func (r *Response) runTest() *http.Response {
 	a := r.specTest
+	a.interval.Start()
+	defer a.interval.End()
+
 	if len(a.mocks) > 0 {
 		a.transport = newTransport(
 			a.mocks,

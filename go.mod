@@ -9,6 +9,7 @@ require (
 	github.com/go-spectest/diff v0.0.0-20231006143314-ce490574d4a9
 	github.com/google/go-cmp v0.6.0
 	github.com/gorilla/websocket v1.5.0
+	github.com/nao1215/gorky v0.2.1
 	github.com/stretchr/testify v1.8.4
 	github.com/tenntenn/testtime v0.2.2
 	github.com/xeipuuv/gojsonschema v1.2.0

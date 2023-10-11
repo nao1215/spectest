@@ -49,7 +49,7 @@ func (cookie *Cookie) Expires(expires time.Time) *Cookie {
 	return cookie
 }
 
-// MaxAge sets the maxage of the Cookie
+// MaxAge sets the max age of the Cookie
 func (cookie *Cookie) MaxAge(maxAge int) *Cookie {
 	cookie.maxAge = &maxAge
 	return cookie

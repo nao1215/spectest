@@ -378,9 +378,7 @@ func (s *SpecTest) report() *http.Response {
 	}
 	defer s.recorder.Reset()
 
-	s.interval.Start()
 	res := s.response.runTest()
-	s.interval.End()
 
 	s.recorder.
 		AddTitle(fmt.Sprintf("%s %s", capturedInboundReq.Method, capturedInboundReq.URL.String())).
