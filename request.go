@@ -63,7 +63,7 @@ func (r *Request) Bodyf(format string, args ...interface{}) *Request {
 
 // BodyFromFile is a builder method to set the request body
 func (r *Request) BodyFromFile(f string) *Request {
-	b, err := os.ReadFile(f)
+	b, err := os.ReadFile(filepath.Clean(f))
 	if err != nil {
 		r.apiTest.t.Fatal(err)
 	}
@@ -225,7 +225,7 @@ func (r *Request) MultipartFile(name string, ff ...string) *Request {
 
 	for _, f := range ff {
 		func() {
-			file, err := os.Open(f)
+			file, err := os.Open(filepath.Clean(f))
 			if err != nil {
 				r.apiTest.t.Fatal(err)
 			}

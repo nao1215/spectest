@@ -11,6 +11,7 @@ import (
 	"net/textproto"
 	"net/url"
 	"os"
+	"path/filepath"
 	"reflect"
 	"regexp"
 	"sort"
@@ -528,7 +529,7 @@ func (r *MockRequest) Bodyf(format string, args ...interface{}) *MockRequest {
 
 // BodyFromFile configures the mock request to match the given body from a file
 func (r *MockRequest) BodyFromFile(f string) *MockRequest {
-	b, err := os.ReadFile(f)
+	b, err := os.ReadFile(filepath.Clean(f))
 	if err != nil {
 		panic(err)
 	}
@@ -713,7 +714,7 @@ func (r *MockResponse) Bodyf(format string, args ...interface{}) *MockResponse {
 
 // BodyFromFile defines the mock response body from a file
 func (r *MockResponse) BodyFromFile(f string) *MockResponse {
-	b, err := os.ReadFile(f)
+	b, err := os.ReadFile(filepath.Clean(f))
 	if err != nil {
 		panic(err)
 	}
@@ -1026,12 +1027,12 @@ var formDataNotPresentMatcher = func(req *http.Request, spec *MockRequest) error
 }
 
 var cookieMatcher = func(req *http.Request, spec *MockRequest) error {
-	for _, c := range spec.cookie {
-		foundCookie, _ := req.Cookie(*c.name)
+	for i := range spec.cookie {
+		foundCookie, _ := req.Cookie(*spec.cookie[i].name)
 		if foundCookie == nil {
-			return fmt.Errorf("expected cookie with name '%s' not received", *c.name)
+			return fmt.Errorf("expected cookie with name '%s' not received", *spec.cookie[i].name)
 		}
-		if _, mismatches := compareCookies(&c, foundCookie); len(mismatches) > 0 {
+		if _, mismatches := compareCookies(&spec.cookie[i], foundCookie); len(mismatches) > 0 {
 			return fmt.Errorf("failed to match cookie: %v", mismatches)
 		}
 	}

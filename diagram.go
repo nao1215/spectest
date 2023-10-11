@@ -46,7 +46,7 @@ type (
 )
 
 func (r *osFileSystem) create(name string) (*os.File, error) {
-	return os.Create(name)
+	return os.Create(filepath.Clean(name))
 }
 
 func (r *osFileSystem) mkdirAll(path string, perm os.FileMode) error {
@@ -217,7 +217,11 @@ func newHTMLTemplateModel(r *Recorder) (htmlTemplateModel, error) {
 		SubTitle:       r.SubTitle,
 		StatusCode:     status,
 		BadgeClass:     badgeCSSClass(status),
-		MetaJSON:       htmlTemplate.JS(jsonMeta),
+		//#nosec
+		// FIXME: G203 (CWE-79): The used method does not auto-escape HTML.
+		// This can potentially lead to 'Cross-site Scripting' vulnerabilities,
+		// in case the attacker controls the input. (Confidence: LOW, Severity: MEDIUM)
+		MetaJSON: htmlTemplate.JS(jsonMeta),
 	}, nil
 }
 

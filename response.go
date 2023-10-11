@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/textproto"
 	"os"
+	"path/filepath"
 )
 
 // Response is the user defined expected response from the application under test
@@ -37,7 +38,7 @@ func (r *Response) Bodyf(format string, args ...interface{}) *Response {
 
 // BodyFromFile reads the given file and uses the content as the expected response body
 func (r *Response) BodyFromFile(f string) *Response {
-	b, err := os.ReadFile(f)
+	b, err := os.ReadFile(filepath.Clean(f))
 	if err != nil {
 		r.specTest.t.Fatal(err)
 	}
