@@ -4,6 +4,7 @@
 ### Added
 - GitHub Actions workflow for [gosec](https://github.com/securego/gosec).
   - Fix gosec issue
+- Show image in the report if Content-Type is image MIME
 
 ## [0.0.4] - 2023-10-10
 ### Added
