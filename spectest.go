@@ -358,7 +358,9 @@ func (s *SpecTest) report() *http.Response {
 	s.observers = append(s.observers, func(finalRes *http.Response, inboundReq *http.Request, a *SpecTest) {
 		capturedFinalRes = copyHTTPResponse(finalRes)
 		defer func() {
-			capturedFinalRes.Body.Close() //nolint errcheck TODO:
+			if err := capturedFinalRes.Body.Close(); err != nil {
+				panic(err) // FIXME: handle error
+			}
 		}()
 		capturedInboundReq = copyHTTPRequest(inboundReq)
 	})

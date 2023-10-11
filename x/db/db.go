@@ -613,7 +613,9 @@ func namedValueToValue(named []driver.NamedValue) ([]driver.Value, error) {
 func sqlDriverNameToDriver(driverName string) driver.Driver {
 	db, _ := sql.Open(driverName, "")
 	if db != nil {
-		db.Close()
+		if err := db.Close(); err != nil {
+			panic(err) // FIXME: return error
+		}
 		return db.Driver()
 	}
 	return nil

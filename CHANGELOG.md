@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.0.5, unreleased] - 2023-XX-XX
+### Added
+- GitHub Actions workflow for [gosec](https://github.com/securego/gosec).
+  - Fix gosec issue
+
 ## [0.0.4] - 2023-10-10
 ### Added
 - Generate code coverage report with `make coverage`. 

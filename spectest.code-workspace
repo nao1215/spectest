@@ -66,6 +66,8 @@
             "Sdump",
             "Seqs",
             "shellcheck",
+            "SNSAPI",
+            "snsiface",
             "spectest",
             "steinfletcher",
             "struct",
