@@ -7,11 +7,12 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/go-spectest/diff v0.0.0-20231006143314-ce490574d4a9 h1:I05FIUaZLNe9Jo6ZCvODDGBqHMk3TYd7V/wV9dZhwXk=
 github.com/go-spectest/diff v0.0.0-20231006143314-ce490574d4a9/go.mod h1:wWRXl4ClWLDIPkL/lS8SSxojHRg1cGngvPcya/mYhf0=
-github.com/go-spectest/spectest v0.0.4 h1:3emVbe3bwbqpdETH8l3NOIBCp+TD/xIPGt7qpzEsUiQ=
-github.com/go-spectest/spectest v0.0.4/go.mod h1:ZXac1xZ+WMcxUzf/hFKJnx55R+9BZdRrhys7F2dZZvk=
-github.com/google/go-cmp v0.5.9 h1:O2Tfq5qg4qc4AmwVlvv0oLiVAGB7enBSJ2x2DqQFi38=
+github.com/go-spectest/spectest v0.0.6 h1:IqQUw1+Tq49ml75C6C3DBtXFilnOXUW8ZBFKlftxBQM=
+github.com/go-spectest/spectest v0.0.6/go.mod h1:XIYK9byIF4TJDO2wrdXMcc06Gg2PfxiJF0Oc7uEfJXM=
+github.com/google/go-cmp v0.6.0 h1:ofyhxvXcZhMsU5ulbFiLKl/XBFqE1GSq7atu8tAmTRI=
 github.com/julienschmidt/httprouter v1.3.0 h1:U0609e9tgbseu3rBINet9P48AI/D3oJs4dN7jwJOQ1U=
 github.com/julienschmidt/httprouter v1.3.0/go.mod h1:JR6WtHb+2LUe8TCKY3cZOxFyyO8IZAc4RVcycCCAKdM=
+github.com/nao1215/gorky v0.2.1 h1:kxXYhCNBbtGru9CCSYx+QC0JZfZJ1csY3uLbb5n2WKA=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/stretchr/testify v1.8.4 h1:CcVxjf3Q8PM0mHUKJCdn+eZZtm5yQwehR5yeSVQQcUk=
 github.com/tenntenn/testtime v0.2.2 h1:y6K00BUNg7cRE9WpkBX/Bn+WgmV5/a3hsw7xGNyF2p0=
