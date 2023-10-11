@@ -5,6 +5,7 @@
 [![Vuluncheck](https://github.com/go-spectest/spectest/actions/workflows/govulncheck.yml/badge.svg)](https://github.com/go-spectest/spectest/actions/workflows/govulncheck.yml)
 [![UnitTestExampleCodes](https://github.com/go-spectest/spectest/actions/workflows/test-examples.yml/badge.svg)](https://github.com/go-spectest/spectest/actions/workflows/test-examples.yml)
 [![reviewdog](https://github.com/go-spectest/spectest/actions/workflows/reviewdog.yml/badge.svg)](https://github.com/go-spectest/spectest/actions/workflows/reviewdog.yml)
+[![Gosec](https://github.com/go-spectest/spectest/actions/workflows/gosec.yml/badge.svg)](https://github.com/go-spectest/spectest/actions/workflows/gosec.yml)
 ![Coverage](https://github.com/go-spectest/octocovs-central-repo/blob/main//badges/go-spectest/spectest/coverage.svg?raw=true)
 
 ## What is spectest?
