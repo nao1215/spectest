@@ -1592,9 +1592,10 @@ func TestReportWithImage(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 	})
 
+	tmpDir := t.TempDir()
 	spectest.New().
 		CustomReportName("sample").
-		Report(spectest.SequenceDiagram(filepath.Join("/", "tmp"))).
+		Report(spectest.SequenceDiagram(tmpDir)).
 		Handler(handler).
 		Get("/image").
 		Expect(t).
@@ -1604,7 +1605,7 @@ func TestReportWithImage(t *testing.T) {
 		Status(http.StatusOK).
 		End()
 
-	if file.Exists(filepath.Join("/", "tmp", "sample.png")) {
+	if file.Exists(filepath.Join(tmpDir, "sample.png")) {
 		t.Errorf("image file should not exist")
 	}
 }
