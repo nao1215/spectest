@@ -1558,11 +1558,11 @@ func TestHTTPMethodTrace(t *testing.T) {
 
 func TestReportWithImage(t *testing.T) {
 	imagePath := filepath.Join("testdata", "sample.png")
-	imageFile, err := os.Open(imagePath)
+	imageFile, err := os.Open(filepath.Clean(imagePath))
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer imageFile.Close()
+	defer imageFile.Close() //nolint
 
 	imageInfo, err := imageFile.Stat()
 	if err != nil {

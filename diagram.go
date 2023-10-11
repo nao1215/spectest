@@ -276,7 +276,7 @@ func generateImage(body, dir, name, contentType string, index int) {
 	if err != nil {
 		panic(err) //FIXME: error handling
 	}
-	defer file.Close()
+	defer file.Close() //nolint
 
 	_, err = file.Write([]byte(body))
 	if err != nil {
