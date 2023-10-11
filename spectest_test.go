@@ -1550,7 +1550,7 @@ func TestHTTPMethodTrace(t *testing.T) {
 			Header("User-Agent", "Go-http-client/1.1").
 			Header("Keep-Alive", "timeout=5, max=1000").
 			Expect(t).
-			Body("Keep-Alive: timeout=5, max=1000\nUser-Agent: Go-http-client/1.1\n").
+			Body(fmt.Sprintf("Keep-Alive: timeout=5, max=1000\nUser-Agent: Go-http-client/1.1\n")).
 			Status(http.StatusOK).
 			End()
 	})

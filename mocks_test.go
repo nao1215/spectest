@@ -108,7 +108,7 @@ func TestMocksNewEmptyUnmatchedMockErrorExpectedErrorsString(t *testing.T) {
 	assert.Equal(t, true, mockError != nil)
 	assert.Equal(t, 2, len(mockError.errors))
 	assert.Equal(t,
-		"received request did not match any mocks\n\nMock 1 mismatches:\n• a boo boo has occurred\n\nMock 2 mismatches:\n• tom drank too much beer\n\n",
+		fmt.Sprintf("received request did not match any mocks\n\nMock 1 mismatches:\n• a boo boo has occurred\n\nMock 2 mismatches:\n• tom drank too much beer\n\n"),
 		mockError.Error())
 }
 
@@ -635,10 +635,10 @@ func TestMocksBodyMatcherRegexp(t *testing.T) {
 		matchBody     string
 		expectedError error
 	}{
-		{"golang\n", "go[lang]?", nil},
-		{"golang\n", "go[lang]?", nil},
-		{"go\n", "go[lang]?", nil},
-		{`{"a":"12345"}\n`, `{"a":"12345"}`, nil},
+		{fmt.Sprintf("golang\n"), "go[lang]?", nil},
+		{fmt.Sprintf("golang\n"), "go[lang]?", nil},
+		{fmt.Sprintf("go\n"), "go[lang]?", nil},
+		{fmt.Sprintf(`{"a":"12345"}\n`), `{"a":"12345"}`, nil},
 	}
 
 	for _, test := range tests {
@@ -850,7 +850,7 @@ func TestMocksUnmatchedMockErrorOrderedMockKeys(t *testing.T) {
 		addErrors(4, errors.New("gah"))
 
 	assert.Equal(t,
-		"received request did not match any mocks\n\nMock 1 mismatches:\n• oh shoot\n\nMock 3 mismatches:\n• oh no\n\nMock 4 mismatches:\n• gah\n\n",
+		fmt.Sprintf("received request did not match any mocks\n\nMock 1 mismatches:\n• oh shoot\n\nMock 3 mismatches:\n• oh no\n\nMock 4 mismatches:\n• gah\n\n"),
 		unmatchedMockError.Error())
 }
 
@@ -869,7 +869,7 @@ func TestMocksMatchesErrorsMatchUnmatchedMocks(t *testing.T) {
 	}
 
 	assert.Equal(t, true, matchErrors != nil)
-	assert.Equal(t, "received request did not match any mocks\n\nMock 1 mismatches:\n• received path /preferences/12345 did not match mock path /preferences/123456\n\n",
+	assert.Equal(t, fmt.Sprintf("received request did not match any mocks\n\nMock 1 mismatches:\n• received path /preferences/12345 did not match mock path /preferences/123456\n\n"),
 		matchErrors.Error())
 }
 

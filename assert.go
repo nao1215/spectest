@@ -95,7 +95,7 @@ func (a DefaultVerifier) Equal(t TestingT, expected, actual interface{}, msgAndA
 // Fail reports a failure
 func (a DefaultVerifier) Fail(t TestingT, failureMessage string, msgAndArgs ...interface{}) bool {
 	content := []labeledContent{
-		{"Error Trace", strings.Join(callerInfo(), "\n\t\t\t")},
+		{"Error Trace", strings.Join(callerInfo(), lineFeed()+"\t\t\t")},
 		{"Error", failureMessage},
 	}
 
@@ -238,7 +238,7 @@ func labeledOutput(content ...labeledContent) string {
 	}
 	var output string
 	for _, v := range content {
-		output += "\t" + v.label + ":" + strings.Repeat(" ", longestLabel-len(v.label)) + "\t" + indentMessageLines(v.content, longestLabel) + "\n"
+		output += "\t" + v.label + ":" + strings.Repeat(" ", longestLabel-len(v.label)) + "\t" + indentMessageLines(v.content, longestLabel) + lineFeed()
 	}
 	return output
 }
@@ -248,7 +248,7 @@ func indentMessageLines(message string, longestLabelLen int) string {
 
 	for i, scanner := 0, bufio.NewScanner(strings.NewReader(message)); scanner.Scan(); i++ {
 		if i != 0 {
-			outBuf.WriteString("\n\t" + strings.Repeat(" ", longestLabelLen+1) + "\t")
+			outBuf.WriteString(lineFeed() + "\t" + strings.Repeat(" ", longestLabelLen+1) + "\t")
 		}
 		outBuf.WriteString(scanner.Text())
 	}

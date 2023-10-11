@@ -75,15 +75,15 @@ func (u *unmatchedMockError) addErrors(mockNumber int, errors ...error) *unmatch
 // Error implementation of in-built error human readable string function
 func (u *unmatchedMockError) Error() string {
 	var strBuilder strings.Builder
-	strBuilder.WriteString("received request did not match any mocks\n\n")
+	strBuilder.WriteString(fmt.Sprintf("received request did not match any mocks\n\n"))
 	for _, mockNumber := range u.orderedMockKeys() {
 		strBuilder.WriteString(fmt.Sprintf("Mock %d mismatches:\n", mockNumber))
 		for _, err := range u.errors[mockNumber] {
 			strBuilder.WriteString("• ")
 			strBuilder.WriteString(err.Error())
-			strBuilder.WriteString("\n")
+			strBuilder.WriteString(lineFeed())
 		}
-		strBuilder.WriteString("\n")
+		strBuilder.WriteString(lineFeed())
 	}
 	return strBuilder.String()
 }
@@ -1216,7 +1216,7 @@ func diff(expected interface{}, actual interface{}) string {
 		Context:  2,
 	})
 
-	return "\n\nDiff:\n" + diff
+	return fmt.Sprintf("\n\nDiff:\n") + diff
 }
 
 func typeAndKind(v interface{}) (reflect.Type, reflect.Kind) {
