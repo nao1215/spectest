@@ -199,9 +199,8 @@ func (sdf *SequenceDiagramFormatter) newHTMLTemplateModel(recorder *Recorder) (h
 			contentType := extractContentType(entry.Header)
 			if isImage(contentType) {
 				generateImage(entry.Body, sdf.storagePath, recorder.Meta.reportFileName(), contentType, i)
-				entry.Body = filepath.Clean(imagePath(sdf.storagePath, recorder.Meta.reportFileName(), contentType, i))
+				entry.Body = filepath.Clean(filepath.Base(imagePath(sdf.storagePath, recorder.Meta.reportFileName(), contentType, i)))
 			}
-
 			entry.Timestamp = v.Timestamp
 			logs = append(logs, entry)
 		case MessageRequest:
