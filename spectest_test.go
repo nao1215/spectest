@@ -1591,8 +1591,10 @@ func TestReportWithImage(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 	})
 
-	tmpDir := t.TempDir()
-	defer removeDir(t, tmpDir)
+	tmpDir, err := os.MkdirTemp("", "spectest")
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	spectest.New().
 		CustomReportName("sample").
@@ -1608,16 +1610,5 @@ func TestReportWithImage(t *testing.T) {
 
 	if file.Exists(filepath.Join(tmpDir, "sample.png")) {
 		t.Errorf("image file should not exist")
-	}
-}
-
-// removeDir ref. https://github.com/golang/go/issues/51442
-func removeDir(t *testing.T, dir string) {
-	t.Helper()
-	for i := 0; i < 10; i++ {
-		if err := os.RemoveAll(dir); err == nil {
-			return
-		}
-		time.Sleep(100 * time.Millisecond)
 	}
 }
