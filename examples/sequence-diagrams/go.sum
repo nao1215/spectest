@@ -2,11 +2,12 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/go-spectest/diff v0.0.0-20231006143314-ce490574d4a9 h1:I05FIUaZLNe9Jo6ZCvODDGBqHMk3TYd7V/wV9dZhwXk=
 github.com/go-spectest/diff v0.0.0-20231006143314-ce490574d4a9/go.mod h1:wWRXl4ClWLDIPkL/lS8SSxojHRg1cGngvPcya/mYhf0=
-github.com/go-spectest/spectest v0.0.4 h1:3emVbe3bwbqpdETH8l3NOIBCp+TD/xIPGt7qpzEsUiQ=
-github.com/go-spectest/spectest v0.0.4/go.mod h1:ZXac1xZ+WMcxUzf/hFKJnx55R+9BZdRrhys7F2dZZvk=
-github.com/google/go-cmp v0.5.9 h1:O2Tfq5qg4qc4AmwVlvv0oLiVAGB7enBSJ2x2DqQFi38=
+github.com/go-spectest/spectest v0.0.5 h1:f3Bi4cIFbS8IxAJawd0L28OszzAqvw8tlaXGh/G4fjI=
+github.com/go-spectest/spectest v0.0.5/go.mod h1:XIYK9byIF4TJDO2wrdXMcc06Gg2PfxiJF0Oc7uEfJXM=
+github.com/google/go-cmp v0.6.0 h1:ofyhxvXcZhMsU5ulbFiLKl/XBFqE1GSq7atu8tAmTRI=
 github.com/gorilla/mux v1.8.0 h1:i40aqfkR1h2SlN9hojwV5ZA91wcXFOvkdNIeFDP5koI=
 github.com/gorilla/mux v1.8.0/go.mod h1:DVbg23sWSpFRCP0SfiEN6jmj59UnW/n46BH5rLB71So=
+github.com/nao1215/gorky v0.2.1 h1:kxXYhCNBbtGru9CCSYx+QC0JZfZJ1csY3uLbb5n2WKA=
 github.com/tenntenn/testtime v0.2.2 h1:y6K00BUNg7cRE9WpkBX/Bn+WgmV5/a3hsw7xGNyF2p0=
 github.com/tenntenn/testtime v0.2.2/go.mod h1:gXZpxnMoBEV+JZwooprQ65lIbR2Kzk5PpP/deHMn+Is=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
