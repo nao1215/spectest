@@ -86,8 +86,8 @@ func (r *webSequenceDiagramDSL) toString() string {
 }
 
 // Format formats the events received by the recorder
-func (r *SequenceDiagramFormatter) Format(recorder *Recorder) {
-	output, err := newHTMLTemplateModel(recorder)
+func (sdf *SequenceDiagramFormatter) Format(recorder *Recorder) {
+	output, err := sdf.newHTMLTemplateModel(recorder)
 	if err != nil {
 		panic(err)
 	}
@@ -106,13 +106,13 @@ func (r *SequenceDiagramFormatter) Format(recorder *Recorder) {
 	}
 
 	fileName := fmt.Sprintf("%s.html", recorder.Meta.reportFileName())
-	err = r.fs.mkdirAll(r.storagePath, os.ModePerm)
+	err = sdf.fs.mkdirAll(sdf.storagePath, os.ModePerm)
 	if err != nil {
 		panic(err)
 	}
-	saveFilesTo := fmt.Sprintf("%s/%s", r.storagePath, fileName)
+	saveFilesTo := filepath.Join(sdf.storagePath, fileName)
 
-	f, err := r.fs.create(saveFilesTo)
+	f, err := sdf.fs.create(saveFilesTo)
 	if err != nil {
 		panic(err)
 	}
@@ -140,6 +140,14 @@ var templateFunc = &htmlTemplate.FuncMap{
 	"inc": func(i int) int {
 		return i + 1
 	},
+	"contains": func(str string, subs ...string) bool {
+		for _, sub := range subs {
+			if strings.Contains(str, sub) {
+				return true
+			}
+		}
+		return false
+	},
 }
 
 func formatDiagramRequest(req *http.Request) string {
@@ -163,14 +171,14 @@ func badgeCSSClass(status int) string {
 	return class
 }
 
-func newHTMLTemplateModel(r *Recorder) (htmlTemplateModel, error) {
-	if len(r.Events) == 0 {
+func (sdf *SequenceDiagramFormatter) newHTMLTemplateModel(recorder *Recorder) (htmlTemplateModel, error) {
+	if len(recorder.Events) == 0 {
 		return htmlTemplateModel{}, errors.New("no events are defined")
 	}
 	var logs []LogEntry
-	webSequenceDiagram := &webSequenceDiagramDSL{meta: r.Meta}
+	webSequenceDiagram := &webSequenceDiagramDSL{meta: recorder.Meta}
 
-	for _, event := range r.Events {
+	for i, event := range recorder.Events {
 		switch v := event.(type) {
 		case HTTPRequest:
 			httpReq := v.Value
@@ -187,6 +195,13 @@ func newHTMLTemplateModel(r *Recorder) (htmlTemplateModel, error) {
 			if err != nil {
 				return htmlTemplateModel{}, err
 			}
+			// If the Content Type is an image, display the image in the report instead of the response body (binary).
+			contentType := extractContentType(entry.Header)
+			if isImage(contentType) {
+				generateImage(entry.Body, sdf.storagePath, recorder.Meta.reportFileName(), contentType, i)
+				entry.Body = filepath.Clean(imagePath(sdf.storagePath, recorder.Meta.reportFileName(), contentType, i))
+			}
+
 			entry.Timestamp = v.Timestamp
 			logs = append(logs, entry)
 		case MessageRequest:
@@ -194,18 +209,26 @@ func newHTMLTemplateModel(r *Recorder) (htmlTemplateModel, error) {
 			logs = append(logs, LogEntry{Header: v.Header, Body: v.Body, Timestamp: v.Timestamp})
 		case MessageResponse:
 			webSequenceDiagram.addResponseRow(v.Source, v.Target, v.Header)
-			logs = append(logs, LogEntry{Header: v.Header, Body: v.Body, Timestamp: v.Timestamp})
+
+			// If the Content Type is an image, display the image in the report instead of the response body (binary).
+			contentType := extractContentType(v.Header)
+			body := v.Body
+			if isImage(contentType) {
+				generateImage(v.Body, sdf.storagePath, recorder.Meta.reportFileName(), contentType, i)
+				body = filepath.Clean(imagePath(sdf.storagePath, recorder.Meta.reportFileName(), contentType, i))
+			}
+			logs = append(logs, LogEntry{Header: v.Header, Body: body, Timestamp: v.Timestamp})
 		default:
 			panic("received unknown event type")
 		}
 	}
 
-	status, err := r.ResponseStatus()
+	status, err := recorder.ResponseStatus()
 	if err != nil {
 		return htmlTemplateModel{}, err
 	}
 
-	jsonMeta, err := json.Marshal(r.Meta)
+	jsonMeta, err := json.Marshal(recorder.Meta)
 	if err != nil {
 		return htmlTemplateModel{}, err
 	}
@@ -213,8 +236,8 @@ func newHTMLTemplateModel(r *Recorder) (htmlTemplateModel, error) {
 	return htmlTemplateModel{
 		WebSequenceDSL: webSequenceDiagram.toString(),
 		LogEntries:     logs,
-		Title:          r.Title,
-		SubTitle:       r.SubTitle,
+		Title:          recorder.Title,
+		SubTitle:       recorder.SubTitle,
 		StatusCode:     status,
 		BadgeClass:     badgeCSSClass(status),
 		//#nosec
@@ -223,6 +246,70 @@ func newHTMLTemplateModel(r *Recorder) (htmlTemplateModel, error) {
 		// in case the attacker controls the input. (Confidence: LOW, Severity: MEDIUM)
 		MetaJSON: htmlTemplate.JS(jsonMeta),
 	}, nil
+}
+
+// extractContentType extracts the content type from the header.
+// If the content type is not found, it returns an empty string.
+// Original source:  "GET /path HTTP/1.1\r\nHost: example.com\r\nContent-Type: application/json\r\n\r\n"
+// Extract: "application/json"
+func extractContentType(headers string) string {
+	for _, header := range strings.Split(headers, "\r\n") {
+		if strings.HasPrefix(header, "Content-Type") {
+			return strings.TrimSpace(strings.TrimPrefix(header, "Content-Type:"))
+		}
+	}
+	return ""
+}
+
+// isImage returns true if the content type is an image.
+func isImage(contentType string) bool {
+	switch contentType {
+	case "image/jpeg", "image/png", "image/gif", "image/svg+xml", "image/bmp", "image/webp", "image/tiff", "image/x-icon":
+		return true
+	}
+	return false
+}
+
+// generateImage generates an image from the body.
+func generateImage(body, dir, name, contentType string, index int) {
+	file, err := os.Create(filepath.Clean(imagePath(dir, name, contentType, index)))
+	if err != nil {
+		panic(err) //FIXME: error handling
+	}
+	defer file.Close() //nolint
+
+	_, err = file.Write([]byte(body))
+	if err != nil {
+		panic(err) //FIXME: error handling
+	}
+}
+
+// imagePath returns the image name.
+func imagePath(dir, name, contentType string, index int) string {
+	return fmt.Sprintf("%s/%s_%d.%s", dir, name, index, toImageExt(contentType))
+}
+
+// toImageExt returns the image extension based on the content type.
+func toImageExt(contentType string) string {
+	switch contentType {
+	case "image/jpeg":
+		return "jpeg"
+	case "image/png":
+		return "png"
+	case "image/gif":
+		return "gif"
+	case "image/svg+xml":
+		return "svg"
+	case "image/bmp":
+		return "bmp"
+	case "image/webp":
+		return "webp"
+	case "image/tiff":
+		return "tiff"
+	case "image/x-icon":
+		return "ico"
+	}
+	return ""
 }
 
 func formatBodyContent(bodyReadCloser io.ReadCloser, replaceBody func(replacementBody io.ReadCloser)) (string, error) {

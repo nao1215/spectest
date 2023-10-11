@@ -71,8 +71,12 @@ const reportTemplate = `<!DOCTYPE html>
             <td>
                 <pre>{{ $e.Header }}</pre>
                 {{if $e.Body }}
-                    <pre style="max-height: 1000px; margin-bottom: 0; border: 1px solid #eee;"><code id="event-message-{{$i}}">{{ $e.Body }}</code></pre>
-                    <button class="copy-to-clipboard-button" data-clipboard-target="#event-message-{{$i}}">copy to clipboard</button>
+                    {{if contains $e.Body ".jpeg" ".png" ".gif" ".svg" ".bmp" ".webp" ".tiff" ".ico" }}
+                        <img src="{{ $e.Body }}" alt="Image">
+                    {{else}}
+                        <pre style="max-height: 1000px; margin-bottom: 0; border: 1px solid #eee;"><code id="event-message-{{$i}}">{{ $e.Body }}</code></pre>
+                        <button class="copy-to-clipboard-button" data-clipboard-target="#event-message-{{$i}}">copy to clipboard</button>
+                    {{end}}
                 {{end}}
             </td>
         </tr>

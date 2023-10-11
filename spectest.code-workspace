@@ -47,6 +47,7 @@
             "multisets",
             "newj",
             "nolint",
+            "nosec",
             "ntest",
             "Obershelp",
             "octocov",
@@ -83,6 +84,7 @@
             "typecheck",
             "unidiff",
             "varcheck",
+            "webp",
             "windiff",
             "writelines"
         ],

@@ -14,6 +14,7 @@ type (
 	}
 
 	// Event represents a reporting event
+	// e.g. HTTPRequest, HTTPResponse, MessageRequest, MessageResponse
 	Event interface {
 		GetTime() time.Time
 	}
