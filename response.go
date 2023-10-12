@@ -132,10 +132,7 @@ func (r *Response) Assert(fn func(*http.Response, *http.Request) error) *Respons
 func (r *Response) End() Result {
 	specTest := r.specTest
 	defer func() {
-		if specTest.debugEnabled {
-			specTest.interval.End()
-			fmt.Printf("Duration: %s\n", specTest.interval.Duration())
-		}
+		specTest.debug.duration(specTest.interval)
 	}()
 
 	if specTest.handler == nil && !specTest.network.isEnable() {
@@ -174,7 +171,7 @@ func (r *Response) runTest() *http.Response {
 		a.transport = newTransport(
 			a.mocks,
 			a.httpClient,
-			a.debugEnabled,
+			a.debug,
 			a.mockResponseDelayEnabled,
 			a.mocksObservers,
 			r.specTest,

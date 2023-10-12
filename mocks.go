@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"net/http/httputil"
 	"net/textproto"
 	"net/url"
 	"os"
@@ -25,7 +24,7 @@ import (
 
 // Transport wraps components used to observe and manipulate the real request and response objects
 type Transport struct {
-	debugEnabled             bool
+	debug                    *debug
 	mockResponseDelayEnabled bool
 	mocks                    []*Mock
 	nativeTransport          http.RoundTripper
@@ -37,18 +36,19 @@ type Transport struct {
 func newTransport(
 	mocks []*Mock,
 	httpClient *http.Client,
-	debugEnabled bool,
+	debug *debug,
 	mockResponseDelayEnabled bool,
 	observers []Observe,
 	apiTest *SpecTest) *Transport {
 	t := &Transport{
 		mocks:                    mocks,
 		httpClient:               httpClient,
-		debugEnabled:             debugEnabled,
+		debug:                    debug,
 		mockResponseDelayEnabled: mockResponseDelayEnabled,
 		observers:                observers,
 		apiTest:                  apiTest,
 	}
+
 	if httpClient != nil {
 		t.nativeTransport = httpClient.Transport
 	} else {
@@ -99,11 +99,9 @@ func (u *unmatchedMockError) orderedMockKeys() []int {
 
 // RoundTrip implementation intended to match a given expected mock request or throw an error with a list of reasons why no match was found.
 func (r *Transport) RoundTrip(req *http.Request) (mockResponse *http.Response, matchErrors error) {
-	if r.debugEnabled {
-		defer func() {
-			debugMock(mockResponse, req)
-		}()
-	}
+	defer func() {
+		r.debug.mock(mockResponse, req)
+	}()
 
 	if r.observers != nil && len(r.observers) > 0 {
 		defer func() {
@@ -129,27 +127,10 @@ func (r *Transport) RoundTrip(req *http.Request) (mockResponse *http.Response, m
 		return res, nil
 	}
 
-	if r.debugEnabled {
+	if r.debug.isEnable() {
 		fmt.Printf("failed to match mocks. Errors: %s\n", matchErrors)
 	}
-
 	return nil, matchErrors
-}
-
-func debugMock(res *http.Response, req *http.Request) {
-	requestDump, err := httputil.DumpRequestOut(req, true)
-	if err == nil {
-		debugLog(requestDebugPrefix(), "request to mock", string(requestDump))
-	}
-
-	if res != nil {
-		responseDump, err := httputil.DumpResponse(res, true)
-		if err == nil {
-			debugLog(responseDebugPrefix(), "response from mock", string(responseDump))
-		}
-	} else {
-		debugLog(responseDebugPrefix(), "response from mock", "")
-	}
 }
 
 // Hijack replace the transport implementation of the interaction under test in order to observe, mock and inject expectations
@@ -220,7 +201,7 @@ type Mock struct {
 	request         *MockRequest
 	response        *MockResponse
 	httpClient      *http.Client
-	debugStandalone bool
+	debugStandalone *debug
 	times           int
 	timesSet        bool
 }
@@ -274,6 +255,26 @@ type MockRequest struct {
 	matchers           []Matcher
 }
 
+// newMockRequest return new MockRequest
+func newMockRequest(m *Mock) *MockRequest {
+	return &MockRequest{
+		mock:               m,
+		headers:            map[string][]string{},
+		headerPresent:      []string{},
+		headerNotPresent:   []string{},
+		formData:           map[string][]string{},
+		formDataPresent:    []string{},
+		formDataNotPresent: []string{},
+		query:              map[string][]string{},
+		queryPresent:       []string{},
+		queryNotPresent:    []string{},
+		cookie:             []Cookie{},
+		cookiePresent:      []string{},
+		cookieNotPresent:   []string{},
+		matchers:           defaultMatchers,
+	}
+}
+
 // UnmatchedMock exposes some information about mocks that failed to match a request
 type UnmatchedMock struct {
 	URL url.URL
@@ -290,17 +291,27 @@ type MockResponse struct {
 	fixedDelayMillis int64
 }
 
+// newMockResponse return new MockResponse
+func newMockResponse(m *Mock) *MockResponse {
+	return &MockResponse{
+		mock:    m,
+		headers: map[string][]string{},
+		cookies: []*Cookie{},
+	}
+}
+
 // StandaloneMocks for using mocks outside of API tests context
 type StandaloneMocks struct {
 	mocks      []*Mock
 	httpClient *http.Client
-	debug      bool
+	debug      *debug
 }
 
 // NewStandaloneMocks create a series of StandaloneMocks
 func NewStandaloneMocks(mocks ...*Mock) *StandaloneMocks {
 	return &StandaloneMocks{
 		mocks: mocks,
+		debug: newDebug(),
 	}
 }
 
@@ -312,7 +323,7 @@ func (r *StandaloneMocks) HTTPClient(cli *http.Client) *StandaloneMocks {
 
 // Debug switch on debugging mode
 func (r *StandaloneMocks) Debug() *StandaloneMocks {
-	r.debug = true
+	r.debug.enable()
 	return r
 }
 
@@ -334,27 +345,19 @@ func (r *StandaloneMocks) End() func() {
 // NewMock create a new mock, ready for configuration using the builder pattern
 func NewMock() *Mock {
 	mock := &Mock{
-		m:     &sync.Mutex{},
-		times: 1,
+		debugStandalone: newDebug(),
+		m:               &sync.Mutex{},
+		times:           1,
 	}
-	mock.request = &MockRequest{
-		mock:     mock,
-		headers:  map[string][]string{},
-		formData: map[string][]string{},
-		query:    map[string][]string{},
-		matchers: defaultMatchers,
-	}
-	mock.response = &MockResponse{
-		mock:    mock,
-		headers: map[string][]string{},
-	}
+	mock.request = newMockRequest(mock)
+	mock.response = newMockResponse(mock)
 	return mock
 }
 
 // Debug is used to set debug mode for mocks in standalone mode.
 // This is overridden by the debug setting in the `SpecTest` struct
 func (m *Mock) Debug() *Mock {
-	m.debugStandalone = true
+	m.debugStandalone.enable()
 	return m
 }
 

@@ -324,12 +324,12 @@ type labeledContent struct {
 // NoopVerifier is a verifier that does not perform verification
 type NoopVerifier struct{}
 
+var _ Verifier = NoopVerifier{}
+
 // True is always true
 func (n NoopVerifier) True(_ TestingT, _ bool, _ ...interface{}) bool {
 	return true
 }
-
-var _ Verifier = NoopVerifier{}
 
 // Equal does not perform any assertion and always returns true
 func (n NoopVerifier) Equal(_ TestingT, _, _ interface{}, _ ...interface{}) bool {

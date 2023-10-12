@@ -1,6 +1,11 @@
 # Changelog
 
-## [0.0.5, unreleased] - 2023-XX-XX
+## [0.0.8, unreleased] - 2023-xx-xx
+### Changed
+- Refactoring
+  - Refactoring for internal code. For example, introduce network struct.
+
+## [0.0.5 - 0.0.7] - 2023-10-12
 ### Added
 - GitHub Actions workflow for [gosec](https://github.com/securego/gosec).
   - Fix gosec issue

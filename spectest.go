@@ -9,9 +9,8 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
-	"net/http/httputil"
 	"net/url"
-	"runtime/debug"
+	runtimeDebug "runtime/debug"
 	"sort"
 	"strings"
 	"time"
@@ -19,8 +18,8 @@ import (
 
 // SpecTest is the top level struct holding the test spec
 type SpecTest struct {
-	// debugEnabled will log the http wire representation of all http interactions
-	debugEnabled bool
+	// debug is used to log the http wire representation of all http interactions
+	debug *debug
 	// mockResponseDelayEnabled will turn on mock response delays (defaults to OFF)
 	mockResponseDelayEnabled bool
 	// network is used to enable/disable networking for the test
@@ -68,6 +67,7 @@ type Observe func(*http.Response, *http.Request, *SpecTest)
 // The name is only used name[0]. name[1]... are ignored.
 func New(name ...string) *SpecTest {
 	specTest := &SpecTest{
+		debug:    newDebug(),
 		interval: NewInterval(),
 		meta:     newMeta(),
 		network:  newNetwork(),
@@ -114,7 +114,7 @@ func (s *SpecTest) EnableMockResponseDelay() *SpecTest {
 // under test, the response returned by the application and any interactions that are
 // intercepted by the mock server.
 func (s *SpecTest) Debug() *SpecTest {
-	s.debugEnabled = true
+	s.debug.enable()
 	return s
 }
 
@@ -450,12 +450,7 @@ func (s *SpecTest) doRequest() (*http.Response, *http.Request) {
 	}
 	resRecorder := httptest.NewRecorder()
 
-	if s.debugEnabled {
-		requestDump, err := httputil.DumpRequest(req, true)
-		if err == nil {
-			debugLog(requestDebugPrefix(), "inbound http request", string(requestDump))
-		}
-	}
+	s.debug.dumpRequest(req)
 
 	var res *http.Response
 	var err error
@@ -469,12 +464,7 @@ func (s *SpecTest) doRequest() (*http.Response, *http.Request) {
 		}
 	}
 
-	if s.debugEnabled {
-		responseDump, err := httputil.DumpResponse(res, true)
-		if err == nil {
-			debugLog(responseDebugPrefix(), "final response", string(responseDump))
-		}
-	}
+	s.debug.dumpResponse(res)
 
 	return res, req
 }
@@ -482,7 +472,7 @@ func (s *SpecTest) doRequest() (*http.Response, *http.Request) {
 func (s *SpecTest) serveHTTP(res *httptest.ResponseRecorder, req *http.Request) {
 	defer func() {
 		if err := recover(); err != nil {
-			s.t.Fatalf("%s: %s", err, debug.Stack())
+			s.t.Fatalf("%s: %s", err, runtimeDebug.Stack())
 		}
 	}()
 
