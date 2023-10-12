@@ -30,7 +30,7 @@ type Transport struct {
 	nativeTransport          http.RoundTripper
 	httpClient               *http.Client
 	observers                []Observe
-	apiTest                  *SpecTest
+	specTest                 *SpecTest
 }
 
 func newTransport(
@@ -39,14 +39,14 @@ func newTransport(
 	debug *debug,
 	mockResponseDelayEnabled bool,
 	observers []Observe,
-	apiTest *SpecTest) *Transport {
+	specTest *SpecTest) *Transport {
 	t := &Transport{
 		mocks:                    mocks,
 		httpClient:               httpClient,
 		debug:                    debug,
 		mockResponseDelayEnabled: mockResponseDelayEnabled,
 		observers:                observers,
-		apiTest:                  apiTest,
+		specTest:                 specTest,
 	}
 
 	if httpClient != nil {
@@ -106,7 +106,7 @@ func (r *Transport) RoundTrip(req *http.Request) (mockResponse *http.Response, m
 	if r.observers != nil && len(r.observers) > 0 {
 		defer func() {
 			for _, observe := range r.observers {
-				observe(mockResponse, req, r.apiTest)
+				observe(mockResponse, req, r.specTest)
 			}
 		}()
 	}
@@ -237,8 +237,7 @@ type MockRequest struct {
 	url                *url.URL
 	method             string
 	headers            map[string][]string
-	basicAuthUsername  string
-	basicAuthPassword  string
+	basicAuth          basicAuth
 	headerPresent      []string
 	headerNotPresent   []string
 	formData           map[string][]string
@@ -583,9 +582,8 @@ func (r *MockRequest) HeaderNotPresent(key string) *MockRequest {
 }
 
 // BasicAuth configures the mock request to match the given basic auth parameters
-func (r *MockRequest) BasicAuth(username, password string) *MockRequest {
-	r.basicAuthUsername = username
-	r.basicAuthPassword = password
+func (r *MockRequest) BasicAuth(userName, password string) *MockRequest {
+	r.basicAuth = newBasicAuth(userName, password)
 	return r
 }
 
@@ -867,26 +865,14 @@ var headerMatcher = func(req *http.Request, spec *MockRequest) error {
 }
 
 var basicAuthMatcher = func(req *http.Request, spec *MockRequest) error {
-	if spec.basicAuthUsername == "" {
+	if spec.basicAuth.isUserNameEmpty() || spec.basicAuth.isPasswordEmpty() {
 		return nil
 	}
-
 	username, password, ok := req.BasicAuth()
 	if !ok {
 		return errors.New("request did not contain valid HTTP Basic Authentication string")
 	}
-
-	if spec.basicAuthUsername != username {
-		return fmt.Errorf("basic auth request username '%s' did not match mock username '%s'",
-			username, spec.basicAuthUsername)
-	}
-
-	if spec.basicAuthPassword != password {
-		return fmt.Errorf("basic auth request password '%s' did not match mock password '%s'",
-			password, spec.basicAuthPassword)
-	}
-
-	return nil
+	return spec.basicAuth.auth(username, password)
 }
 
 var headerPresentMatcher = func(req *http.Request, spec *MockRequest) error {
