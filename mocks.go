@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"net/http/httputil"
 	"net/textproto"
 	"net/url"
 	"os"
@@ -25,30 +24,31 @@ import (
 
 // Transport wraps components used to observe and manipulate the real request and response objects
 type Transport struct {
-	debugEnabled             bool
+	debug                    *debug
 	mockResponseDelayEnabled bool
 	mocks                    []*Mock
 	nativeTransport          http.RoundTripper
 	httpClient               *http.Client
 	observers                []Observe
-	apiTest                  *SpecTest
+	specTest                 *SpecTest
 }
 
 func newTransport(
 	mocks []*Mock,
 	httpClient *http.Client,
-	debugEnabled bool,
+	debug *debug,
 	mockResponseDelayEnabled bool,
 	observers []Observe,
-	apiTest *SpecTest) *Transport {
+	specTest *SpecTest) *Transport {
 	t := &Transport{
 		mocks:                    mocks,
 		httpClient:               httpClient,
-		debugEnabled:             debugEnabled,
+		debug:                    debug,
 		mockResponseDelayEnabled: mockResponseDelayEnabled,
 		observers:                observers,
-		apiTest:                  apiTest,
+		specTest:                 specTest,
 	}
+
 	if httpClient != nil {
 		t.nativeTransport = httpClient.Transport
 	} else {
@@ -99,16 +99,14 @@ func (u *unmatchedMockError) orderedMockKeys() []int {
 
 // RoundTrip implementation intended to match a given expected mock request or throw an error with a list of reasons why no match was found.
 func (r *Transport) RoundTrip(req *http.Request) (mockResponse *http.Response, matchErrors error) {
-	if r.debugEnabled {
-		defer func() {
-			debugMock(mockResponse, req)
-		}()
-	}
+	defer func() {
+		r.debug.mock(mockResponse, req)
+	}()
 
 	if r.observers != nil && len(r.observers) > 0 {
 		defer func() {
 			for _, observe := range r.observers {
-				observe(mockResponse, req, r.apiTest)
+				observe(mockResponse, req, r.specTest)
 			}
 		}()
 	}
@@ -129,27 +127,10 @@ func (r *Transport) RoundTrip(req *http.Request) (mockResponse *http.Response, m
 		return res, nil
 	}
 
-	if r.debugEnabled {
+	if r.debug.isEnable() {
 		fmt.Printf("failed to match mocks. Errors: %s\n", matchErrors)
 	}
-
 	return nil, matchErrors
-}
-
-func debugMock(res *http.Response, req *http.Request) {
-	requestDump, err := httputil.DumpRequestOut(req, true)
-	if err == nil {
-		debugLog(requestDebugPrefix(), "request to mock", string(requestDump))
-	}
-
-	if res != nil {
-		responseDump, err := httputil.DumpResponse(res, true)
-		if err == nil {
-			debugLog(responseDebugPrefix(), "response from mock", string(responseDump))
-		}
-	} else {
-		debugLog(responseDebugPrefix(), "response from mock", "")
-	}
 }
 
 // Hijack replace the transport implementation of the interaction under test in order to observe, mock and inject expectations
@@ -220,7 +201,7 @@ type Mock struct {
 	request         *MockRequest
 	response        *MockResponse
 	httpClient      *http.Client
-	debugStandalone bool
+	debugStandalone *debug
 	times           int
 	timesSet        bool
 }
@@ -256,8 +237,7 @@ type MockRequest struct {
 	url                *url.URL
 	method             string
 	headers            map[string][]string
-	basicAuthUsername  string
-	basicAuthPassword  string
+	basicAuth          basicAuth
 	headerPresent      []string
 	headerNotPresent   []string
 	formData           map[string][]string
@@ -272,6 +252,26 @@ type MockRequest struct {
 	body               string
 	bodyRegexp         string
 	matchers           []Matcher
+}
+
+// newMockRequest return new MockRequest
+func newMockRequest(m *Mock) *MockRequest {
+	return &MockRequest{
+		mock:               m,
+		headers:            map[string][]string{},
+		headerPresent:      []string{},
+		headerNotPresent:   []string{},
+		formData:           map[string][]string{},
+		formDataPresent:    []string{},
+		formDataNotPresent: []string{},
+		query:              map[string][]string{},
+		queryPresent:       []string{},
+		queryNotPresent:    []string{},
+		cookie:             []Cookie{},
+		cookiePresent:      []string{},
+		cookieNotPresent:   []string{},
+		matchers:           defaultMatchers,
+	}
 }
 
 // UnmatchedMock exposes some information about mocks that failed to match a request
@@ -290,17 +290,27 @@ type MockResponse struct {
 	fixedDelayMillis int64
 }
 
+// newMockResponse return new MockResponse
+func newMockResponse(m *Mock) *MockResponse {
+	return &MockResponse{
+		mock:    m,
+		headers: map[string][]string{},
+		cookies: []*Cookie{},
+	}
+}
+
 // StandaloneMocks for using mocks outside of API tests context
 type StandaloneMocks struct {
 	mocks      []*Mock
 	httpClient *http.Client
-	debug      bool
+	debug      *debug
 }
 
 // NewStandaloneMocks create a series of StandaloneMocks
 func NewStandaloneMocks(mocks ...*Mock) *StandaloneMocks {
 	return &StandaloneMocks{
 		mocks: mocks,
+		debug: newDebug(),
 	}
 }
 
@@ -312,7 +322,7 @@ func (r *StandaloneMocks) HTTPClient(cli *http.Client) *StandaloneMocks {
 
 // Debug switch on debugging mode
 func (r *StandaloneMocks) Debug() *StandaloneMocks {
-	r.debug = true
+	r.debug.enable()
 	return r
 }
 
@@ -334,27 +344,19 @@ func (r *StandaloneMocks) End() func() {
 // NewMock create a new mock, ready for configuration using the builder pattern
 func NewMock() *Mock {
 	mock := &Mock{
-		m:     &sync.Mutex{},
-		times: 1,
+		debugStandalone: newDebug(),
+		m:               &sync.Mutex{},
+		times:           1,
 	}
-	mock.request = &MockRequest{
-		mock:     mock,
-		headers:  map[string][]string{},
-		formData: map[string][]string{},
-		query:    map[string][]string{},
-		matchers: defaultMatchers,
-	}
-	mock.response = &MockResponse{
-		mock:    mock,
-		headers: map[string][]string{},
-	}
+	mock.request = newMockRequest(mock)
+	mock.response = newMockResponse(mock)
 	return mock
 }
 
 // Debug is used to set debug mode for mocks in standalone mode.
 // This is overridden by the debug setting in the `SpecTest` struct
 func (m *Mock) Debug() *Mock {
-	m.debugStandalone = true
+	m.debugStandalone.enable()
 	return m
 }
 
@@ -580,9 +582,8 @@ func (r *MockRequest) HeaderNotPresent(key string) *MockRequest {
 }
 
 // BasicAuth configures the mock request to match the given basic auth parameters
-func (r *MockRequest) BasicAuth(username, password string) *MockRequest {
-	r.basicAuthUsername = username
-	r.basicAuthPassword = password
+func (r *MockRequest) BasicAuth(userName, password string) *MockRequest {
+	r.basicAuth = newBasicAuth(userName, password)
 	return r
 }
 
@@ -864,26 +865,14 @@ var headerMatcher = func(req *http.Request, spec *MockRequest) error {
 }
 
 var basicAuthMatcher = func(req *http.Request, spec *MockRequest) error {
-	if spec.basicAuthUsername == "" {
+	if spec.basicAuth.isUserNameEmpty() || spec.basicAuth.isPasswordEmpty() {
 		return nil
 	}
-
 	username, password, ok := req.BasicAuth()
 	if !ok {
 		return errors.New("request did not contain valid HTTP Basic Authentication string")
 	}
-
-	if spec.basicAuthUsername != username {
-		return fmt.Errorf("basic auth request username '%s' did not match mock username '%s'",
-			username, spec.basicAuthUsername)
-	}
-
-	if spec.basicAuthPassword != password {
-		return fmt.Errorf("basic auth request password '%s' did not match mock password '%s'",
-			password, spec.basicAuthPassword)
-	}
-
-	return nil
+	return spec.basicAuth.auth(username, password)
 }
 
 var headerPresentMatcher = func(req *http.Request, spec *MockRequest) error {

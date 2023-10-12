@@ -12,6 +12,7 @@ import (
 
 // Response is the user defined expected response from the application under test
 type Response struct {
+	specTest          *SpecTest
 	status            int
 	body              string
 	headers           map[string][]string
@@ -20,8 +21,19 @@ type Response struct {
 	cookies           []*Cookie
 	cookiesPresent    []string
 	cookiesNotPresent []string
-	specTest          *SpecTest
 	assert            []Assert
+}
+
+func newResponse(s *SpecTest) *Response {
+	return &Response{
+		specTest:          s,
+		headers:           map[string][]string{},
+		headersPresent:    []string{},
+		headersNotPresent: []string{},
+		cookies:           []*Cookie{},
+		cookiesPresent:    []string{},
+		cookiesNotPresent: []string{},
+	}
 }
 
 // Body is the expected response body
@@ -120,13 +132,10 @@ func (r *Response) Assert(fn func(*http.Response, *http.Request) error) *Respons
 func (r *Response) End() Result {
 	specTest := r.specTest
 	defer func() {
-		if specTest.debugEnabled {
-			specTest.interval.End()
-			fmt.Printf("Duration: %s\n", specTest.interval.Duration())
-		}
+		specTest.debug.duration(specTest.interval)
 	}()
 
-	if specTest.handler == nil && !specTest.networkingEnabled {
+	if specTest.handler == nil && !specTest.network.isEnable() {
 		specTest.t.Fatal("either define a http.Handler or enable networking")
 	}
 
@@ -162,7 +171,7 @@ func (r *Response) runTest() *http.Response {
 		a.transport = newTransport(
 			a.mocks,
 			a.httpClient,
-			a.debugEnabled,
+			a.debug,
 			a.mockResponseDelayEnabled,
 			a.mocksObservers,
 			r.specTest,

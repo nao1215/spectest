@@ -9,9 +9,8 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
-	"net/http/httputil"
 	"net/url"
-	"runtime/debug"
+	runtimeDebug "runtime/debug"
 	"sort"
 	"strings"
 	"time"
@@ -19,14 +18,12 @@ import (
 
 // SpecTest is the top level struct holding the test spec
 type SpecTest struct {
-	// debugEnabled will log the http wire representation of all http interactions
-	debugEnabled bool
+	// debug is used to log the http wire representation of all http interactions
+	debug *debug
 	// mockResponseDelayEnabled will turn on mock response delays (defaults to OFF)
 	mockResponseDelayEnabled bool
-	// networkingEnabled will enable networking for provided clients
-	networkingEnabled bool
-	// networkingHTTPClient is the http client used when networking is enabled
-	networkingHTTPClient *http.Client
+	// network is used to enable/disable networking for the test
+	network *network
 	// reporter is the report formatter.
 	reporter ReportFormatter
 	// verifier is the assertion implementation. Default is DefaultVerifier.
@@ -66,30 +63,21 @@ type SpecTest struct {
 // Observe will be called by with the request and response on completion
 type Observe func(*http.Response, *http.Request, *SpecTest)
 
-// New creates a new api test. The name is optional and will appear in test reports
+// New creates a new api test. The name is optional and will appear in test reports.
+// The name is only used name[0]. name[1]... are ignored.
 func New(name ...string) *SpecTest {
 	specTest := &SpecTest{
-		meta: newMeta(),
+		debug:    newDebug(),
+		interval: NewInterval(),
+		meta:     newMeta(),
+		network:  newNetwork(),
 	}
-
-	request := &Request{
-		apiTest:  specTest,
-		headers:  map[string][]string{},
-		query:    map[string][]string{},
-		formData: map[string][]string{},
-	}
-	response := &Response{
-		specTest: specTest,
-		headers:  map[string][]string{},
-	}
-	specTest.request = request
-	specTest.response = response
+	specTest.request = newRequest(specTest)
+	specTest.response = newResponse(specTest)
 
 	if len(name) > 0 {
 		specTest.name = name[0]
 	}
-	specTest.interval = NewInterval()
-
 	return specTest
 }
 
@@ -104,13 +92,14 @@ func HandlerFunc(handlerFunc http.HandlerFunc) *SpecTest {
 }
 
 // EnableNetworking will enable networking for provided clients
+// If no clients are provided, the default http client will be used.
+// If multiple clients are provided, the first client will be used.
 func (s *SpecTest) EnableNetworking(clients ...*http.Client) *SpecTest {
-	s.networkingEnabled = true
+	s.network.enabled = true
 	if len(clients) == 1 {
-		s.networkingHTTPClient = clients[0]
+		s.network.Client = clients[0]
 		return s
 	}
-	s.networkingHTTPClient = http.DefaultClient
 	return s
 }
 
@@ -125,7 +114,7 @@ func (s *SpecTest) EnableMockResponseDelay() *SpecTest {
 // under test, the response returned by the application and any interactions that are
 // intercepted by the mock server.
 func (s *SpecTest) Debug() *SpecTest {
-	s.debugEnabled = true
+	s.debug.enable()
 	return s
 }
 
@@ -461,31 +450,21 @@ func (s *SpecTest) doRequest() (*http.Response, *http.Request) {
 	}
 	resRecorder := httptest.NewRecorder()
 
-	if s.debugEnabled {
-		requestDump, err := httputil.DumpRequest(req, true)
-		if err == nil {
-			debugLog(requestDebugPrefix(), "inbound http request", string(requestDump))
-		}
-	}
+	s.debug.dumpRequest(req)
 
 	var res *http.Response
 	var err error
-	if !s.networkingEnabled {
+	if !s.network.isEnable() {
 		s.serveHTTP(resRecorder, copyHTTPRequest(req))
 		res = resRecorder.Result()
 	} else {
-		res, err = s.networkingHTTPClient.Do(copyHTTPRequest(req))
+		res, err = s.network.Do(copyHTTPRequest(req))
 		if err != nil {
 			s.t.Fatal(err)
 		}
 	}
 
-	if s.debugEnabled {
-		responseDump, err := httputil.DumpResponse(res, true)
-		if err == nil {
-			debugLog(responseDebugPrefix(), "final response", string(responseDump))
-		}
-	}
+	s.debug.dumpResponse(res)
 
 	return res, req
 }
@@ -493,7 +472,7 @@ func (s *SpecTest) doRequest() (*http.Response, *http.Request) {
 func (s *SpecTest) serveHTTP(res *httptest.ResponseRecorder, req *http.Request) {
 	defer func() {
 		if err := recover(); err != nil {
-			s.t.Fatalf("%s: %s", err, debug.Stack())
+			s.t.Fatalf("%s: %s", err, runtimeDebug.Stack())
 		}
 	}()
 
@@ -615,7 +594,7 @@ func (s *SpecTest) buildRequest() *http.Request {
 	if s.request.multipart != nil {
 		err := s.request.multipart.Close()
 		if err != nil {
-			s.request.apiTest.t.Fatal(err)
+			s.request.specTest.t.Fatal(err)
 		}
 
 		s.request.Header("Content-Type", s.request.multipart.FormDataContentType())
@@ -629,7 +608,7 @@ func (s *SpecTest) buildRequest() *http.Request {
 
 	req.URL.RawQuery = formatQuery(s.request)
 	req.Host = SystemUnderTestDefaultName
-	if s.networkingEnabled {
+	if s.network.isEnable() {
 		req.Host = req.URL.Host
 	}
 
