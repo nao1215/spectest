@@ -2,7 +2,6 @@
 [![LinuxUnitTest](https://github.com/go-spectest/spectest/actions/workflows/linux_test.yml/badge.svg)](https://github.com/go-spectest/spectest/actions/workflows/linux_test.yml)
 [![MacUnitTest](https://github.com/go-spectest/spectest/actions/workflows/mac_test.yml/badge.svg)](https://github.com/go-spectest/spectest/actions/workflows/mac_test.yml)
 [![WindowsUnitTest](https://github.com/go-spectest/spectest/actions/workflows/windows_test.yml/badge.svg)](https://github.com/go-spectest/spectest/actions/workflows/windows_test.yml)
-[![Vuluncheck](https://github.com/go-spectest/spectest/actions/workflows/govulncheck.yml/badge.svg)](https://github.com/go-spectest/spectest/actions/workflows/govulncheck.yml)
 [![UnitTestExampleCodes](https://github.com/go-spectest/spectest/actions/workflows/test-examples.yml/badge.svg)](https://github.com/go-spectest/spectest/actions/workflows/test-examples.yml)
 [![reviewdog](https://github.com/go-spectest/spectest/actions/workflows/reviewdog.yml/badge.svg)](https://github.com/go-spectest/spectest/actions/workflows/reviewdog.yml)
 [![Gosec](https://github.com/go-spectest/spectest/actions/workflows/gosec.yml/badge.svg)](https://github.com/go-spectest/spectest/actions/workflows/gosec.yml)

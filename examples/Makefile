@@ -12,3 +12,18 @@ test:
 	cd sequence-diagrams-with-mysql-database && go test -v ./...
 	cd sequence-diagrams-with-postgres-database && go test -v ./...
 	cd sequence-diagrams-with-sqlite-database && go test -v -covermode=atomic ./...
+
+mod:
+	cd echo && go mod tidy
+	cd fiber && go mod tidy
+	cd gin && go mod tidy
+	cd ginkgo && go mod tidy
+	cd gorilla && go mod tidy
+	cd httprouter && go mod tidy
+	#cd iris && go mod tidy
+	cd mocks && go mod tidy
+	cd plantuml && go mod tidy
+	cd sequence-diagrams && go mod tidy
+	cd sequence-diagrams-with-mysql-database && go mod tidy
+	cd sequence-diagrams-with-postgres-database && go mod tidy
+	cd sequence-diagrams-with-sqlite-database && go mod tidy
