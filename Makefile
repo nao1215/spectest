@@ -7,6 +7,9 @@ test: ## Run unit tests
 test-examples: ## Run unit tests for examples directory
 	make -C examples test
 
+clean: ## Clean up
+	rm -f coverage.out coverage.html
+
 .DEFAULT_GOAL := help
 help:  ## Show this help
 	@grep -E '^[0-9a-zA-Z_-]+[[:blank:]]*:.*?## .*$$' $(MAKEFILE_LIST) | sort \
