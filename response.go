@@ -12,6 +12,7 @@ import (
 
 // Response is the user defined expected response from the application under test
 type Response struct {
+	specTest          *SpecTest
 	status            int
 	body              string
 	headers           map[string][]string
@@ -20,8 +21,19 @@ type Response struct {
 	cookies           []*Cookie
 	cookiesPresent    []string
 	cookiesNotPresent []string
-	specTest          *SpecTest
 	assert            []Assert
+}
+
+func newResponse(s *SpecTest) *Response {
+	return &Response{
+		specTest:          s,
+		headers:           map[string][]string{},
+		headersPresent:    []string{},
+		headersNotPresent: []string{},
+		cookies:           []*Cookie{},
+		cookiesPresent:    []string{},
+		cookiesNotPresent: []string{},
+	}
 }
 
 // Body is the expected response body
@@ -126,7 +138,7 @@ func (r *Response) End() Result {
 		}
 	}()
 
-	if specTest.handler == nil && !specTest.networkingEnabled {
+	if specTest.handler == nil && !specTest.network.isEnable() {
 		specTest.t.Fatal("either define a http.Handler or enable networking")
 	}
 

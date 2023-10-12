@@ -14,6 +14,7 @@ import (
 
 // Request is the user defined request that will be invoked on the handler under test
 type Request struct {
+	specTest        *SpecTest
 	interceptor     Intercept
 	method          string
 	url             string
@@ -27,7 +28,18 @@ type Request struct {
 	cookies         []*Cookie
 	basicAuth       string
 	context         context.Context
-	apiTest         *SpecTest
+}
+
+// newRequest creates a new request
+func newRequest(s *SpecTest) *Request {
+	return &Request{
+		specTest:        s,
+		query:           map[string][]string{},
+		queryCollection: map[string][]string{},
+		headers:         map[string][]string{},
+		formData:        map[string][]string{},
+		cookies:         []*Cookie{},
+	}
 }
 
 // GraphQLRequestBody represents the POST request body as per the GraphQL spec
@@ -65,7 +77,7 @@ func (r *Request) Bodyf(format string, args ...interface{}) *Request {
 func (r *Request) BodyFromFile(f string) *Request {
 	b, err := os.ReadFile(filepath.Clean(f))
 	if err != nil {
-		r.apiTest.t.Fatal(err)
+		r.specTest.t.Fatal(err)
 	}
 	r.body = string(b)
 	return r
@@ -82,7 +94,7 @@ func (r *Request) JSON(v interface{}) *Request {
 	default:
 		asJSON, err := json.Marshal(x)
 		if err != nil {
-			r.apiTest.t.Fatal(err)
+			r.specTest.t.Fatal(err)
 			return nil
 		}
 		r.body = string(asJSON)
@@ -117,7 +129,7 @@ func (r *Request) GraphQLRequest(body GraphQLRequestBody) *Request {
 
 	data, err := json.Marshal(body)
 	if err != nil {
-		r.apiTest.t.Fatal(err)
+		r.specTest.t.Fatal(err)
 	}
 	r.body = string(data)
 	return r
@@ -210,7 +222,7 @@ func (r *Request) MultipartFormData(name string, values ...string) *Request {
 
 	for _, value := range values {
 		if err := r.multipart.WriteField(name, value); err != nil {
-			r.apiTest.t.Fatal(err)
+			r.specTest.t.Fatal(err)
 		}
 	}
 	return r
@@ -227,17 +239,17 @@ func (r *Request) MultipartFile(name string, ff ...string) *Request {
 		func() {
 			file, err := os.Open(filepath.Clean(f))
 			if err != nil {
-				r.apiTest.t.Fatal(err)
+				r.specTest.t.Fatal(err)
 			}
 			defer file.Close() //nolint
 
 			part, err := r.multipart.CreateFormFile(name, filepath.Base(file.Name()))
 			if err != nil {
-				r.apiTest.t.Fatal(err)
+				r.specTest.t.Fatal(err)
 			}
 
 			if _, err = io.Copy(part, file); err != nil {
-				r.apiTest.t.Fatal(err)
+				r.specTest.t.Fatal(err)
 			}
 		}()
 	}
@@ -254,12 +266,12 @@ func (r *Request) setMultipartWriter() {
 
 func (r *Request) checkCombineFormDataWithMultipart() {
 	if r.multipart != nil && len(r.formData) > 0 {
-		r.apiTest.t.Fatal("FormData (application/x-www-form-urlencoded) and MultiPartFormData(multipart/form-data) cannot be combined")
+		r.specTest.t.Fatal("FormData (application/x-www-form-urlencoded) and MultiPartFormData(multipart/form-data) cannot be combined")
 	}
 }
 
 // Expect marks the request spec as complete and following code will define the expected response
 func (r *Request) Expect(t TestingT) *Response {
-	r.apiTest.t = t
-	return r.apiTest.response
+	r.specTest.t = t
+	return r.specTest.response
 }
