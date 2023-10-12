@@ -3,7 +3,7 @@ module github.com/go-spectest/spectest/examples/sequence-diagrams
 go 1.18
 
 require (
-	github.com/go-spectest/spectest v0.0.5
+	github.com/go-spectest/spectest v0.0.6
 	github.com/gorilla/mux v1.8.0
 )
 
