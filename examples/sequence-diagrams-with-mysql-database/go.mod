@@ -3,7 +3,7 @@ module github.com/go-spectest/spectest/examples/sequence-diagrams-with-mysql-dat
 go 1.18
 
 require (
-	github.com/go-spectest/spectest v0.0.6
+	github.com/go-spectest/spectest v0.0.7
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/gorilla/mux v1.8.0
 	github.com/jmoiron/sqlx v1.3.5
