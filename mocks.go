@@ -196,14 +196,18 @@ func buildResponseFromMock(mockResponse *MockResponse) *http.Response {
 
 // Mock represents the entire interaction for a mock to be used for testing
 type Mock struct {
-	m               *sync.Mutex
-	isUsed          bool
-	request         *MockRequest
-	response        *MockResponse
-	httpClient      *http.Client
+	m      *sync.Mutex
+	isUsed bool
+	// request is used to configure the request of the mock
+	request *MockRequest
+	// resopnse is used to configure the response of the mock
+	response *MockResponse
+	// httpClient is used to enable/disable networking for the test
+	httpClient *http.Client
+	// debugStandalone is used to enable/disable debug logging for standalone mocks
 	debugStandalone *debug
-	times           int
-	timesSet        bool
+	// execCount is used to track the number of times the mock has been executed
+	execCount *execCount
 }
 
 // Matches checks whether the given request matches the mock
@@ -346,7 +350,7 @@ func NewMock() *Mock {
 	mock := &Mock{
 		debugStandalone: newDebug(),
 		m:               &sync.Mutex{},
-		times:           1,
+		execCount:       newExecCount(1),
 	}
 	mock.request = newMockRequest(mock)
 	mock.response = newMockResponse(mock)
@@ -752,9 +756,8 @@ func (r *MockResponse) FixedDelay(delay int64) *MockResponse {
 }
 
 // Times respond the given number of times
-func (r *MockResponse) Times(times int) *MockResponse {
-	r.mock.times = times
-	r.mock.timesSet = true
+func (r *MockResponse) Times(times uint) *MockResponse {
+	r.mock.execCount.updateExpectCount(times)
 	return r
 }
 
@@ -1231,4 +1234,32 @@ func (r *mockInteraction) GetRequestHost() string {
 		host = r.request.URL.Host
 	}
 	return host
+}
+
+// execCount is used to track the number of times a mock has been executed.
+type execCount struct {
+	// expect is the expected number of times the mock will be executed.
+	expect uint
+	// actual is the actual number of times the mock has been executed.
+	actual uint
+}
+
+// newExecCount creates a new execCount with the given expected number of executions.
+func newExecCount(expect uint) *execCount {
+	return &execCount{expect: expect}
+}
+
+// updateExpectCount updates the expected number of executions.
+func (e *execCount) updateExpectCount(expect uint) {
+	e.expect = expect
+}
+
+// increment increments the actual number of executions.
+func (e *execCount) increment() {
+	e.actual++
+}
+
+// isComplete returns true if the actual number of executions matches the expected number of executions.
+func (e *execCount) isComplete() bool {
+	return e.actual == e.expect
 }
