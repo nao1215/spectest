@@ -155,14 +155,16 @@ func (s *SpecTest) HandlerFunc(handlerFunc http.HandlerFunc) *SpecTest {
 	return s
 }
 
-// Mocks is a builder method for setting the mocks
+// Mocks is a builder method for setting the mocks.
+// A mock that expects multiple executions will reset the expected call
+// count to 1 when generated as a mock that expects a single execution.
 func (s *SpecTest) Mocks(mocks ...*Mock) *SpecTest {
 	var m []*Mock
 	for i := range mocks {
-		times := mocks[i].response.mock.times
-		for j := 1; j <= times; j++ {
+		times := mocks[i].response.mock.execCount.expect
+		for j := 1; j <= int(times); j++ {
 			mockCopy := mocks[i].copy()
-			mockCopy.times = 1
+			mockCopy.execCount = newExecCount(1)
 			m = append(m, mockCopy)
 		}
 	}
@@ -426,7 +428,7 @@ func (s *SpecTest) report() *http.Response {
 
 func (s *SpecTest) assertMocks() {
 	for _, mock := range s.mocks {
-		if !mock.isUsed && mock.timesSet {
+		if !mock.isUsed && mock.execCount.isComplete() {
 			s.verifier.Fail(s.t, "mock was not invoked expected times", failureMessageArgs{Name: s.name})
 		}
 	}

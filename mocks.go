@@ -22,17 +22,73 @@ import (
 	difflib "github.com/go-spectest/diff"
 )
 
-// Transport wraps components used to observe and manipulate the real request and response objects
-type Transport struct {
-	debug                    *debug
-	mockResponseDelayEnabled bool
-	mocks                    []*Mock
-	nativeTransport          http.RoundTripper
-	httpClient               *http.Client
-	observers                []Observe
-	specTest                 *SpecTest
+// unmatchedMockError is used to store errors when a request does not match any mocks.
+// It implements the error interface.
+type unmatchedMockError struct {
+	// errors is a map of mock number to errors
+	errors map[int][]error
 }
 
+// newUnmatchedMockError creates a new unmatchedMockError
+func newUnmatchedMockError() *unmatchedMockError {
+	return &unmatchedMockError{
+		errors: map[int][]error{},
+	}
+}
+
+// addErrors adds errors to the unmatchedMockError
+func (u *unmatchedMockError) addErrors(mockNumber int, errors ...error) *unmatchedMockError {
+	u.errors[mockNumber] = append(u.errors[mockNumber], errors...)
+	return u
+}
+
+// Error implementation of in-built error human readable string function
+func (u *unmatchedMockError) Error() string {
+	var strBuilder strings.Builder
+	strBuilder.WriteString("received request did not match any mocks\n\n")
+	for _, mockNumber := range u.orderedMockKeys() {
+		strBuilder.WriteString(fmt.Sprintf("Mock %d mismatches:\n", mockNumber))
+		for _, err := range u.errors[mockNumber] {
+			strBuilder.WriteString("• ")
+			strBuilder.WriteString(err.Error())
+			strBuilder.WriteString("\n")
+		}
+		strBuilder.WriteString("\n")
+	}
+	return strBuilder.String()
+}
+
+// orderedMockKeys returns the keys of the errors map in order.
+func (u *unmatchedMockError) orderedMockKeys() []int {
+	var mockKeys []int
+	for mockKey := range u.errors {
+		mockKeys = append(mockKeys, mockKey)
+	}
+	sort.Ints(mockKeys)
+	return mockKeys
+}
+
+// Transport wraps components used to observe and manipulate the real request and response objects
+type Transport struct {
+	// httpClient is the http client used when networking is enabled.
+	httpClient *http.Client
+	// mocks is the list of mocks to use when mocking the request
+	mocks []*Mock
+	// mockResponseDelayEnabled will enable mock response delay
+	mockResponseDelayEnabled bool
+	// observers is the list of observers to use when observing the request and response
+	observers []Observe
+	// debug is used to enable/disable debug logging
+	debug *debug
+	// nativeTransport is the native http.RoundTripper
+	nativeTransport http.RoundTripper
+	// specTest is the spectest instance
+	specTest *SpecTest
+}
+
+// newTransport creates a new transport
+// If you set httpClient to nil, http.DefaultClient will be used.
+// If you set debug to nil, debug will be disabled.
 func newTransport(
 	mocks []*Mock,
 	httpClient *http.Client,
@@ -57,47 +113,8 @@ func newTransport(
 	return t
 }
 
-type unmatchedMockError struct {
-	errors map[int][]error
-}
-
-func newUnmatchedMockError() *unmatchedMockError {
-	return &unmatchedMockError{
-		errors: map[int][]error{},
-	}
-}
-
-func (u *unmatchedMockError) addErrors(mockNumber int, errors ...error) *unmatchedMockError {
-	u.errors[mockNumber] = append(u.errors[mockNumber], errors...)
-	return u
-}
-
-// Error implementation of in-built error human readable string function
-func (u *unmatchedMockError) Error() string {
-	var strBuilder strings.Builder
-	strBuilder.WriteString("received request did not match any mocks\n\n")
-	for _, mockNumber := range u.orderedMockKeys() {
-		strBuilder.WriteString(fmt.Sprintf("Mock %d mismatches:\n", mockNumber))
-		for _, err := range u.errors[mockNumber] {
-			strBuilder.WriteString("• ")
-			strBuilder.WriteString(err.Error())
-			strBuilder.WriteString("\n")
-		}
-		strBuilder.WriteString("\n")
-	}
-	return strBuilder.String()
-}
-
-func (u *unmatchedMockError) orderedMockKeys() []int {
-	var mockKeys []int
-	for mockKey := range u.errors {
-		mockKeys = append(mockKeys, mockKey)
-	}
-	sort.Ints(mockKeys)
-	return mockKeys
-}
-
-// RoundTrip implementation intended to match a given expected mock request or throw an error with a list of reasons why no match was found.
+// RoundTrip implementation intended to match a given expected mock request
+// or throw an error with a list of reasons why no match was found.
 func (r *Transport) RoundTrip(req *http.Request) (mockResponse *http.Response, matchErrors error) {
 	defer func() {
 		r.debug.mock(mockResponse, req)
@@ -196,14 +213,18 @@ func buildResponseFromMock(mockResponse *MockResponse) *http.Response {
 
 // Mock represents the entire interaction for a mock to be used for testing
 type Mock struct {
-	m               *sync.Mutex
-	isUsed          bool
-	request         *MockRequest
-	response        *MockResponse
-	httpClient      *http.Client
+	m      *sync.Mutex
+	isUsed bool
+	// request is used to configure the request of the mock
+	request *MockRequest
+	// resopnse is used to configure the response of the mock
+	response *MockResponse
+	// httpClient is used to enable/disable networking for the test
+	httpClient *http.Client
+	// debugStandalone is used to enable/disable debug logging for standalone mocks
 	debugStandalone *debug
-	times           int
-	timesSet        bool
+	// execCount is used to track the number of times the mock has been executed
+	execCount *execCount
 }
 
 // Matches checks whether the given request matches the mock
@@ -217,6 +238,7 @@ func (m *Mock) Matches(req *http.Request) []error {
 	return errs
 }
 
+// copy copy Mock.
 func (m *Mock) copy() *Mock {
 	newMock := *m
 
@@ -270,7 +292,7 @@ func newMockRequest(m *Mock) *MockRequest {
 		cookie:             []Cookie{},
 		cookiePresent:      []string{},
 		cookieNotPresent:   []string{},
-		matchers:           defaultMatchers,
+		matchers:           defaultMatchers(),
 	}
 }
 
@@ -346,7 +368,7 @@ func NewMock() *Mock {
 	mock := &Mock{
 		debugStandalone: newDebug(),
 		m:               &sync.Mutex{},
-		times:           1,
+		execCount:       newExecCount(1),
 	}
 	mock.request = newMockRequest(mock)
 	mock.response = newMockResponse(mock)
@@ -752,9 +774,8 @@ func (r *MockResponse) FixedDelay(delay int64) *MockResponse {
 }
 
 // Times respond the given number of times
-func (r *MockResponse) Times(times int) *MockResponse {
-	r.mock.times = times
-	r.mock.timesSet = true
+func (r *MockResponse) Times(times uint) *MockResponse {
+	r.mock.execCount.updateExpectCount(times)
 	return r
 }
 
@@ -782,7 +803,37 @@ func (r *MockResponse) EndStandalone(other ...*Mock) func() {
 // Will return an error that describes why there was a mismatch if the inputs do not match or nil if they do.
 type Matcher func(*http.Request, *MockRequest) error
 
-var pathMatcher Matcher = func(r *http.Request, spec *MockRequest) error {
+// defaultMatchers returns the default list of matchers used by the mock server.
+func defaultMatchers() []Matcher {
+	return []Matcher{
+		pathMatcher,
+		hostMatcher,
+		schemeMatcher,
+		methodMatcher,
+		headerMatcher,
+		basicAuthMatcher,
+		headerPresentMatcher,
+		headerNotPresentMatcher,
+		queryParamMatcher,
+		queryPresentMatcher,
+		queryNotPresentMatcher,
+		formDataMatcher,
+		formDataPresentMatcher,
+		formDataNotPresentMatcher,
+		bodyMatcher,
+		bodyRegexpMatcher,
+		cookieMatcher,
+		cookiePresentMatcher,
+		cookieNotPresentMatcher,
+	}
+}
+
+// pathMatcher compares the path of the received HTTP request with the path specified in the mock request.
+// If the paths match, it returns nil, indicating a successful match. If the paths do not match,
+// it attempts to match using regular expressions. If a match is found, it returns an error describing
+// the mismatch. If no match is found, it returns nil. The error message includes details about
+// the received path and the expected mock path that did not match.
+func pathMatcher(r *http.Request, spec *MockRequest) error {
 	receivedPath := r.URL.Path
 	mockPath := spec.url.Path
 	if receivedPath == mockPath {
@@ -794,7 +845,12 @@ var pathMatcher Matcher = func(r *http.Request, spec *MockRequest) error {
 	})
 }
 
-var hostMatcher Matcher = func(r *http.Request, spec *MockRequest) error {
+// hostMatcher compares the host of the received HTTP request with the host specified in the mock request.
+// If the hosts match, it returns nil, indicating a successful match. If the hosts do not match,
+// it attempts to match using regular expressions. If a match is found, it returns an error describing
+// the mismatch. If no match is found, it returns nil. The error message includes details about
+// the received host and the expected mock host that did not match.
+func hostMatcher(r *http.Request, spec *MockRequest) error {
 	receivedHost := r.Host
 	if receivedHost == "" {
 		receivedHost = r.URL.Host
@@ -812,7 +868,11 @@ var hostMatcher Matcher = func(r *http.Request, spec *MockRequest) error {
 	})
 }
 
-var methodMatcher Matcher = func(r *http.Request, spec *MockRequest) error {
+// methodMatcher compares the HTTP request method (GET, POST, PUT, etc.) with the method specified in the mock request.
+// If the methods match, it returns nil, indicating a successful match. If the methods do not match,
+// it returns an error describing the mismatch. If the mock method is an empty string, it matches any request method.
+// The error message includes details about the received method and the expected mock method that did not match.
+func methodMatcher(r *http.Request, spec *MockRequest) error {
 	receivedMethod := r.Method
 	mockMethod := spec.method
 	if receivedMethod == mockMethod {
@@ -824,7 +884,13 @@ var methodMatcher Matcher = func(r *http.Request, spec *MockRequest) error {
 	return fmt.Errorf("received method %s did not match mock method %s", receivedMethod, mockMethod)
 }
 
-var schemeMatcher Matcher = func(r *http.Request, spec *MockRequest) error {
+// schemeMatcher compares the scheme (http, https, etc.) of the received HTTP request URL
+// with the scheme specified in the mock request URL.
+// If the schemes match, it returns nil, indicating a successful match. If the schemes do not match,
+// it returns an error describing the mismatch. If either the received or mock scheme is an empty string,
+// it matches any scheme. The error message includes details about the received scheme and the expected
+// mock scheme that did not match.
+func schemeMatcher(r *http.Request, spec *MockRequest) error {
 	receivedScheme := r.URL.Scheme
 	mockScheme := spec.url.Scheme
 	if receivedScheme == "" {
@@ -838,12 +904,18 @@ var schemeMatcher Matcher = func(r *http.Request, spec *MockRequest) error {
 	})
 }
 
-var headerMatcher = func(req *http.Request, spec *MockRequest) error {
+// headerMatcher compares the headers of the received HTTP request with the headers specified in the mock request.
+// It checks each header key-value pair in the mock request against the corresponding header values in the received request.
+// If all the headers in the mock request match the received request headers (based on regular expressions),
+// it returns nil, indicating a successful match. If any header does not match, it returns an error describing the mismatch.
+// The error message includes details about the specific headers that did not match between the received and expected requests.
+func headerMatcher(req *http.Request, spec *MockRequest) error {
 	mockHeaders := spec.headers
 	for key, values := range mockHeaders {
 		var match bool
 		var err error
 		receivedHeaders := req.Header
+
 		for _, field := range receivedHeaders[key] {
 			for _, value := range values {
 				match, err = regexp.MatchString(value, field)
@@ -851,12 +923,10 @@ var headerMatcher = func(req *http.Request, spec *MockRequest) error {
 					return fmt.Errorf("failed to parse regexp for header %s with value %s", key, value)
 				}
 			}
-
 			if match {
 				break
 			}
 		}
-
 		if !match {
 			return fmt.Errorf("not all of received headers %s matched expected mock headers %s", receivedHeaders, mockHeaders)
 		}
@@ -864,7 +934,8 @@ var headerMatcher = func(req *http.Request, spec *MockRequest) error {
 	return nil
 }
 
-var basicAuthMatcher = func(req *http.Request, spec *MockRequest) error {
+// basicAuthMatcher compares the basic auth credentials of the received HTTP request with the credentials specified in the mock request.
+func basicAuthMatcher(req *http.Request, spec *MockRequest) error {
 	if spec.basicAuth.isUserNameEmpty() || spec.basicAuth.isPasswordEmpty() {
 		return nil
 	}
@@ -875,7 +946,8 @@ var basicAuthMatcher = func(req *http.Request, spec *MockRequest) error {
 	return spec.basicAuth.auth(username, password)
 }
 
-var headerPresentMatcher = func(req *http.Request, spec *MockRequest) error {
+// headerPresentMatcher compares the headers of the received HTTP request with the headers specified in the mock request.
+func headerPresentMatcher(req *http.Request, spec *MockRequest) error {
 	for _, header := range spec.headerPresent {
 		if req.Header.Get(header) == "" {
 			return fmt.Errorf("expected header '%s' was not present", header)
@@ -884,7 +956,12 @@ var headerPresentMatcher = func(req *http.Request, spec *MockRequest) error {
 	return nil
 }
 
-var headerNotPresentMatcher = func(req *http.Request, spec *MockRequest) error {
+// headerNotPresentMatcher checks that specific headers are not present in the received HTTP request.
+// It compares the list of headers specified in the mock request with the headers in the received request.
+// If any of the specified headers are found in the received request, it returns an error indicating
+// that an unexpected header was present. If all specified headers are not present, it returns nil,
+// indicating a successful match.
+func headerNotPresentMatcher(req *http.Request, spec *MockRequest) error {
 	for _, header := range spec.headerNotPresent {
 		if req.Header.Get(header) != "" {
 			return fmt.Errorf("unexpected header '%s' was present", header)
@@ -893,7 +970,12 @@ var headerNotPresentMatcher = func(req *http.Request, spec *MockRequest) error {
 	return nil
 }
 
-var queryParamMatcher = func(req *http.Request, spec *MockRequest) error {
+// queryParamMatcher compares the query parameters of the received HTTP request with the query parameters specified in the mock request.
+// It checks each query parameter key-value pair in the mock request against the corresponding query parameter values in the received request.
+// If all the query parameters in the mock request match the received request query parameters (based on regular expressions),
+// it returns nil, indicating a successful match. If any query parameter does not match, it returns an error describing the mismatch.
+// The error message includes details about the specific query parameters that did not match between the received and expected requests.
+func queryParamMatcher(req *http.Request, spec *MockRequest) error {
 	mockQueryParams := spec.query
 	for key, values := range mockQueryParams {
 		receivedQueryParams := req.URL.Query()
@@ -923,7 +1005,12 @@ var queryParamMatcher = func(req *http.Request, spec *MockRequest) error {
 	return nil
 }
 
-var queryPresentMatcher = func(req *http.Request, spec *MockRequest) error {
+// queryPresentMatcher checks if specific query parameters specified in the mock request are present in the received HTTP request.
+// It compares each expected query parameter with the corresponding query parameter in the received request's URL.
+// If any expected query parameter is not found in the received request, it returns an error indicating
+// that the expected query parameter was not received. If all expected query parameters are present,
+// it returns nil, indicating a successful match.
+func queryPresentMatcher(req *http.Request, spec *MockRequest) error {
 	for _, query := range spec.queryPresent {
 		if req.URL.Query().Get(query) == "" {
 			return fmt.Errorf("expected query param %s not received", query)
@@ -932,7 +1019,12 @@ var queryPresentMatcher = func(req *http.Request, spec *MockRequest) error {
 	return nil
 }
 
-var queryNotPresentMatcher = func(req *http.Request, spec *MockRequest) error {
+// queryNotPresentMatcher checks if specific query parameters specified in the mock request are not present in the received HTTP request.
+// It compares each query parameter specified in the `queryNotPresent` list with the corresponding query parameter in the received request's URL.
+// If any query parameter from the `queryNotPresent` list is found in the received request, it returns an error indicating
+// that an unexpected query parameter was present. If none of the specified query parameters are present,
+// it returns nil, indicating a successful match.
+func queryNotPresentMatcher(req *http.Request, spec *MockRequest) error {
 	for _, query := range spec.queryNotPresent {
 		if req.URL.Query().Get(query) != "" {
 			return fmt.Errorf("unexpected query param '%s' present", query)
@@ -941,7 +1033,12 @@ var queryNotPresentMatcher = func(req *http.Request, spec *MockRequest) error {
 	return nil
 }
 
-var formDataMatcher = func(req *http.Request, spec *MockRequest) error {
+// formDataMatcher checks if specific form data parameters specified in the mock request are present in the received HTTP request.
+// It compares each form data parameter key-value pair in the `formData` map with the corresponding form data parameters in the received request.
+// If all the form data parameters in the mock request match the received request form data parameters (based on regular expressions),
+// it returns nil, indicating a successful match. If any form data parameter does not match, it returns an error describing the mismatch.
+// The error message includes details about the specific form data parameters that did not match between the received and expected requests.
+func formDataMatcher(req *http.Request, spec *MockRequest) error {
 	mockFormData := spec.formData
 
 	for key, values := range mockFormData {
@@ -979,7 +1076,12 @@ var formDataMatcher = func(req *http.Request, spec *MockRequest) error {
 	return nil
 }
 
-var formDataPresentMatcher = func(req *http.Request, spec *MockRequest) error {
+// formDataPresentMatcher checks if specific form data parameters specified in the mock request are present in the received HTTP request.
+// It compares each form data parameter key specified in the `formDataPresent` list with the corresponding form data parameters in the received request.
+// If any expected form data parameter is not found in the received request, it returns an error indicating
+// that the expected form data parameter was not received. If all expected form data parameters are present,
+// it returns nil, indicating a successful match.
+func formDataPresentMatcher(req *http.Request, spec *MockRequest) error {
 	if len(spec.formDataPresent) > 0 {
 		r := copyHTTPRequest(req)
 		if err := r.ParseForm(); err != nil {
@@ -997,7 +1099,12 @@ var formDataPresentMatcher = func(req *http.Request, spec *MockRequest) error {
 	return nil
 }
 
-var formDataNotPresentMatcher = func(req *http.Request, spec *MockRequest) error {
+// formDataPresentMatcher checks if specific form data parameters specified in the mock request are present in the received HTTP request.
+// It compares each form data parameter key specified in the `formDataPresent` list with the corresponding form data parameters in the received request.
+// If any expected form data parameter is not found in the received request, it returns an error indicating
+// that the expected form data parameter was not received. If all expected form data parameters are present,
+// it returns nil, indicating a successful match.
+func formDataNotPresentMatcher(req *http.Request, spec *MockRequest) error {
 	if len(spec.formDataNotPresent) > 0 {
 		r := copyHTTPRequest(req)
 		if err := r.ParseForm(); err != nil {
@@ -1015,7 +1122,8 @@ var formDataNotPresentMatcher = func(req *http.Request, spec *MockRequest) error
 	return nil
 }
 
-var cookieMatcher = func(req *http.Request, spec *MockRequest) error {
+// cookieMatcher checks if specific cookies specified in the mock request are present in the received HTTP request.
+func cookieMatcher(req *http.Request, spec *MockRequest) error {
 	for i := range spec.cookie {
 		foundCookie, _ := req.Cookie(*spec.cookie[i].name)
 		if foundCookie == nil {
@@ -1028,7 +1136,8 @@ var cookieMatcher = func(req *http.Request, spec *MockRequest) error {
 	return nil
 }
 
-var cookiePresentMatcher = func(req *http.Request, spec *MockRequest) error {
+// cookiePresentMatcher checks if specific cookies specified in the mock request are present in the received HTTP request.
+func cookiePresentMatcher(req *http.Request, spec *MockRequest) error {
 	for _, c := range spec.cookiePresent {
 		foundCookie, _ := req.Cookie(c)
 		if foundCookie == nil {
@@ -1038,7 +1147,8 @@ var cookiePresentMatcher = func(req *http.Request, spec *MockRequest) error {
 	return nil
 }
 
-var cookieNotPresentMatcher = func(req *http.Request, spec *MockRequest) error {
+// cookieNotPresentMatcher checks if specific cookies specified in the mock request are present in the received HTTP request.
+func cookieNotPresentMatcher(req *http.Request, spec *MockRequest) error {
 	for _, c := range spec.cookieNotPresent {
 		foundCookie, _ := req.Cookie(c)
 		if foundCookie != nil {
@@ -1048,7 +1158,8 @@ var cookieNotPresentMatcher = func(req *http.Request, spec *MockRequest) error {
 	return nil
 }
 
-var bodyMatcher = func(req *http.Request, spec *MockRequest) error {
+// bodyMatcher compares the body of the received HTTP request with the body specified in the mock request.
+func bodyMatcher(req *http.Request, spec *MockRequest) error {
 	mockBody := spec.body
 
 	if len(mockBody) == 0 {
@@ -1095,7 +1206,11 @@ var bodyMatcher = func(req *http.Request, spec *MockRequest) error {
 	return fmt.Errorf("received body did not match expected mock body\n%s", diff(mockBody, bodyStr))
 }
 
-var bodyRegexpMatcher = func(req *http.Request, spec *MockRequest) error {
+// bodyRegexpMatcher checks if the body of the received HTTP request matches the regular expression specified in the mock request.
+// If the regular expression is empty, it returns nil, indicating a successful match without checking the body.
+// If the body of the received request does not match the regular expression, it returns an error describing the mismatch.
+// The error message includes the details of the received body and the expected regular expression that did not match.
+func bodyRegexpMatcher(req *http.Request, spec *MockRequest) error {
 	expression := spec.bodyRegexp
 
 	if len(expression) == 0 {
@@ -1127,33 +1242,12 @@ var bodyRegexpMatcher = func(req *http.Request, spec *MockRequest) error {
 	return fmt.Errorf("received body did not match expected mock body\n%s", diff(expression, bodyStr))
 }
 
+// errorOrNil returns nil if the statement is true, otherwise it returns an error with the given message.
 func errorOrNil(statement bool, errorMessage func() string) error {
 	if statement {
 		return nil
 	}
 	return errors.New(errorMessage())
-}
-
-var defaultMatchers = []Matcher{
-	pathMatcher,
-	hostMatcher,
-	schemeMatcher,
-	methodMatcher,
-	headerMatcher,
-	basicAuthMatcher,
-	headerPresentMatcher,
-	headerNotPresentMatcher,
-	queryParamMatcher,
-	queryPresentMatcher,
-	queryNotPresentMatcher,
-	formDataMatcher,
-	formDataPresentMatcher,
-	formDataNotPresentMatcher,
-	bodyMatcher,
-	bodyRegexpMatcher,
-	cookieMatcher,
-	cookiePresentMatcher,
-	cookieNotPresentMatcher,
 }
 
 type timeoutError struct{}
@@ -1231,4 +1325,27 @@ func (r *mockInteraction) GetRequestHost() string {
 		host = r.request.URL.Host
 	}
 	return host
+}
+
+// execCount is used to track the number of times a mock has been executed.
+type execCount struct {
+	// expect is the expected number of times the mock will be executed.
+	expect uint
+	// actual is the actual number of times the mock has been executed.
+	actual uint
+}
+
+// newExecCount creates a new execCount with the given expected number of executions.
+func newExecCount(expect uint) *execCount {
+	return &execCount{expect: expect}
+}
+
+// updateExpectCount updates the expected number of executions.
+func (e *execCount) updateExpectCount(expect uint) {
+	e.expect = expect
+}
+
+// isComplete returns true if the actual number of executions matches the expected number of executions.
+func (e *execCount) isComplete() bool {
+	return e.actual == e.expect
 }

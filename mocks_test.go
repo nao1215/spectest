@@ -751,7 +751,7 @@ func TestMocksAddMatcherKeepsDefaultMocks(t *testing.T) {
 	testMock := NewMock()
 
 	// Default matchers present on new mock
-	assert.Equal(t, len(defaultMatchers), len(testMock.request.matchers))
+	assert.Equal(t, len(defaultMatchers()), len(testMock.request.matchers))
 
 	testMock.Get("/test/mock").
 		AddMatcher(func(r *http.Request, mr *MockRequest) error {
@@ -763,7 +763,7 @@ func TestMocksAddMatcherKeepsDefaultMocks(t *testing.T) {
 		End()
 
 	// New matcher added successfully
-	assert.Equal(t, len(defaultMatchers)+1, len(testMock.request.matchers))
+	assert.Equal(t, len(defaultMatchers())+1, len(testMock.request.matchers))
 }
 
 func TestMocksPanicsIfURLInvalid(t *testing.T) {
