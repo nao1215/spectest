@@ -361,7 +361,7 @@ func (s *SpecTest) report() *http.Response {
 }
 
 // newMeta creates a new meta data object.
-// This method is called in report().
+// This meta data is used for creating report.
 func (s *SpecTest) newMeta(capture *capture) *Meta {
 	meta := newMeta()
 	meta.StatusCode = capture.finalResponse.StatusCode
