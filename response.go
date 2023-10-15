@@ -148,7 +148,7 @@ func (r *Response) End() Result {
 
 	var unmatchedMocks []UnmatchedMock
 	for _, m := range r.specTest.mocks {
-		if !m.isUsed {
+		if !m.state.isRunning() {
 			unmatchedMocks = append(unmatchedMocks, UnmatchedMock{
 				URL: *m.request.url,
 			})

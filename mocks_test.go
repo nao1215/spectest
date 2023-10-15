@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"net"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -102,8 +101,8 @@ func TestMocksNewUnmatchedMockErrorEmpty(t *testing.T) {
 
 func TestMocksNewEmptyUnmatchedMockErrorExpectedErrorsString(t *testing.T) {
 	mockError := newUnmatchedMockError().
-		addErrors(1, errors.New("a boo boo has occurred")).
-		addErrors(2, errors.New("tom drank too much beer"))
+		append(1, errors.New("a boo boo has occurred")).
+		append(2, errors.New("tom drank too much beer"))
 
 	assert.Equal(t, true, mockError != nil)
 	assert.Equal(t, 2, len(mockError.errors))
@@ -845,9 +844,9 @@ func TestMocksMatchesNilIfNoMatch(t *testing.T) {
 
 func TestMocksUnmatchedMockErrorOrderedMockKeys(t *testing.T) {
 	unmatchedMockError := newUnmatchedMockError().
-		addErrors(3, errors.New("oh no")).
-		addErrors(1, errors.New("oh shoot")).
-		addErrors(4, errors.New("gah"))
+		append(3, errors.New("oh no")).
+		append(1, errors.New("oh shoot")).
+		append(4, errors.New("gah"))
 
 	assert.Equal(t,
 		"received request did not match any mocks\n\nMock 1 mismatches:\n• oh shoot\n\nMock 3 mismatches:\n• oh no\n\nMock 4 mismatches:\n• gah\n\n",
@@ -1133,7 +1132,7 @@ func TestMocksWithHTTPTimeout(t *testing.T) {
 
 	assert.Equal(t, true, err != nil)
 	var isTimeout bool
-	if err, ok := err.(net.Error); ok && err.Timeout() {
+	if errors.Is(err, ErrTimeout) {
 		isTimeout = true
 	}
 	assert.Equal(t, true, isTimeout)

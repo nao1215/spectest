@@ -163,7 +163,7 @@ func (s *SpecTest) Mocks(mocks ...*Mock) *SpecTest {
 	for i := range mocks {
 		times := mocks[i].response.mock.execCount.expect
 		for j := 1; j <= int(times); j++ {
-			mockCopy := mocks[i].copy()
+			mockCopy := mocks[i].deepCopy()
 			mockCopy.execCount = newExecCount(1)
 			m = append(m, mockCopy)
 		}
@@ -341,6 +341,7 @@ func (s *SpecTest) Tracef(format string, args ...interface{}) *Request {
 	return s.Trace(fmt.Sprintf(format, args...))
 }
 
+// report will run the test and return the report.
 func (s *SpecTest) report() *http.Response {
 	var capturedInboundReq *http.Request
 	var capturedFinalRes *http.Response
@@ -428,7 +429,7 @@ func (s *SpecTest) report() *http.Response {
 
 func (s *SpecTest) assertMocks() {
 	for _, mock := range s.mocks {
-		if !mock.isUsed && mock.execCount.isComplete() {
+		if !mock.state.isRunning() && mock.execCount.isComplete() {
 			s.verifier.Fail(s.t, "mock was not invoked expected times", failureMessageArgs{Name: s.name})
 		}
 	}
