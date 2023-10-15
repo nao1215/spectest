@@ -22,11 +22,6 @@ func (d *debug) enable() {
 	d.enabled = true
 }
 
-// disable will disable debug logging
-func (d *debug) disable() {
-	d.enabled = false
-}
-
 // isEnable returns true if debug logging is enabled
 func (d *debug) isEnable() bool {
 	return d.enabled

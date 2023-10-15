@@ -58,7 +58,7 @@ func (u *unmatchedMockError) Error() string {
 
 // orderedMockKeys returns the keys of the errors map in order.
 func (u *unmatchedMockError) orderedMockKeys() []int {
-	var mockKeys []int
+	mockKeys := make([]int, 0, len(u.errors))
 	for mockKey := range u.errors {
 		mockKeys = append(mockKeys, mockKey)
 	}
