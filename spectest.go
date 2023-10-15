@@ -353,7 +353,7 @@ func (s *SpecTest) report() *http.Response {
 
 	res := s.response.runTest()
 
-	s.record(capture)
+	s.recordResult(capture)
 	s.recorder.AddMeta(s.newMeta(capture))
 	s.reporter.Format(s.recorder)
 
@@ -376,8 +376,8 @@ func (s *SpecTest) newMeta(capture *capture) *Meta {
 	return meta
 }
 
-// record record the test result. This method is called after runTest().
-func (s SpecTest) record(capture *capture) {
+// recordResult record the test result. This method is called after runTest().
+func (s SpecTest) recordResult(capture *capture) {
 	s.recorder.
 		AddTitle(fmt.Sprintf("%s %s", capture.inboundRequest.Method, capture.inboundRequest.URL.String())).
 		AddSubTitle(s.name).
