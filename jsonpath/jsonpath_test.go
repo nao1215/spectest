@@ -19,9 +19,8 @@ func TestApiTestContains(t *testing.T) {
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Header().Set("Content-Type", "application/json")
-		_, err := w.Write([]byte(`{"a": 12345, "b": [{"key": "c", "value": "result"}], "d": null}`))
-		if err != nil {
-			panic(err)
+		if _, err := w.Write([]byte(`{"a": 12345, "b": [{"key": "c", "value": "result"}], "d": null}`)); err != nil {
+			t.Fatal(err)
 		}
 	})
 
@@ -38,9 +37,8 @@ func TestApiTestEqualNumeric(t *testing.T) {
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Header().Set("Content-Type", "application/json")
-		_, err := w.Write([]byte(`{"a": 12345, "b": [{"key": "c", "value": "result"}]}`))
-		if err != nil {
-			panic(err)
+		if _, err := w.Write([]byte(`{"a": 12345, "b": [{"key": "c", "value": "result"}]}`)); err != nil {
+			t.Fatal(err)
 		}
 	})
 
@@ -57,9 +55,8 @@ func TestApiTestEqualString(t *testing.T) {
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Header().Set("Content-Type", "application/json")
-		_, err := w.Write([]byte(`{"a": "12345", "b": [{"key": "c", "value": "result"}]}`))
-		if err != nil {
-			panic(err)
+		if _, err := w.Write([]byte(`{"a": "12345", "b": [{"key": "c", "value": "result"}]}`)); err != nil {
+			t.Fatal(err)
 		}
 	})
 
@@ -76,9 +73,8 @@ func TestApiTestEqualMap(t *testing.T) {
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Header().Set("Content-Type", "application/json")
-		_, err := w.Write([]byte(`{"a": "hello", "b": 12345}`))
-		if err != nil {
-			panic(err)
+		if _, err := w.Write([]byte(`{"a": "hello", "b": 12345}`)); err != nil {
+			t.Fatal(err)
 		}
 	})
 
@@ -95,9 +91,8 @@ func TestApiTestNotEqualNumeric(t *testing.T) {
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Header().Set("Content-Type", "application/json")
-		_, err := w.Write([]byte(`{"a": 12345, "b": [{"key": "c", "value": "result"}]}`))
-		if err != nil {
-			panic(err)
+		if _, err := w.Write([]byte(`{"a": 12345, "b": [{"key": "c", "value": "result"}]}`)); err != nil {
+			t.Fatal(err)
 		}
 	})
 
@@ -114,9 +109,8 @@ func TestApiTestNotEqualString(t *testing.T) {
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Header().Set("Content-Type", "application/json")
-		_, err := w.Write([]byte(`{"a": "12345", "b": [{"key": "c", "value": "result"}]}`))
-		if err != nil {
-			panic(err)
+		if _, err := w.Write([]byte(`{"a": "12345", "b": [{"key": "c", "value": "result"}]}`)); err != nil {
+			t.Fatal(err)
 		}
 	})
 
@@ -133,9 +127,8 @@ func TestApiTestNotEqualMap(t *testing.T) {
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Header().Set("Content-Type", "application/json")
-		_, err := w.Write([]byte(`{"a": "hello", "b": 12345}`))
-		if err != nil {
-			panic(err)
+		if _, err := w.Write([]byte(`{"a": "hello", "b": 12345}`)); err != nil {
+			t.Fatal(err)
 		}
 	})
 
@@ -152,9 +145,8 @@ func TestApiTestLen(t *testing.T) {
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Header().Set("Content-Type", "application/json")
-		_, err := w.Write([]byte(`{"a": [1, 2, 3], "b": "c", "d": null}`))
-		if err != nil {
-			panic(err)
+		if _, err := w.Write([]byte(`{"a": [1, 2, 3], "b": "c", "d": null}`)); err != nil {
+			t.Fatal(err)
 		}
 	})
 
@@ -183,9 +175,8 @@ func TestApiTestGreaterThan(t *testing.T) {
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Header().Set("Content-Type", "application/json")
-		_, err := w.Write([]byte(`{"a": [1, 2, 3], "b": "c", "d": null}`))
-		if err != nil {
-			panic(err)
+		if _, err := w.Write([]byte(`{"a": [1, 2, 3], "b": "c", "d": null}`)); err != nil {
+			t.Fatal(err)
 		}
 	})
 
@@ -214,9 +205,8 @@ func TestApiTestLessThan(t *testing.T) {
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Header().Set("Content-Type", "application/json")
-		_, err := w.Write([]byte(`{"a": [1, 2, 3], "b": "c", "d": null}`))
-		if err != nil {
-			panic(err)
+		if _, err := w.Write([]byte(`{"a": [1, 2, 3], "b": "c", "d": null}`)); err != nil {
+			t.Fatal(err)
 		}
 	})
 
@@ -245,9 +235,8 @@ func TestApiTestPresent(t *testing.T) {
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Header().Set("Content-Type", "application/json")
-		_, err := w.Write([]byte(`{"a": 22}`))
-		if err != nil {
-			panic(err)
+		if _, err := w.Write([]byte(`{"a": 22}`)); err != nil {
+			t.Fatal(err)
 		}
 	})
 
@@ -273,9 +262,8 @@ func TestApiTestMatches(t *testing.T) {
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Header().Set("Content-Type", "application/json")
-		_, err := w.Write([]byte(`{"anObject":{"aString":"tom<3Beer","aNumber":7.212,"aBool":true},"aString":"tom<3Beer","aNumber":7,"aNumberSlice":[7,8,9],"aStringSlice":["7","8","9"]}`))
-		if err != nil {
-			panic(err)
+		if _, err := w.Write([]byte(`{"anObject":{"aString":"tom<3Beer","aNumber":7.212,"aBool":true},"aString":"tom<3Beer","aNumber":7,"aNumberSlice":[7,8,9],"aStringSlice":["7","8","9"]}`)); err != nil {
+			t.Fatal(err)
 		}
 	})
 
@@ -296,7 +284,7 @@ func TestApiTestChain(t *testing.T) {
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Header().Set("Content-Type", "application/json")
-		_, err := w.Write([]byte(`{
+		if _, err := w.Write([]byte(`{
 			"a": {
 			"b": {
 				"c": {
@@ -306,9 +294,8 @@ func TestApiTestChain(t *testing.T) {
 				}
 			}
 			}
-		}`))
-		if err != nil {
-			panic(err)
+		}`)); err != nil {
+			t.Fatal(err)
 		}
 	})
 
