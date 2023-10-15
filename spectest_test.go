@@ -1127,7 +1127,7 @@ func TestRealNetworking(t *testing.T) {
 
 	go func() {
 		if err := srv.ListenAndServe(); err != nil {
-			t.Fatal(err)
+			panic(err)
 		}
 	}()
 	time.Sleep(time.Millisecond * 100) // TODO: find a better way to wait for the server to start
