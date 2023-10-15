@@ -81,6 +81,7 @@ func (a DefaultVerifier) Equal(t TestingT, expected, actual interface{}, msgAndA
 			expected, actual, err), msgAndArgs...)
 	}
 
+	// For non-error values, continue with the existing comparison logic
 	if !objectsAreEqual(expected, actual) {
 		diff := diff(expected, actual)
 		expected, actual = formatUnequalValues(expected, actual)
@@ -88,7 +89,6 @@ func (a DefaultVerifier) Equal(t TestingT, expected, actual interface{}, msgAndA
 			"expected: %s\n"+
 			"actual  : %s%s", expected, actual, diff), msgAndArgs...)
 	}
-
 	return true
 }
 
@@ -121,7 +121,6 @@ func (a DefaultVerifier) NoError(t TestingT, err error, msgAndArgs ...interface{
 	if err != nil {
 		return a.Fail(t, fmt.Sprintf("Received unexpected error:\n%+v", err), msgAndArgs...)
 	}
-
 	return true
 }
 

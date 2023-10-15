@@ -1525,7 +1525,7 @@ func TestHTTPMethodOptions(t *testing.T) {
 func TestHTTPMethodTrace(t *testing.T) {
 	t.Run("success  case: test Trace()", func(t *testing.T) {
 		handler := http.NewServeMux()
-		handler.HandleFunc("/trace", func(w http.ResponseWriter, r *http.Request) {
+		handler.HandleFunc("/trace123", func(w http.ResponseWriter, r *http.Request) {
 			if r.Method != http.MethodTrace {
 				t.Fatalf("expected method to be TRACE, got %s", r.Method)
 			}
@@ -1546,7 +1546,7 @@ func TestHTTPMethodTrace(t *testing.T) {
 
 		spectest.New().
 			Handler(handler).
-			Trace("/trace").
+			Tracef("/trace%s", "123").
 			Header("User-Agent", "Go-http-client/1.1").
 			Header("Keep-Alive", "timeout=5, max=1000").
 			Expect(t).
