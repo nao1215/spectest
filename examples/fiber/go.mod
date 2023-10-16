@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/go-spectest/spectest v0.0.7
-	github.com/gofiber/fiber/v2 v2.49.2
+	github.com/gofiber/fiber/v2 v2.50.0
 )
 
 require (
@@ -21,7 +21,7 @@ require (
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/tenntenn/testtime v0.2.2 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
-	github.com/valyala/fasthttp v1.49.0 // indirect
+	github.com/valyala/fasthttp v1.50.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
-	golang.org/x/sys v0.12.0 // indirect
+	golang.org/x/sys v0.13.0 // indirect
 )
