@@ -13,7 +13,6 @@ import (
 	runtimeDebug "runtime/debug"
 	"sort"
 	"strings"
-	"time"
 )
 
 // SpecTest is the top level struct holding the test spec
@@ -343,27 +342,9 @@ func (s *SpecTest) Tracef(format string, args ...interface{}) *Request {
 
 // report will run the test and return the report.
 func (s *SpecTest) report() *http.Response {
-	var capturedInboundReq *http.Request
-	var capturedFinalRes *http.Response
-	var capturedMockInteractions []*mockInteraction
-
-	s.observers = append(s.observers, func(finalRes *http.Response, inboundReq *http.Request, a *SpecTest) {
-		capturedFinalRes = copyHTTPResponse(finalRes)
-		defer func() {
-			if err := capturedFinalRes.Body.Close(); err != nil {
-				panic(err) // FIXME: handle error
-			}
-		}()
-		capturedInboundReq = copyHTTPRequest(inboundReq)
-	})
-
-	s.mocksObservers = append(s.mocksObservers, func(mockRes *http.Response, mockReq *http.Request, a *SpecTest) {
-		capturedMockInteractions = append(capturedMockInteractions, &mockInteraction{
-			request:   copyHTTPRequest(mockReq),
-			response:  copyHTTPResponse(mockRes),
-			timestamp: time.Now().UTC(),
-		})
-	})
+	capture := newCapture()
+	s.observers = capture.appendObserver(s.observers)
+	s.mocksObservers = capture.appendMockObservers(s.mocksObservers)
 
 	if s.recorder == nil {
 		s.recorder = NewTestRecorder()
@@ -372,17 +353,42 @@ func (s *SpecTest) report() *http.Response {
 
 	res := s.response.runTest()
 
+	s.recordResult(capture)
+	s.recorder.AddMeta(s.newMeta(capture))
+	s.reporter.Format(s.recorder)
+
+	return res
+}
+
+// newMeta creates a new meta data object.
+// This meta data is used for creating report.
+func (s *SpecTest) newMeta(capture *capture) *Meta {
+	meta := newMeta()
+	meta.StatusCode = capture.finalResponse.StatusCode
+	meta.Path = capture.inboundRequest.URL.String()
+	meta.Method = capture.inboundRequest.Method
+	meta.Duration = s.interval.Duration().Nanoseconds()
+	meta.Name = s.name
+	meta.ReportFileName = s.meta.ReportFileName
+	if s.meta.Host != "" {
+		meta.Host = s.meta.Host
+	}
+	return meta
+}
+
+// recordResult record the test result. This method is called after runTest().
+func (s SpecTest) recordResult(capture *capture) {
 	s.recorder.
-		AddTitle(fmt.Sprintf("%s %s", capturedInboundReq.Method, capturedInboundReq.URL.String())).
+		AddTitle(fmt.Sprintf("%s %s", capture.inboundRequest.Method, capture.inboundRequest.URL.String())).
 		AddSubTitle(s.name).
 		AddHTTPRequest(HTTPRequest{
 			Source:    ConsumerDefaultName,
 			Target:    SystemUnderTestDefaultName,
-			Value:     capturedInboundReq,
+			Value:     capture.inboundRequest,
 			Timestamp: s.interval.Started,
 		})
 
-	for _, interaction := range capturedMockInteractions {
+	for _, interaction := range capture.mockInteractions {
 		s.recorder.AddHTTPRequest(HTTPRequest{
 			Source:    SystemUnderTestDefaultName,
 			Target:    interaction.GetRequestHost(),
@@ -402,29 +408,13 @@ func (s *SpecTest) report() *http.Response {
 	s.recorder.AddHTTPResponse(HTTPResponse{
 		Source:    SystemUnderTestDefaultName,
 		Target:    ConsumerDefaultName,
-		Value:     capturedFinalRes,
+		Value:     capture.finalResponse,
 		Timestamp: s.interval.Finished,
 	})
 
 	sort.Slice(s.recorder.Events, func(i, j int) bool {
 		return s.recorder.Events[i].GetTime().Before(s.recorder.Events[j].GetTime())
 	})
-
-	meta := newMeta()
-	meta.StatusCode = capturedFinalRes.StatusCode
-	meta.Path = capturedInboundReq.URL.String()
-	meta.Method = capturedInboundReq.Method
-	meta.Duration = s.interval.Duration().Nanoseconds()
-	meta.Name = s.name
-	meta.ReportFileName = s.meta.ReportFileName
-	if s.meta.Host != "" {
-		meta.Host = s.meta.Host
-	}
-
-	s.recorder.AddMeta(meta)
-	s.reporter.Format(s.recorder)
-
-	return res
 }
 
 func (s *SpecTest) assertMocks() {

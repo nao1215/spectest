@@ -549,9 +549,8 @@ func TestApiTestMatchesJSONResponseBody(t *testing.T) {
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusCreated)
 		w.Header().Set("Content-Type", "application/json")
-		_, err := w.Write([]byte(`{"a": 12345}`))
-		if err != nil {
-			panic(err)
+		if _, err := w.Write([]byte(`{"a": 12345}`)); err != nil {
+			t.Fatal(err)
 		}
 	})
 
@@ -569,9 +568,8 @@ func TestApiTestMatchesJSONResponseBodyWithFormatter(t *testing.T) {
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusCreated)
 		w.Header().Set("Content-Type", "application/json")
-		_, err := w.Write([]byte(`{"a": 12345}`))
-		if err != nil {
-			panic(err)
+		if _, err := w.Write([]byte(`{"a": 12345}`)); err != nil {
+			t.Fatal(err)
 		}
 	})
 
@@ -592,9 +590,8 @@ func TestApiTestMatchesJSONBodyFromFile(t *testing.T) {
 
 		w.WriteHeader(http.StatusCreated)
 		w.Header().Set("Content-Type", "application/json")
-		_, err := w.Write([]byte(`{"a": 12345}`))
-		if err != nil {
-			panic(err)
+		if _, err := w.Write([]byte(`{"a": 12345}`)); err != nil {
+			t.Fatal(err)
 		}
 	})
 
@@ -616,9 +613,8 @@ func TestApiTestMatchesBodyFromFile(t *testing.T) {
 
 		w.WriteHeader(http.StatusCreated)
 		w.Header().Set("Content-Type", "application/json")
-		_, err := w.Write([]byte(`{"a": 12345}`))
-		if err != nil {
-			panic(err)
+		if _, err := w.Write([]byte(`{"a": 12345}`)); err != nil {
+			t.Fatal(err)
 		}
 	})
 
@@ -638,9 +634,8 @@ func TestApiTestMatchesJSONResponseBodyWithWhitespace(t *testing.T) {
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusCreated)
 		w.Header().Set("Content-Type", "application/json")
-		_, err := w.Write([]byte(`{"a": 12345, "b": "hi"}`))
-		if err != nil {
-			panic(err)
+		if _, err := w.Write([]byte(`{"a": 12345, "b": "hi"}`)); err != nil {
+			t.Fatal(err)
 		}
 	})
 
@@ -661,9 +656,8 @@ func TestApiTestMatchesTextResponseBody(t *testing.T) {
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Header().Set("Content-Type", "text/plain")
-		_, err := w.Write([]byte(`hello`))
-		if err != nil {
-			panic(err)
+		if _, err := w.Write([]byte(`hello`)); err != nil {
+			t.Fatal(err)
 		}
 	})
 
@@ -816,9 +810,8 @@ func TestApiTestEndReturnsTheResult(t *testing.T) {
 		HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusCreated)
 			w.Header().Set("Content-Type", "application/json")
-			_, err := w.Write([]byte(`{"a": 12345, "b": "hi"}`))
-			if err != nil {
-				panic(err)
+			if _, err := w.Write([]byte(`{"a": 12345, "b": "hi"}`)); err != nil {
+				t.Fatal(err)
 			}
 		}).
 		Get("/hello").
@@ -991,9 +984,8 @@ func TestApiTestObserveDumpsTheHttpRequestAndResponse(t *testing.T) {
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusCreated)
 		w.Header().Set("Content-Type", "application/json")
-		_, err := w.Write([]byte(`{"a": 12345}`))
-		if err != nil {
-			panic(err)
+		if _, err := w.Write([]byte(`{"a": 12345}`)); err != nil {
+			t.Fatal(err)
 		}
 	})
 
@@ -1092,9 +1084,8 @@ func TestApiTestNoopVerifier(t *testing.T) {
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusCreated)
 		w.Header().Set("Content-Type", "application/json")
-		_, err := w.Write([]byte(`{"a": 12345}`))
-		if err != nil {
-			panic(err)
+		if _, err := w.Write([]byte(`{"a": 12345}`)); err != nil {
+			t.Fatal(err)
 		}
 	})
 
