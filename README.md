@@ -374,3 +374,7 @@ func TestApi(t *testing.T) {
 ## Contributing
 
 View the [contributing guide](CONTRIBUTING.md).
+
+## Star History
+[![Star History Chart](https://api.star-history.com/svg?repos=go-spectest/spectest&type=Date)](https://star-history.com/#go-spectest/spectest&Date)
+
