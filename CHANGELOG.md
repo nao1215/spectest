@@ -1,6 +1,9 @@
 # Changelog
 
 ## [0.0.8, unreleased] - 2023-xx-xx
+### Added
+- image package
+  - Support image comparison; EqualFromFile()
 ### Changed
 - Refactoring
   - Refactoring for internal code. For example, introduce network struct.
