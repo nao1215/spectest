@@ -1,3 +1,4 @@
+// Package image provides assertions for image comparison.
 package image
 
 import (
@@ -22,7 +23,7 @@ func EqualFromFile(expected string) func(*http.Response, *http.Request) error {
 		if err != nil {
 			return err
 		}
-		defer tempFile.Close()
+		defer tempFile.Close() //nolint:errcheck
 
 		body, err := io.ReadAll(res.Body)
 		if err != nil {
