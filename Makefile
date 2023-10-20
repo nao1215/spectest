@@ -1,7 +1,7 @@
 .PHONY: test test-examples docs fmt vet
 
 test: ## Run unit tests
-	go test ./... -v -covermode=atomic -coverprofile=coverage.out
+	go test ./... -v -covermode=atomic -cover -coverpkg=./... -coverprofile=coverage.out
 	go tool cover -html=coverage.out -o coverage.html
 
 test-examples: ## Run unit tests for examples directory
