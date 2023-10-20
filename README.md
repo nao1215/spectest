@@ -51,11 +51,11 @@ In the original apitest repository, side projects were managed in separate repos
   
 | Library                                                                 | Comment                                        |
 | ----------------------------------------------------------------------- | -----------------------------------------------|
-| [JSON Path](https://github.com/go-spectest/spectest/jsonpath)           | JSON Path assertion addons                      |
-| [JOSN Schema](https://github.com/go-spectest/spectest/jsonschema)               | JSON Schema assertion addons |
-| [CSS Selectors](https://github.com/go-spectest/spectest/css-selector)  | CSS selector assertion addons                  |
-| [PlantUML](https://github.com/go-spectest/spectest/plantuml)           | Export sequence diagrams as plantUML           |
-| [DynamoDB (broken)](https://github.com/go-spectest/aws)           | Add DynamoDB interactions to sequence diagrams |
+| [JSON Path](https://github.com/go-spectest/spectest/tree/main/jsonpath)           | JSON Path assertion addons                      |
+| [JOSN Schema](https://github.com/go-spectest/spectest/tree/main/jsonschema)               | JSON Schema assertion addons |
+| [CSS Selectors](https://github.com/go-spectest/spectest/tree/main/css-selector)  | CSS selector assertion addons                  |
+| [PlantUML](https://github.com/go-spectest/spectest/tree/main/plantuml)           | Export sequence diagrams as plantUML           |
+| [DynamoDB (broken)](https://github.com/go-spectest/tree/main/aws)           | Add DynamoDB interactions to sequence diagrams |
 
 ### Credits
 
