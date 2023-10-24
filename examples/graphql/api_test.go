@@ -34,7 +34,6 @@ func TestQueryEmpty(t *testing.T) {
 
 func TestQueryWithTodo(t *testing.T) {
 	handler := graph.NewHandler()
-
 	spectest.New().
 		Handler(handler).
 		Post("/query").

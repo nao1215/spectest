@@ -1,8 +1,8 @@
 package graph
 
-import "github.com/go-spectest/spectest/examples/graphql/graph/model"
-
-//go:generate gqlgen
+import (
+	"github.com/go-spectest/spectest/examples/graphql/graph/model"
+)
 
 // This file will not be regenerated automatically.
 //
