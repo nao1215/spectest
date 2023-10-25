@@ -1,6 +1,10 @@
 # Changelog
 
-## [0.0.8, unreleased] - 2023-xx-xx
+## [0.0.9] - 2023-XX-XX
+### Fixed
+- image.EqualFromFile() close response body.
+
+## [0.0.8] - 2023-10-24
 ### Added
 - image package
   - Support image comparison; EqualFromFile()
