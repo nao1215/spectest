@@ -29,6 +29,8 @@ func EqualFromFile(expected string) func(*http.Response, *http.Request) error {
 		if err != nil {
 			return err
 		}
+		defer res.Body.Close() //nolint:errcheck
+
 		if _, err = tempFile.Write(body); err != nil {
 			return err
 		}
