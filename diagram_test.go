@@ -81,7 +81,7 @@ func TestWebSequenceDiagramGeneratesDSL(t *testing.T) {
 		wsd.addResponseRow("C", "B", "response1")
 		wsd.addResponseRow("B", "A", "response2")
 
-		actual := wsd.toString()
+		actual := wsd.String()
 
 		expected := `"A"->"B": (1) request1
 "B"->"C": (2) request2
@@ -102,7 +102,7 @@ func TestWebSequenceDiagramGeneratesDSL(t *testing.T) {
 		wsd.addResponseRow("C", SystemUnderTestDefaultName, "response1")
 		wsd.addResponseRow(SystemUnderTestDefaultName, ConsumerDefaultName, "response2")
 
-		actual := wsd.toString()
+		actual := wsd.String()
 
 		expected := `"cli"->"sut": (1) request1
 "sut"->"C": (2) request2
@@ -126,7 +126,7 @@ func TestWebSequenceDiagramGeneratesDSL(t *testing.T) {
 		wsd.addResponseRow("C", SystemUnderTestDefaultName, "response1")
 		wsd.addResponseRow(SystemUnderTestDefaultName, ConsumerDefaultName, "response2")
 
-		actual := wsd.toString()
+		actual := wsd.String()
 
 		expected := `"custom-consumer"->"custom-testing-target": (1) request1
 "custom-testing-target"->"C": (2) request2

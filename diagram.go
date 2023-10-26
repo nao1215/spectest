@@ -41,46 +41,7 @@ type (
 		// fs is the file system used to save the report
 		fs fileSystem
 	}
-
-	// webSequenceDiagramDSL is the DSL used to render the sequence diagram.
-	webSequenceDiagramDSL struct {
-		data  bytes.Buffer
-		count int
-		meta  *Meta
-	}
 )
-
-func (r *webSequenceDiagramDSL) addRequestRow(source string, target string, description string) {
-	r.addRow("->", source, target, description)
-}
-
-func (r *webSequenceDiagramDSL) addResponseRow(source string, target string, description string) {
-	r.addRow("->>", source, target, description)
-}
-
-func (r *webSequenceDiagramDSL) addRow(operation, source string, target string, description string) {
-	if r.meta.ConsumerName != "" {
-		source = strings.ReplaceAll(source, ConsumerDefaultName, r.meta.ConsumerName)
-		target = strings.ReplaceAll(target, ConsumerDefaultName, r.meta.ConsumerName)
-	}
-	if r.meta.TestingTargetName != "" {
-		source = strings.ReplaceAll(source, SystemUnderTestDefaultName, r.meta.TestingTargetName)
-		target = strings.ReplaceAll(target, SystemUnderTestDefaultName, r.meta.TestingTargetName)
-	}
-
-	r.count++
-	r.data.WriteString(fmt.Sprintf("%s%s%s: (%d) %s\n",
-		quoted(source),
-		operation,
-		quoted(target),
-		r.count,
-		description),
-	)
-}
-
-func (r *webSequenceDiagramDSL) toString() string {
-	return r.data.String()
-}
 
 // Format formats the events received by the recorder
 func (sdf *SequenceDiagramFormatter) Format(recorder *Recorder) {
@@ -90,7 +51,19 @@ func (sdf *SequenceDiagramFormatter) Format(recorder *Recorder) {
 	}
 
 	template, err := htmlTemplate.New("sequenceDiagram").
-		Funcs(*templateFunc).
+		Funcs(htmlTemplate.FuncMap{
+			"inc": func(i int) int {
+				return i + 1
+			},
+			"contains": func(str string, subs ...string) bool {
+				for _, sub := range subs {
+					if strings.Contains(str, sub) {
+						return true
+					}
+				}
+				return false
+			},
+		}).
 		Parse(reportTemplate)
 	if err != nil {
 		panic(err)
@@ -133,20 +106,10 @@ func SequenceDiagram(path ...string) *SequenceDiagramFormatter {
 	return &SequenceDiagramFormatter{storagePath: storagePath, fs: &defaultFileSystem{}}
 }
 
-var templateFunc = &htmlTemplate.FuncMap{
-	"inc": func(i int) int {
-		return i + 1
-	},
-	"contains": func(str string, subs ...string) bool {
-		for _, sub := range subs {
-			if strings.Contains(str, sub) {
-				return true
-			}
-		}
-		return false
-	},
-}
-
+// formatDiagramRequest formats the HTTP request into a string for logging purposes.
+// It takes in a pointer to an http.Request and returns a string.
+// If the URL contains a query, it appends it to the string.
+// If the resulting string is longer than 65 characters, it truncates it and appends "...".
 func formatDiagramRequest(req *http.Request) string {
 	out := fmt.Sprintf("%s %s", req.Method, req.URL.Path)
 	if req.URL.RawQuery != "" {
@@ -158,16 +121,24 @@ func formatDiagramRequest(req *http.Request) string {
 	return out
 }
 
+// badgeCSSClass returns a CSS class for a badge based on the HTTP status code.
+// If the status code is between 400 and 499, it returns a warning class.
+// If the status code is 500 or greater, it returns a danger class.
+// Otherwise, it returns a success class.
 func badgeCSSClass(status int) string {
 	class := "badge badge-success"
-	if status >= 400 && status < 500 {
+	if status >= http.StatusBadRequest && status < http.StatusInternalServerError {
 		class = "badge badge-warning"
-	} else if status >= 500 {
+	} else if status >= http.StatusInternalServerError {
 		class = "badge badge-danger"
 	}
 	return class
 }
 
+// newHTMLTemplateModel returns a new htmlTemplateModel and an error.
+// It iterates through the Recorder's events and creates a webSequenceDiagramDSL and logs.
+// If the Content Type is an image, it generates an image and replaces the response body with the image path.
+// It returns an htmlTemplateModel containing the webSequenceDiagramDSL, logs, title, subtitle, status code, badge class, and Meta data in JSON format.
 func (sdf *SequenceDiagramFormatter) newHTMLTemplateModel(recorder *Recorder) (htmlTemplateModel, error) {
 	if len(recorder.Events) == 0 {
 		return htmlTemplateModel{}, errors.New("no events are defined")
@@ -230,7 +201,7 @@ func (sdf *SequenceDiagramFormatter) newHTMLTemplateModel(recorder *Recorder) (h
 	}
 
 	return htmlTemplateModel{
-		WebSequenceDSL: webSequenceDiagram.toString(),
+		WebSequenceDSL: webSequenceDiagram.String(),
 		LogEntries:     logs,
 		Title:          recorder.Title,
 		SubTitle:       recorder.SubTitle,
@@ -308,6 +279,9 @@ func toImageExt(contentType string) string {
 	return ""
 }
 
+// formatBodyContent reads the bodyReadCloser and replaces it with the replacementBody.
+// It returns a string representation of the body with indentation if it is a valid JSON, otherwise it returns the original body.
+// If bodyReadCloser is nil, it returns an empty string and no error.
 func formatBodyContent(bodyReadCloser io.ReadCloser, replaceBody func(replacementBody io.ReadCloser)) (string, error) {
 	if bodyReadCloser == nil {
 		return "", nil
@@ -337,6 +311,50 @@ func formatBodyContent(bodyReadCloser io.ReadCloser, replaceBody func(replacemen
 	return buf.String(), nil
 }
 
+// quoted returns a quoted string representation of the input string.
 func quoted(in string) string {
 	return fmt.Sprintf("%q", in)
+}
+
+// webSequenceDiagramDSL is the DSL used to render the sequence diagram.
+type webSequenceDiagramDSL struct {
+	data  bytes.Buffer
+	count int
+	meta  *Meta
+}
+
+// addRequestRow adds a request row to the sequence diagram
+func (r *webSequenceDiagramDSL) addRequestRow(source string, target string, description string) {
+	r.addRow("->", source, target, description)
+}
+
+// addResponseRow adds a response row to the sequence diagram
+func (r *webSequenceDiagramDSL) addResponseRow(source string, target string, description string) {
+	r.addRow("->>", source, target, description)
+}
+
+// addRow adds a row to the sequence diagram
+func (r *webSequenceDiagramDSL) addRow(operation, source string, target string, description string) {
+	if r.meta.ConsumerName != "" {
+		source = strings.ReplaceAll(source, ConsumerDefaultName, r.meta.ConsumerName)
+		target = strings.ReplaceAll(target, ConsumerDefaultName, r.meta.ConsumerName)
+	}
+	if r.meta.TestingTargetName != "" {
+		source = strings.ReplaceAll(source, SystemUnderTestDefaultName, r.meta.TestingTargetName)
+		target = strings.ReplaceAll(target, SystemUnderTestDefaultName, r.meta.TestingTargetName)
+	}
+
+	r.count++
+	r.data.WriteString(fmt.Sprintf("%s%s%s: (%d) %s\n",
+		quoted(source),
+		operation,
+		quoted(target),
+		r.count,
+		description),
+	)
+}
+
+// String returns the string representation of the sequence diagram
+func (r *webSequenceDiagramDSL) String() string {
+	return r.data.String()
 }
