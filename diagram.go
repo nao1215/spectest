@@ -12,6 +12,8 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+
+	"github.com/go-spectest/markdown"
 )
 
 type (
@@ -42,6 +44,50 @@ type (
 		fs fileSystem
 	}
 )
+
+// ReportFormatterConfig is the configuration for a ReportFormatter
+type ReportFormatterConfig struct {
+	// Path is the path where the report will be saved.
+	// By default, the report will be saved in the ".sequence"
+	Path string
+	// Kind is the kind of report to generate
+	Kind ReportKind
+}
+
+// ReportKind is the kind of the report.
+type ReportKind uint
+
+const (
+	// ReportKindHTML is the HTML report kind. This is the default.
+	ReportKindHTML ReportKind = 0
+	// ReportKindMarkdown is the Markdown report kind.
+	ReportKindMarkdown ReportKind = 1
+)
+
+// SequenceDiagram produce a sequence diagram at the given path or .sequence by default.
+// SequenceDiagramFormatter generate html report with sequence diagram.
+// Deprecated: Use SequenceReport instead.
+func SequenceDiagram(path ...string) ReportFormatter {
+	var storagePath string
+	if len(path) == 0 {
+		storagePath = ".sequence"
+	} else {
+		storagePath = path[0]
+	}
+	return &SequenceDiagramFormatter{storagePath: storagePath, fs: &defaultFileSystem{}}
+}
+
+// SequenceReport produce a sequence diagram at the given path or .sequence by default.
+// SequenceDiagramFormatter generate html report or markdown report with sequence diagram.
+func SequenceReport(config ReportFormatterConfig) ReportFormatter {
+	if config.Path == "" {
+		config.Path = ".sequence"
+	}
+	if config.Kind == ReportKindMarkdown {
+		return &MarkdownFormatter{storagePath: config.Path, fs: &defaultFileSystem{}}
+	}
+	return &SequenceDiagramFormatter{storagePath: config.Path, fs: &defaultFileSystem{}}
+}
 
 // Format formats the events received by the recorder
 func (sdf *SequenceDiagramFormatter) Format(recorder *Recorder) {
@@ -93,17 +139,6 @@ func (sdf *SequenceDiagramFormatter) Format(recorder *Recorder) {
 		panic(err)
 	}
 	fmt.Printf("Created sequence diagram (%s): %s\n", fileName, filepath.FromSlash(s))
-}
-
-// SequenceDiagram produce a sequence diagram at the given path or .sequence by default
-func SequenceDiagram(path ...string) *SequenceDiagramFormatter {
-	var storagePath string
-	if len(path) == 0 {
-		storagePath = ".sequence"
-	} else {
-		storagePath = path[0]
-	}
-	return &SequenceDiagramFormatter{storagePath: storagePath, fs: &defaultFileSystem{}}
 }
 
 // formatDiagramRequest formats the HTTP request into a string for logging purposes.
@@ -318,9 +353,12 @@ func quoted(in string) string {
 
 // webSequenceDiagramDSL is the DSL used to render the sequence diagram.
 type webSequenceDiagramDSL struct {
-	data  bytes.Buffer
+	// data is the buffer used to store the sequence diagram
+	data bytes.Buffer
+	// count is the number of rows in the sequence diagram
 	count int
-	meta  *Meta
+	// meta is the meta data of the sequence diagram
+	meta *Meta
 }
 
 // addRequestRow adds a request row to the sequence diagram
@@ -357,4 +395,30 @@ func (r *webSequenceDiagramDSL) addRow(operation, source string, target string, 
 // String returns the string representation of the sequence diagram
 func (r *webSequenceDiagramDSL) String() string {
 	return r.data.String()
+}
+
+// MarkdownFormatter implementation of a ReportFormatter
+type MarkdownFormatter struct {
+	// storagePath is the path where the report will be saved
+	storagePath string
+	// fs is the file system used to save the report
+	fs fileSystem
+}
+
+// Format formats the events received by the recorder.
+func (m *MarkdownFormatter) Format(recorder *Recorder) {
+	if err := m.fs.mkdirAll(m.storagePath, os.ModePerm); err != nil {
+		panic(err) // TODO: error handling
+	}
+
+	fileName := fmt.Sprintf("%s.md", recorder.Meta.reportFileName())
+	f, err := m.fs.create(filepath.Clean(filepath.Join(m.storagePath, fileName)))
+	if err != nil {
+		panic(err) // TODO: error handling
+	}
+
+	markdown.NewMarkdown(f).
+		H1(recorder.Title). // TODO: add status badge
+		H2(recorder.SubTitle).
+		Build()
 }

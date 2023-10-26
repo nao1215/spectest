@@ -139,16 +139,27 @@ func TestWebSequenceDiagramGeneratesDSL(t *testing.T) {
 	})
 }
 
-func TestNewSequenceDiagramFormatterSetsDefaultPath(t *testing.T) {
-	formatter := SequenceDiagram()
+func TestNewSequenceDiagramFormatterStoragePath(t *testing.T) {
+	t.Parallel()
+	t.Run("should use default storage path", func(t *testing.T) {
+		t.Parallel()
+		formatter := SequenceDiagram()
+		v, ok := formatter.(*SequenceDiagramFormatter)
+		if !ok {
+			t.Fatalf("expected SequenceDiagramFormatter, got %T", formatter)
+		}
+		assert.Equal(t, ".sequence", v.storagePath)
+	})
 
-	assert.Equal(t, ".sequence", formatter.storagePath)
-}
-
-func TestNewSequenceDiagramFormatterOverridesPath(t *testing.T) {
-	formatter := SequenceDiagram(".sequence-diagram")
-
-	assert.Equal(t, ".sequence-diagram", formatter.storagePath)
+	t.Run("should use custom storage path", func(t *testing.T) {
+		t.Parallel()
+		formatter := SequenceDiagram(".sequence-diagram")
+		v, ok := formatter.(*SequenceDiagramFormatter)
+		if !ok {
+			t.Fatalf("expected SequenceDiagramFormatter, got %T", formatter)
+		}
+		assert.Equal(t, ".sequence-diagram", v.storagePath)
+	})
 }
 
 func TestRecorderBuilder(t *testing.T) {
