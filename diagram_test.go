@@ -10,6 +10,33 @@ import (
 	"testing"
 )
 
+// MockFS is a mock implementation of the fileSystem interface
+type MockFS struct {
+	// CapturedCreateName is the name captured by the create method
+	CapturedCreateName string
+	// CapturedCreateFile is the file path (full path) captured by the create method
+	CapturedCreateFile string
+	// CapturedMkdirAllPath is the path captured by the mkdirAll method
+	CapturedMkdirAllPath string
+}
+
+// create creates a file at the given path
+func (m *MockFS) create(name string) (*os.File, error) {
+	m.CapturedCreateName = name
+	file, err := os.CreateTemp("/tmp", "spectest")
+	if err != nil {
+		panic(err)
+	}
+	m.CapturedCreateFile = file.Name()
+	return file, nil
+}
+
+// mkdirAll creates a directory at the given path
+func (m *MockFS) mkdirAll(path string, _ os.FileMode) error {
+	m.CapturedMkdirAllPath = path
+	return nil
+}
+
 func TestDiagramBadgeCSSClass(t *testing.T) {
 	tests := []struct {
 		status int
@@ -148,7 +175,7 @@ func TestNewHTMLTemplateModelErrorsIfNoEventsDefined(t *testing.T) {
 
 	s := SequenceDiagramFormatter{
 		storagePath: ".sequence",
-		fs:          &FS{},
+		fs:          &MockFS{},
 	}
 	_, err := s.newHTMLTemplateModel(recorder)
 
@@ -160,7 +187,7 @@ func TestNewHTMLTemplateModelSuccess(t *testing.T) {
 
 	s := SequenceDiagramFormatter{
 		storagePath: ".sequence",
-		fs:          &FS{},
+		fs:          &MockFS{},
 	}
 	model, err := s.newHTMLTemplateModel(recorder)
 
@@ -252,27 +279,6 @@ func aResponse() HTTPResponse {
 		Source: "resSource",
 		Target: "resTarget",
 	}
-}
-
-type FS struct {
-	CapturedCreateName   string
-	CapturedCreateFile   string
-	CapturedMkdirAllPath string
-}
-
-func (m *FS) create(name string) (*os.File, error) {
-	m.CapturedCreateName = name
-	file, err := os.CreateTemp("/tmp", "spectest")
-	if err != nil {
-		panic(err)
-	}
-	m.CapturedCreateFile = file.Name()
-	return file, nil
-}
-
-func (m *FS) mkdirAll(path string, _ os.FileMode) error {
-	m.CapturedMkdirAllPath = path
-	return nil
 }
 
 func TestExtractContentType(t *testing.T) {

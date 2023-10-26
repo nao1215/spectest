@@ -15,43 +15,40 @@ import (
 )
 
 type (
+	// htmlTemplateModel is the model used to render the HTML template.
+	// NOTE: The fields must be exported to be used by the template.
 	htmlTemplateModel struct {
-		Title          string
-		SubTitle       string
-		StatusCode     int
-		BadgeClass     string
-		LogEntries     []LogEntry
+		// Title is the title of the report
+		Title string
+		// SubTitle is the subtitle of the report
+		SubTitle string
+		// StatusCode is the HTTP status code of the response
+		StatusCode int
+		// BadgeClass is the CSS class of the status code badge
+		BadgeClass string
+		// LogEntries is the list of log entries
+		LogEntries []LogEntry
+		// WebSequenceDSL is the DSL used to render the sequence diagram
 		WebSequenceDSL string
-		MetaJSON       htmlTemplate.JS
+		// MetaJSON is the JSON representation of the meta data
+		MetaJSON htmlTemplate.JS
 	}
 
 	// SequenceDiagramFormatter implementation of a ReportFormatter
 	SequenceDiagramFormatter struct {
+		// storagePath is the path where the report will be saved
 		storagePath string
-		fs          fileSystem
+		// fs is the file system used to save the report
+		fs fileSystem
 	}
 
-	fileSystem interface {
-		create(name string) (*os.File, error)
-		mkdirAll(path string, perm os.FileMode) error
-	}
-
-	osFileSystem struct{}
-
+	// webSequenceDiagramDSL is the DSL used to render the sequence diagram.
 	webSequenceDiagramDSL struct {
 		data  bytes.Buffer
 		count int
 		meta  *Meta
 	}
 )
-
-func (r *osFileSystem) create(name string) (*os.File, error) {
-	return os.Create(filepath.Clean(name))
-}
-
-func (r *osFileSystem) mkdirAll(path string, perm os.FileMode) error {
-	return os.MkdirAll(path, perm)
-}
 
 func (r *webSequenceDiagramDSL) addRequestRow(source string, target string, description string) {
 	r.addRow("->", source, target, description)
@@ -133,7 +130,7 @@ func SequenceDiagram(path ...string) *SequenceDiagramFormatter {
 	} else {
 		storagePath = path[0]
 	}
-	return &SequenceDiagramFormatter{storagePath: storagePath, fs: &osFileSystem{}}
+	return &SequenceDiagramFormatter{storagePath: storagePath, fs: &defaultFileSystem{}}
 }
 
 var templateFunc = &htmlTemplate.FuncMap{
