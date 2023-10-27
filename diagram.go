@@ -451,7 +451,7 @@ func (m *MarkdownFormatter) generateMarkdown(w io.Writer, recorder *Recorder, st
 	for i, log := range logs {
 		markdown = markdown.H4(fmt.Sprintf("Event %d", i+1)).LF()
 		if log.Header != "" {
-			markdown = markdown.PlainText(strings.ReplaceAll(log.Header, "\r\n", fmt.Sprintf("  \r\n"))).LF()
+			markdown = markdown.PlainText(strings.ReplaceAll(log.Header, "\r\n", "  \r\n")).LF()
 		}
 		if log.Body != "" {
 			contentType := extractContentType(log.Header)
