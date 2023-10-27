@@ -19,7 +19,7 @@ func Test_defaultFileSystem_create(t *testing.T) {
 		if err != nil {
 			t.Fatalf("create() error = %v, wantErr %v", err, false)
 		}
-		defer file.Close()
+		defer file.Close() // nolint
 
 		if _, err := os.Stat("test.txt"); os.IsNotExist(err) {
 			t.Errorf("create() file does not exist")

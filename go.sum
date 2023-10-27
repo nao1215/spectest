@@ -16,8 +16,8 @@ github.com/go-spectest/diff v0.0.0-20231006143314-ce490574d4a9 h1:I05FIUaZLNe9Jo
 github.com/go-spectest/diff v0.0.0-20231006143314-ce490574d4a9/go.mod h1:wWRXl4ClWLDIPkL/lS8SSxojHRg1cGngvPcya/mYhf0=
 github.com/go-spectest/imaging v1.0.6 h1:b7qzcXLs1p9uZMjAKO+oe+a6EGo5JbwPDkcWafmTnX8=
 github.com/go-spectest/imaging v1.0.6/go.mod h1:/AyhBt5HEFGDPy2AxP+hcV5NH8QQpftJP9g3yGOVtvs=
-github.com/go-spectest/markdown v0.0.1 h1:G6Wx8PuHLFSzmIkDMZy2jJ7iyEHJ1mdBMoJpLbv+DkM=
-github.com/go-spectest/markdown v0.0.1/go.mod h1:CA24IJfG0EjqL1s93XEfKOjvWg8zUTC2fZY/eQcTNnQ=
+github.com/go-spectest/markdown v0.0.2 h1:9N+qfXNzsHbgPdWsYIb2jW7VBuE4ThIUJh7+BeLRKIg=
+github.com/go-spectest/markdown v0.0.2/go.mod h1:CA24IJfG0EjqL1s93XEfKOjvWg8zUTC2fZY/eQcTNnQ=
 github.com/google/go-cmp v0.6.0 h1:ofyhxvXcZhMsU5ulbFiLKl/XBFqE1GSq7atu8tAmTRI=
 github.com/google/go-cmp v0.6.0/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=
 github.com/gorilla/websocket v1.5.0 h1:PPwGk2jz7EePpoHN/+ClbZu8SPxiqlu12wZP/3sWmnc=

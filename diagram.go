@@ -13,7 +13,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/go-spectest/markdown"
+	md "github.com/go-spectest/markdown"
 )
 
 type (
@@ -286,9 +286,14 @@ func generateImage(body, dir, name, contentType string, index int) {
 	}
 }
 
-// imagePath returns the image name.
+// imagePath returns the image path.
 func imagePath(dir, name, contentType string, index int) string {
 	return fmt.Sprintf("%s/%s_%d.%s", dir, name, index, toImageExt(contentType))
+}
+
+// imageName returns the image name.
+func imageName(name, contentType string, index int) string {
+	return fmt.Sprintf("%s_%d.%s", name, index, toImageExt(contentType))
 }
 
 // toImageExt returns the image extension based on the content type.
@@ -406,7 +411,12 @@ type MarkdownFormatter struct {
 }
 
 // Format formats the events received by the recorder.
+// TODO: refactor this method
 func (m *MarkdownFormatter) Format(recorder *Recorder) {
+	if len(recorder.Events) == 0 {
+		panic("no events are defined") // TODO: error handling
+	}
+
 	if err := m.fs.mkdirAll(m.storagePath, os.ModePerm); err != nil {
 		panic(err) // TODO: error handling
 	}
@@ -417,8 +427,91 @@ func (m *MarkdownFormatter) Format(recorder *Recorder) {
 		panic(err) // TODO: error handling
 	}
 
-	markdown.NewMarkdown(f).
-		H1(recorder.Title). // TODO: add status badge
-		H2(recorder.SubTitle).
-		Build()
+	status, err := recorder.ResponseStatus()
+	if err != nil {
+		panic(err) // TODO: error handling
+	}
+
+	logs, err := m.logEntry(recorder.Events)
+	if err != nil {
+		panic(err) // TODO: error handling
+	}
+	m.generateMarkdown(f, recorder, status, logs)
+}
+
+// generateMarkdown generates a markdown report.
+func (m *MarkdownFormatter) generateMarkdown(w io.Writer, recorder *Recorder, status int, logs []LogEntry) {
+	markdown := m.statusBadge(md.NewMarkdown(w).H2(recorder.Title), status).LF()
+	if recorder.SubTitle != "" {
+		markdown = markdown.H3(recorder.SubTitle).LF()
+	}
+	markdown = markdown.PlainText("TODO: implement mermaid sequence diagram").LF()
+
+	markdown = markdown.H2("Event log")
+	for i, log := range logs {
+		markdown = markdown.H4(fmt.Sprintf("Event %d", i+1)).LF()
+		if log.Header != "" {
+			markdown = markdown.PlainText(strings.Replace(log.Header, "\r\n", fmt.Sprintf("  \r\n"), -1)).LF()
+		}
+		if log.Body != "" {
+			body := log.Body
+			contentType := extractContentType(log.Header)
+			if isImage(contentType) {
+				generateImage(body, m.storagePath, recorder.Meta.reportFileName(), contentType, i)
+				body = filepath.Clean(imageName(recorder.Meta.reportFileName(), contentType, i))
+				markdown = markdown.PlainText(md.Image(body, body)).LF()
+			} else {
+				markdown = markdown.PlainText(strings.Replace(log.Body, "\n", "  \n", -1)).LF()
+			}
+		}
+		markdown = markdown.HorizontalRule().LF()
+	}
+
+	if err := markdown.Build(); err != nil {
+		panic(err) // TODO: error handling
+	}
+}
+
+// statusBadge returns a markdown with a status badge based on the HTTP status code.
+func (m *MarkdownFormatter) statusBadge(md *md.Markdown, status int) *md.Markdown {
+	switch {
+	case status >= http.StatusBadRequest && status < http.StatusInternalServerError:
+		return md.YellowBadgef("%d", status)
+	case status >= http.StatusInternalServerError:
+		return md.RedBadgef("%d", status)
+	default:
+		return md.GreenBadgef("%d", status)
+	}
+}
+
+// logEntry returns a list of log entries based on the events.
+func (m *MarkdownFormatter) logEntry(events []Event) ([]LogEntry, error) {
+	var logs []LogEntry
+
+	for _, event := range events {
+		switch v := event.(type) {
+		case HTTPRequest:
+			httpReq := v.Value
+			entry, err := NewHTTPRequestLogEntry(httpReq)
+			if err != nil {
+				return nil, err
+			}
+			entry.Timestamp = v.Timestamp
+			logs = append(logs, entry)
+		case HTTPResponse:
+			entry, err := NewHTTPResponseLogEntry(v.Value)
+			if err != nil {
+				return nil, err
+			}
+			entry.Timestamp = v.Timestamp
+			logs = append(logs, entry)
+		case MessageRequest:
+			logs = append(logs, LogEntry{Header: v.Header, Body: v.Body, Timestamp: v.Timestamp})
+		case MessageResponse:
+			logs = append(logs, LogEntry{Header: v.Header, Body: v.Body, Timestamp: v.Timestamp})
+		default:
+			panic("received unknown event type")
+		}
+	}
+	return logs, nil
 }

@@ -500,3 +500,37 @@ func Test_toImageExt(t *testing.T) {
 		})
 	}
 }
+
+func Test_imageName(t *testing.T) {
+	t.Parallel()
+
+	type args struct {
+		name        string
+		contentType string
+		index       int
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			name: "should return image name",
+			args: args{
+				name:        "image",
+				contentType: "image/png",
+				index:       1,
+			},
+			want: "image_1.png",
+		},
+	}
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			if got := imageName(tt.args.name, tt.args.contentType, tt.args.index); got != tt.want {
+				t.Errorf("imageName() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
