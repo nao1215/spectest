@@ -451,17 +451,16 @@ func (m *MarkdownFormatter) generateMarkdown(w io.Writer, recorder *Recorder, st
 	for i, log := range logs {
 		markdown = markdown.H4(fmt.Sprintf("Event %d", i+1)).LF()
 		if log.Header != "" {
-			markdown = markdown.PlainText(strings.Replace(log.Header, "\r\n", fmt.Sprintf("  \r\n"), -1)).LF()
+			markdown = markdown.PlainText(strings.ReplaceAll(log.Header, "\r\n", fmt.Sprintf("  \r\n"))).LF()
 		}
 		if log.Body != "" {
-			body := log.Body
 			contentType := extractContentType(log.Header)
 			if isImage(contentType) {
-				generateImage(body, m.storagePath, recorder.Meta.reportFileName(), contentType, i)
-				body = filepath.Clean(imageName(recorder.Meta.reportFileName(), contentType, i))
+				generateImage(log.Body, m.storagePath, recorder.Meta.reportFileName(), contentType, i)
+				body := filepath.Clean(imageName(recorder.Meta.reportFileName(), contentType, i))
 				markdown = markdown.PlainText(md.Image(body, body)).LF()
 			} else {
-				markdown = markdown.PlainText(strings.Replace(log.Body, "\n", "  \n", -1)).LF()
+				markdown = markdown.PlainText(strings.ReplaceAll(log.Body, "\n", "  \n")).LF()
 			}
 		}
 		markdown = markdown.HorizontalRule().LF()
