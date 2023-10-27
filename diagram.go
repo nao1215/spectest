@@ -12,77 +12,81 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+
+	md "github.com/go-spectest/markdown"
 )
 
 type (
+	// htmlTemplateModel is the model used to render the HTML template.
+	// NOTE: The fields must be exported to be used by the template.
 	htmlTemplateModel struct {
-		Title          string
-		SubTitle       string
-		StatusCode     int
-		BadgeClass     string
-		LogEntries     []LogEntry
+		// Title is the title of the report
+		Title string
+		// SubTitle is the subtitle of the report
+		SubTitle string
+		// StatusCode is the HTTP status code of the response
+		StatusCode int
+		// BadgeClass is the CSS class of the status code badge
+		BadgeClass string
+		// LogEntries is the list of log entries
+		LogEntries []LogEntry
+		// WebSequenceDSL is the DSL used to render the sequence diagram
 		WebSequenceDSL string
-		MetaJSON       htmlTemplate.JS
+		// MetaJSON is the JSON representation of the meta data
+		MetaJSON htmlTemplate.JS
 	}
 
 	// SequenceDiagramFormatter implementation of a ReportFormatter
 	SequenceDiagramFormatter struct {
+		// storagePath is the path where the report will be saved
 		storagePath string
-		fs          fileSystem
-	}
-
-	fileSystem interface {
-		create(name string) (*os.File, error)
-		mkdirAll(path string, perm os.FileMode) error
-	}
-
-	osFileSystem struct{}
-
-	webSequenceDiagramDSL struct {
-		data  bytes.Buffer
-		count int
-		meta  *Meta
+		// fs is the file system used to save the report
+		fs fileSystem
 	}
 )
 
-func (r *osFileSystem) create(name string) (*os.File, error) {
-	return os.Create(filepath.Clean(name))
+// ReportFormatterConfig is the configuration for a ReportFormatter
+type ReportFormatterConfig struct {
+	// Path is the path where the report will be saved.
+	// By default, the report will be saved in the ".sequence"
+	Path string
+	// Kind is the kind of report to generate
+	Kind ReportKind
 }
 
-func (r *osFileSystem) mkdirAll(path string, perm os.FileMode) error {
-	return os.MkdirAll(path, perm)
-}
+// ReportKind is the kind of the report.
+type ReportKind uint
 
-func (r *webSequenceDiagramDSL) addRequestRow(source string, target string, description string) {
-	r.addRow("->", source, target, description)
-}
+const (
+	// ReportKindHTML is the HTML report kind. This is the default.
+	ReportKindHTML ReportKind = 0
+	// ReportKindMarkdown is the Markdown report kind.
+	ReportKindMarkdown ReportKind = 1
+)
 
-func (r *webSequenceDiagramDSL) addResponseRow(source string, target string, description string) {
-	r.addRow("->>", source, target, description)
-}
-
-func (r *webSequenceDiagramDSL) addRow(operation, source string, target string, description string) {
-	if r.meta.ConsumerName != "" {
-		source = strings.ReplaceAll(source, ConsumerDefaultName, r.meta.ConsumerName)
-		target = strings.ReplaceAll(target, ConsumerDefaultName, r.meta.ConsumerName)
+// SequenceDiagram produce a sequence diagram at the given path or .sequence by default.
+// SequenceDiagramFormatter generate html report with sequence diagram.
+// Deprecated: Use SequenceReport instead.
+func SequenceDiagram(path ...string) ReportFormatter {
+	var storagePath string
+	if len(path) == 0 {
+		storagePath = ".sequence"
+	} else {
+		storagePath = path[0]
 	}
-	if r.meta.TestingTargetName != "" {
-		source = strings.ReplaceAll(source, SystemUnderTestDefaultName, r.meta.TestingTargetName)
-		target = strings.ReplaceAll(target, SystemUnderTestDefaultName, r.meta.TestingTargetName)
-	}
-
-	r.count++
-	r.data.WriteString(fmt.Sprintf("%s%s%s: (%d) %s\n",
-		quoted(source),
-		operation,
-		quoted(target),
-		r.count,
-		description),
-	)
+	return &SequenceDiagramFormatter{storagePath: storagePath, fs: &defaultFileSystem{}}
 }
 
-func (r *webSequenceDiagramDSL) toString() string {
-	return r.data.String()
+// SequenceReport produce a sequence diagram at the given path or .sequence by default.
+// SequenceDiagramFormatter generate html report or markdown report with sequence diagram.
+func SequenceReport(config ReportFormatterConfig) ReportFormatter {
+	if config.Path == "" {
+		config.Path = ".sequence"
+	}
+	if config.Kind == ReportKindMarkdown {
+		return &MarkdownFormatter{storagePath: config.Path, fs: &defaultFileSystem{}}
+	}
+	return &SequenceDiagramFormatter{storagePath: config.Path, fs: &defaultFileSystem{}}
 }
 
 // Format formats the events received by the recorder
@@ -93,7 +97,19 @@ func (sdf *SequenceDiagramFormatter) Format(recorder *Recorder) {
 	}
 
 	template, err := htmlTemplate.New("sequenceDiagram").
-		Funcs(*templateFunc).
+		Funcs(htmlTemplate.FuncMap{
+			"inc": func(i int) int {
+				return i + 1
+			},
+			"contains": func(str string, subs ...string) bool {
+				for _, sub := range subs {
+					if strings.Contains(str, sub) {
+						return true
+					}
+				}
+				return false
+			},
+		}).
 		Parse(reportTemplate)
 	if err != nil {
 		panic(err)
@@ -125,31 +141,10 @@ func (sdf *SequenceDiagramFormatter) Format(recorder *Recorder) {
 	fmt.Printf("Created sequence diagram (%s): %s\n", fileName, filepath.FromSlash(s))
 }
 
-// SequenceDiagram produce a sequence diagram at the given path or .sequence by default
-func SequenceDiagram(path ...string) *SequenceDiagramFormatter {
-	var storagePath string
-	if len(path) == 0 {
-		storagePath = ".sequence"
-	} else {
-		storagePath = path[0]
-	}
-	return &SequenceDiagramFormatter{storagePath: storagePath, fs: &osFileSystem{}}
-}
-
-var templateFunc = &htmlTemplate.FuncMap{
-	"inc": func(i int) int {
-		return i + 1
-	},
-	"contains": func(str string, subs ...string) bool {
-		for _, sub := range subs {
-			if strings.Contains(str, sub) {
-				return true
-			}
-		}
-		return false
-	},
-}
-
+// formatDiagramRequest formats the HTTP request into a string for logging purposes.
+// It takes in a pointer to an http.Request and returns a string.
+// If the URL contains a query, it appends it to the string.
+// If the resulting string is longer than 65 characters, it truncates it and appends "...".
 func formatDiagramRequest(req *http.Request) string {
 	out := fmt.Sprintf("%s %s", req.Method, req.URL.Path)
 	if req.URL.RawQuery != "" {
@@ -161,16 +156,24 @@ func formatDiagramRequest(req *http.Request) string {
 	return out
 }
 
+// badgeCSSClass returns a CSS class for a badge based on the HTTP status code.
+// If the status code is between 400 and 499, it returns a warning class.
+// If the status code is 500 or greater, it returns a danger class.
+// Otherwise, it returns a success class.
 func badgeCSSClass(status int) string {
 	class := "badge badge-success"
-	if status >= 400 && status < 500 {
+	if status >= http.StatusBadRequest && status < http.StatusInternalServerError {
 		class = "badge badge-warning"
-	} else if status >= 500 {
+	} else if status >= http.StatusInternalServerError {
 		class = "badge badge-danger"
 	}
 	return class
 }
 
+// newHTMLTemplateModel returns a new htmlTemplateModel and an error.
+// It iterates through the Recorder's events and creates a webSequenceDiagramDSL and logs.
+// If the Content Type is an image, it generates an image and replaces the response body with the image path.
+// It returns an htmlTemplateModel containing the webSequenceDiagramDSL, logs, title, subtitle, status code, badge class, and Meta data in JSON format.
 func (sdf *SequenceDiagramFormatter) newHTMLTemplateModel(recorder *Recorder) (htmlTemplateModel, error) {
 	if len(recorder.Events) == 0 {
 		return htmlTemplateModel{}, errors.New("no events are defined")
@@ -233,7 +236,7 @@ func (sdf *SequenceDiagramFormatter) newHTMLTemplateModel(recorder *Recorder) (h
 	}
 
 	return htmlTemplateModel{
-		WebSequenceDSL: webSequenceDiagram.toString(),
+		WebSequenceDSL: webSequenceDiagram.String(),
 		LogEntries:     logs,
 		Title:          recorder.Title,
 		SubTitle:       recorder.SubTitle,
@@ -283,9 +286,14 @@ func generateImage(body, dir, name, contentType string, index int) {
 	}
 }
 
-// imagePath returns the image name.
+// imagePath returns the image path.
 func imagePath(dir, name, contentType string, index int) string {
 	return fmt.Sprintf("%s/%s_%d.%s", dir, name, index, toImageExt(contentType))
+}
+
+// imageName returns the image name.
+func imageName(name, contentType string, index int) string {
+	return fmt.Sprintf("%s_%d.%s", name, index, toImageExt(contentType))
 }
 
 // toImageExt returns the image extension based on the content type.
@@ -311,6 +319,9 @@ func toImageExt(contentType string) string {
 	return ""
 }
 
+// formatBodyContent reads the bodyReadCloser and replaces it with the replacementBody.
+// It returns a string representation of the body with indentation if it is a valid JSON, otherwise it returns the original body.
+// If bodyReadCloser is nil, it returns an empty string and no error.
 func formatBodyContent(bodyReadCloser io.ReadCloser, replaceBody func(replacementBody io.ReadCloser)) (string, error) {
 	if bodyReadCloser == nil {
 		return "", nil
@@ -340,6 +351,166 @@ func formatBodyContent(bodyReadCloser io.ReadCloser, replaceBody func(replacemen
 	return buf.String(), nil
 }
 
+// quoted returns a quoted string representation of the input string.
 func quoted(in string) string {
 	return fmt.Sprintf("%q", in)
+}
+
+// webSequenceDiagramDSL is the DSL used to render the sequence diagram.
+type webSequenceDiagramDSL struct {
+	// data is the buffer used to store the sequence diagram
+	data bytes.Buffer
+	// count is the number of rows in the sequence diagram
+	count int
+	// meta is the meta data of the sequence diagram
+	meta *Meta
+}
+
+// addRequestRow adds a request row to the sequence diagram
+func (r *webSequenceDiagramDSL) addRequestRow(source string, target string, description string) {
+	r.addRow("->", source, target, description)
+}
+
+// addResponseRow adds a response row to the sequence diagram
+func (r *webSequenceDiagramDSL) addResponseRow(source string, target string, description string) {
+	r.addRow("->>", source, target, description)
+}
+
+// addRow adds a row to the sequence diagram
+func (r *webSequenceDiagramDSL) addRow(operation, source string, target string, description string) {
+	if r.meta.ConsumerName != "" {
+		source = strings.ReplaceAll(source, ConsumerDefaultName, r.meta.ConsumerName)
+		target = strings.ReplaceAll(target, ConsumerDefaultName, r.meta.ConsumerName)
+	}
+	if r.meta.TestingTargetName != "" {
+		source = strings.ReplaceAll(source, SystemUnderTestDefaultName, r.meta.TestingTargetName)
+		target = strings.ReplaceAll(target, SystemUnderTestDefaultName, r.meta.TestingTargetName)
+	}
+
+	r.count++
+	r.data.WriteString(fmt.Sprintf("%s%s%s: (%d) %s\n",
+		quoted(source),
+		operation,
+		quoted(target),
+		r.count,
+		description),
+	)
+}
+
+// String returns the string representation of the sequence diagram
+func (r *webSequenceDiagramDSL) String() string {
+	return r.data.String()
+}
+
+// MarkdownFormatter implementation of a ReportFormatter
+type MarkdownFormatter struct {
+	// storagePath is the path where the report will be saved
+	storagePath string
+	// fs is the file system used to save the report
+	fs fileSystem
+}
+
+// Format formats the events received by the recorder.
+// TODO: refactor this method
+func (m *MarkdownFormatter) Format(recorder *Recorder) {
+	if len(recorder.Events) == 0 {
+		panic("no events are defined") // TODO: error handling
+	}
+
+	if err := m.fs.mkdirAll(m.storagePath, os.ModePerm); err != nil {
+		panic(err) // TODO: error handling
+	}
+
+	fileName := fmt.Sprintf("%s.md", recorder.Meta.reportFileName())
+	f, err := m.fs.create(filepath.Clean(filepath.Join(m.storagePath, fileName)))
+	if err != nil {
+		panic(err) // TODO: error handling
+	}
+
+	status, err := recorder.ResponseStatus()
+	if err != nil {
+		panic(err) // TODO: error handling
+	}
+
+	logs, err := m.logEntry(recorder.Events)
+	if err != nil {
+		panic(err) // TODO: error handling
+	}
+	m.generateMarkdown(f, recorder, status, logs)
+}
+
+// generateMarkdown generates a markdown report.
+func (m *MarkdownFormatter) generateMarkdown(w io.Writer, recorder *Recorder, status int, logs []LogEntry) {
+	markdown := m.statusBadge(md.NewMarkdown(w).H2(recorder.Title), status).LF()
+	if recorder.SubTitle != "" {
+		markdown = markdown.H3(recorder.SubTitle).LF()
+	}
+	markdown = markdown.PlainText("TODO: implement mermaid sequence diagram").LF()
+
+	markdown = markdown.H2("Event log")
+	for i, log := range logs {
+		markdown = markdown.H4(fmt.Sprintf("Event %d", i+1)).LF()
+		if log.Header != "" {
+			markdown = markdown.PlainText(strings.ReplaceAll(log.Header, "\r\n", "  \r\n")).LF()
+		}
+		if log.Body != "" {
+			contentType := extractContentType(log.Header)
+			if isImage(contentType) {
+				generateImage(log.Body, m.storagePath, recorder.Meta.reportFileName(), contentType, i)
+				body := filepath.Clean(imageName(recorder.Meta.reportFileName(), contentType, i))
+				markdown = markdown.PlainText(md.Image(body, body)).LF()
+			} else {
+				markdown = markdown.PlainText(strings.ReplaceAll(log.Body, "\n", "  \n")).LF()
+			}
+		}
+		markdown = markdown.HorizontalRule().LF()
+	}
+
+	if err := markdown.Build(); err != nil {
+		panic(err) // TODO: error handling
+	}
+}
+
+// statusBadge returns a markdown with a status badge based on the HTTP status code.
+func (m *MarkdownFormatter) statusBadge(md *md.Markdown, status int) *md.Markdown {
+	switch {
+	case status >= http.StatusBadRequest && status < http.StatusInternalServerError:
+		return md.YellowBadgef("%d", status)
+	case status >= http.StatusInternalServerError:
+		return md.RedBadgef("%d", status)
+	default:
+		return md.GreenBadgef("%d", status)
+	}
+}
+
+// logEntry returns a list of log entries based on the events.
+func (m *MarkdownFormatter) logEntry(events []Event) ([]LogEntry, error) {
+	var logs []LogEntry
+
+	for _, event := range events {
+		switch v := event.(type) {
+		case HTTPRequest:
+			httpReq := v.Value
+			entry, err := NewHTTPRequestLogEntry(httpReq)
+			if err != nil {
+				return nil, err
+			}
+			entry.Timestamp = v.Timestamp
+			logs = append(logs, entry)
+		case HTTPResponse:
+			entry, err := NewHTTPResponseLogEntry(v.Value)
+			if err != nil {
+				return nil, err
+			}
+			entry.Timestamp = v.Timestamp
+			logs = append(logs, entry)
+		case MessageRequest:
+			logs = append(logs, LogEntry{Header: v.Header, Body: v.Body, Timestamp: v.Timestamp})
+		case MessageResponse:
+			logs = append(logs, LogEntry{Header: v.Header, Body: v.Body, Timestamp: v.Timestamp})
+		default:
+			panic("received unknown event type")
+		}
+	}
+	return logs, nil
 }

@@ -10,6 +10,33 @@ import (
 	"testing"
 )
 
+// MockFS is a mock implementation of the fileSystem interface
+type MockFS struct {
+	// CapturedCreateName is the name captured by the create method
+	CapturedCreateName string
+	// CapturedCreateFile is the file path (full path) captured by the create method
+	CapturedCreateFile string
+	// CapturedMkdirAllPath is the path captured by the mkdirAll method
+	CapturedMkdirAllPath string
+}
+
+// create creates a file at the given path
+func (m *MockFS) create(name string) (*os.File, error) {
+	m.CapturedCreateName = name
+	file, err := os.CreateTemp("/tmp", "spectest")
+	if err != nil {
+		panic(err)
+	}
+	m.CapturedCreateFile = file.Name()
+	return file, nil
+}
+
+// mkdirAll creates a directory at the given path
+func (m *MockFS) mkdirAll(path string, _ os.FileMode) error {
+	m.CapturedMkdirAllPath = path
+	return nil
+}
+
 func TestDiagramBadgeCSSClass(t *testing.T) {
 	tests := []struct {
 		status int
@@ -54,7 +81,7 @@ func TestWebSequenceDiagramGeneratesDSL(t *testing.T) {
 		wsd.addResponseRow("C", "B", "response1")
 		wsd.addResponseRow("B", "A", "response2")
 
-		actual := wsd.toString()
+		actual := wsd.String()
 
 		expected := `"A"->"B": (1) request1
 "B"->"C": (2) request2
@@ -75,7 +102,7 @@ func TestWebSequenceDiagramGeneratesDSL(t *testing.T) {
 		wsd.addResponseRow("C", SystemUnderTestDefaultName, "response1")
 		wsd.addResponseRow(SystemUnderTestDefaultName, ConsumerDefaultName, "response2")
 
-		actual := wsd.toString()
+		actual := wsd.String()
 
 		expected := `"cli"->"sut": (1) request1
 "sut"->"C": (2) request2
@@ -99,7 +126,7 @@ func TestWebSequenceDiagramGeneratesDSL(t *testing.T) {
 		wsd.addResponseRow("C", SystemUnderTestDefaultName, "response1")
 		wsd.addResponseRow(SystemUnderTestDefaultName, ConsumerDefaultName, "response2")
 
-		actual := wsd.toString()
+		actual := wsd.String()
 
 		expected := `"custom-consumer"->"custom-testing-target": (1) request1
 "custom-testing-target"->"C": (2) request2
@@ -112,16 +139,27 @@ func TestWebSequenceDiagramGeneratesDSL(t *testing.T) {
 	})
 }
 
-func TestNewSequenceDiagramFormatterSetsDefaultPath(t *testing.T) {
-	formatter := SequenceDiagram()
+func TestNewSequenceDiagramFormatterStoragePath(t *testing.T) {
+	t.Parallel()
+	t.Run("should use default storage path", func(t *testing.T) {
+		t.Parallel()
+		formatter := SequenceDiagram()
+		v, ok := formatter.(*SequenceDiagramFormatter)
+		if !ok {
+			t.Fatalf("expected SequenceDiagramFormatter, got %T", formatter)
+		}
+		assert.Equal(t, ".sequence", v.storagePath)
+	})
 
-	assert.Equal(t, ".sequence", formatter.storagePath)
-}
-
-func TestNewSequenceDiagramFormatterOverridesPath(t *testing.T) {
-	formatter := SequenceDiagram(".sequence-diagram")
-
-	assert.Equal(t, ".sequence-diagram", formatter.storagePath)
+	t.Run("should use custom storage path", func(t *testing.T) {
+		t.Parallel()
+		formatter := SequenceDiagram(".sequence-diagram")
+		v, ok := formatter.(*SequenceDiagramFormatter)
+		if !ok {
+			t.Fatalf("expected SequenceDiagramFormatter, got %T", formatter)
+		}
+		assert.Equal(t, ".sequence-diagram", v.storagePath)
+	})
 }
 
 func TestRecorderBuilder(t *testing.T) {
@@ -148,7 +186,7 @@ func TestNewHTMLTemplateModelErrorsIfNoEventsDefined(t *testing.T) {
 
 	s := SequenceDiagramFormatter{
 		storagePath: ".sequence",
-		fs:          &FS{},
+		fs:          &MockFS{},
 	}
 	_, err := s.newHTMLTemplateModel(recorder)
 
@@ -160,7 +198,7 @@ func TestNewHTMLTemplateModelSuccess(t *testing.T) {
 
 	s := SequenceDiagramFormatter{
 		storagePath: ".sequence",
-		fs:          &FS{},
+		fs:          &MockFS{},
 	}
 	model, err := s.newHTMLTemplateModel(recorder)
 
@@ -252,27 +290,6 @@ func aResponse() HTTPResponse {
 		Source: "resSource",
 		Target: "resTarget",
 	}
-}
-
-type FS struct {
-	CapturedCreateName   string
-	CapturedCreateFile   string
-	CapturedMkdirAllPath string
-}
-
-func (m *FS) create(name string) (*os.File, error) {
-	m.CapturedCreateName = name
-	file, err := os.CreateTemp("/tmp", "spectest")
-	if err != nil {
-		panic(err)
-	}
-	m.CapturedCreateFile = file.Name()
-	return file, nil
-}
-
-func (m *FS) mkdirAll(path string, _ os.FileMode) error {
-	m.CapturedMkdirAllPath = path
-	return nil
 }
 
 func TestExtractContentType(t *testing.T) {
@@ -479,6 +496,40 @@ func Test_toImageExt(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := toImageExt(tt.args.contentType); got != tt.want {
 				t.Errorf("toImageExt() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_imageName(t *testing.T) {
+	t.Parallel()
+
+	type args struct {
+		name        string
+		contentType string
+		index       int
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			name: "should return image name",
+			args: args{
+				name:        "image",
+				contentType: "image/png",
+				index:       1,
+			},
+			want: "image_1.png",
+		},
+	}
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			if got := imageName(tt.args.name, tt.args.contentType, tt.args.index); got != tt.want {
+				t.Errorf("imageName() = %v, want %v", got, tt.want)
 			}
 		})
 	}

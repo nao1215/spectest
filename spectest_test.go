@@ -1599,7 +1599,70 @@ func TestReportWithImage(t *testing.T) {
 		Status(http.StatusOK).
 		End()
 
-	if file.Exists(filepath.Join(tmpDir, "sample.png")) {
-		t.Errorf("image file should not exist")
+	if !file.Exists(filepath.Join(tmpDir, "sample_1.png")) {
+		t.Errorf("image file should exist")
+	}
+}
+
+func TestMarkdownReportWithImage(t *testing.T) {
+	imagePath := filepath.Join("testdata", "sample.png")
+	imageFile, err := os.Open(filepath.Clean(imagePath))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer imageFile.Close() //nolint
+
+	imageInfo, err := imageFile.Stat()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	body, err := io.ReadAll(imageFile)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	handler := http.NewServeMux()
+	handler.HandleFunc("/image", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			t.Fatalf("expected method to be GET, got %s", r.Method)
+		}
+
+		w.Header().Set("Content-Type", "image/png")
+		w.Header().Set("Content-Length", fmt.Sprint(imageInfo.Size()))
+
+		_, err = io.Copy(w, bytes.NewReader(body))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+	})
+
+	tmpDir, err := os.MkdirTemp("", "spectest")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	spectest.New().
+		CustomReportName("sample").
+		Report(spectest.SequenceReport(spectest.ReportFormatterConfig{
+			Path: tmpDir,
+			Kind: spectest.ReportKindMarkdown,
+		})).
+		Handler(handler).
+		Get("/image").
+		Expect(t).
+		Body(string(body)).
+		Header("Content-Type", "image/png").
+		Header("Content-Length", fmt.Sprint(imageInfo.Size())).
+		Status(http.StatusOK).
+		End()
+
+	if !file.Exists(filepath.Join(tmpDir, "sample.md")) {
+		t.Errorf("markdown file should exist")
+	}
+	if !file.Exists(filepath.Join(tmpDir, "sample_1.png")) {
+		t.Errorf("image file should exist")
 	}
 }
