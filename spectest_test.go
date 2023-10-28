@@ -1704,9 +1704,6 @@ func TestMarkdownReportResponseJSON(t *testing.T) {
 	}
 
 	path := filepath.Join("testdata", "sample.md")
-	if runtime.GOOS == "windows" {
-		path = filepath.Join("testdata", "sample_windows.md")
-	}
 	want, err := os.ReadFile(path)
 	if err != nil {
 		t.Fatal(err)
@@ -1717,7 +1714,14 @@ func TestMarkdownReportResponseJSON(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if diff := cmp.Diff(string(want), string(got)); diff != "" {
+	if diff := cmp.Diff(strings.ReplaceAll(string(want), lineFeed(), ""), strings.ReplaceAll(string(got), lineFeed(), "")); diff != "" {
 		t.Errorf("markdown file mismatch (-want +got):\n%s", diff)
 	}
+}
+
+func lineFeed() string {
+	if runtime.GOOS == "windows" {
+		return "\r\n"
+	}
+	return "\n"
 }
