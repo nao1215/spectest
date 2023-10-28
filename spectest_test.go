@@ -13,6 +13,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"reflect"
+	"runtime"
 	"sort"
 	"strings"
 	"testing"
@@ -1702,7 +1703,11 @@ func TestMarkdownReportResponseJSON(t *testing.T) {
 		t.Errorf("markdown file should exist")
 	}
 
-	want, err := os.ReadFile(filepath.Join("testdata", "sample.md"))
+	path := filepath.Join("testdata", "sample.md")
+	if runtime.GOOS == "windows" {
+		path = filepath.Join("testdata", "sample_windows.md")
+	}
+	want, err := os.ReadFile(path)
 	if err != nil {
 		t.Fatal(err)
 	}
