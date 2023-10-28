@@ -1675,7 +1675,13 @@ func TestMarkdownReportResponseJSON(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		if _, err := w.Write([]byte(`{"a": 12345}`)); err != nil {
+
+		body, err := os.ReadFile(filepath.Join("testdata", "response_body.json"))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if _, err := w.Write(body); err != nil {
 			t.Fatal(err)
 		}
 	})
@@ -1695,7 +1701,7 @@ func TestMarkdownReportResponseJSON(t *testing.T) {
 		Post("/hello").
 		Expect(t).
 		Header("Content-Type", "application/json").
-		BodyFromFile(filepath.Join("testdata", "request_body.json")).
+		BodyFromFile(filepath.Join("testdata", "response_body.json")).
 		Status(http.StatusOK).
 		End()
 
