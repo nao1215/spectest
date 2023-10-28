@@ -1728,14 +1728,11 @@ func TestMarkdownReportResponseJSON(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if diff := cmp.Diff(strings.ReplaceAll(string(want), lineFeed(), ""), strings.ReplaceAll(string(got), lineFeed(), "")); diff != "" {
+	w := strings.ReplaceAll(string(want), "\r\n", "")
+	w = strings.ReplaceAll(string(w), "\n", "")
+	g := strings.ReplaceAll(string(got), "\r\n", "")
+	g = strings.ReplaceAll(string(g), "\n", "")
+	if diff := cmp.Diff(w, g); diff != "" {
 		t.Errorf("markdown file mismatch (-want +got):\n%s", diff)
 	}
-}
-
-func lineFeed() string {
-	if runtime.GOOS == "windows" {
-		return "\r\n"
-	}
-	return "\n"
 }
