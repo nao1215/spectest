@@ -1703,8 +1703,7 @@ func TestMarkdownReportResponseJSON(t *testing.T) {
 		t.Errorf("markdown file should exist")
 	}
 
-	path := filepath.Join("testdata", "sample.md")
-	want, err := os.ReadFile(path)
+	want, err := os.ReadFile(filepath.Clean(filepath.Join("testdata", "sample.md")))
 	if err != nil {
 		t.Fatal(err)
 	}
