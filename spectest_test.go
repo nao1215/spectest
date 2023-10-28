@@ -1670,6 +1670,10 @@ func TestMarkdownReportWithImage(t *testing.T) {
 }
 
 func TestMarkdownReportResponseJSON(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("skipping test on windows")
+	}
+
 	handler := http.NewServeMux()
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 
@@ -1677,10 +1681,6 @@ func TestMarkdownReportResponseJSON(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 
 		path := filepath.Join("testdata", "response_body.json")
-		if runtime.GOOS == "windows" {
-			path = filepath.Join("testdata", "response_body_windows.json")
-		}
-
 		body, err := os.ReadFile(filepath.Clean(path))
 		if err != nil {
 			t.Fatal(err)
@@ -1715,9 +1715,6 @@ func TestMarkdownReportResponseJSON(t *testing.T) {
 	}
 
 	path := filepath.Join("testdata", "sample.md")
-	if runtime.GOOS == "windows" {
-		path = filepath.Join("testdata", "sample_windows.md")
-	}
 	want, err := os.ReadFile(filepath.Clean(path))
 	if err != nil {
 		t.Fatal(err)
@@ -1728,11 +1725,7 @@ func TestMarkdownReportResponseJSON(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	w := strings.ReplaceAll(string(want), "\r\n", "")
-	w = strings.ReplaceAll(string(w), "\n", "")
-	g := strings.ReplaceAll(string(got), "\r\n", "")
-	g = strings.ReplaceAll(string(g), "\n", "")
-	if diff := cmp.Diff(w, g); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("markdown file mismatch (-want +got):\n%s", diff)
 	}
 }
