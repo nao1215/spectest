@@ -14,6 +14,7 @@ import (
 	"strings"
 
 	md "github.com/go-spectest/markdown"
+	"github.com/go-spectest/mermaid/sequence"
 )
 
 type (
@@ -445,7 +446,7 @@ func (m *MarkdownFormatter) generateMarkdown(w io.Writer, recorder *Recorder, st
 	if recorder.SubTitle != "" {
 		markdown = markdown.H3(recorder.SubTitle).LF()
 	}
-	markdown = markdown.PlainText("TODO: implement mermaid sequence diagram").LF()
+	markdown = markdown.CodeBlocks(md.SyntaxHighlightMermaid, m.mermaidSequenceDiagram(recorder)).LF()
 
 	markdown = markdown.H2("Event log")
 	for i, log := range logs {
@@ -469,6 +470,26 @@ func (m *MarkdownFormatter) generateMarkdown(w io.Writer, recorder *Recorder, st
 	if err := markdown.Build(); err != nil {
 		panic(err) // TODO: error handling
 	}
+}
+
+func (m *MarkdownFormatter) mermaidSequenceDiagram(recorder *Recorder) string {
+	seq := sequence.NewDiagram(io.Discard).AutoNumber()
+
+	for _, event := range recorder.Events {
+		switch v := event.(type) {
+		case HTTPRequest:
+			seq.SyncRequest(v.Source, v.Target, formatDiagramRequest(v.Value))
+		case HTTPResponse:
+			seq.SyncResponse(v.Source, v.Target, strconv.Itoa(v.Value.StatusCode))
+		case MessageRequest:
+			seq.SyncRequest(v.Source, v.Target, v.Header)
+		case MessageResponse:
+			seq.SyncResponse(v.Source, v.Target, v.Header)
+		default:
+			panic("received unknown event type") // TODO: error handling
+		}
+	}
+	return seq.String()
 }
 
 // statusBadge returns a markdown with a status badge based on the HTTP status code.

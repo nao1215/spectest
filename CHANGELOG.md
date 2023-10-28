@@ -1,6 +1,8 @@
 # Changelog
 
-## [0.0.9] - 2023-XX-XX
+## [0.0.9] - 2023-10-28
+### Added
+- Support markdown report.
 ### Fixed
 - image.EqualFromFile() close response body.
 
