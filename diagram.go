@@ -460,6 +460,8 @@ func (m *MarkdownFormatter) generateMarkdown(w io.Writer, recorder *Recorder, st
 				generateImage(log.Body, m.storagePath, recorder.Meta.reportFileName(), contentType, i)
 				body := filepath.Clean(imageName(recorder.Meta.reportFileName(), contentType, i))
 				markdown = markdown.PlainText(md.Image(body, body)).LF()
+			} else if strings.Contains(contentType, "application/json") {
+				markdown = markdown.CodeBlocks(md.SyntaxHighlightJSON, log.Body).LF()
 			} else {
 				markdown = markdown.PlainText(strings.ReplaceAll(log.Body, "\n", "  \n")).LF()
 			}
