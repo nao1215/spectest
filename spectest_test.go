@@ -1670,7 +1670,6 @@ func TestMarkdownReportWithImage(t *testing.T) {
 
 func TestMarkdownReportResponseJSON(t *testing.T) {
 	handler := http.NewServeMux()
-
 	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 
 		w.Header().Set("Content-Type", "application/json")
@@ -1708,7 +1707,7 @@ func TestMarkdownReportResponseJSON(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	got, err := os.ReadFile(filepath.Join(tmpDir, "sample.md"))
+	got, err := os.ReadFile(filepath.Clean(filepath.Join(tmpDir, "sample.md")))
 	if err != nil {
 		t.Fatal(err)
 	}
