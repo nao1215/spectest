@@ -1676,7 +1676,12 @@ func TestMarkdownReportResponseJSON(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		body, err := os.ReadFile(filepath.Join("testdata", "response_body.json"))
+		path := filepath.Join("testdata", "response_body.json")
+		if runtime.GOOS == "windows" {
+			path = filepath.Join("testdata", "response_body_windows.json")
+		}
+
+		body, err := os.ReadFile(filepath.Clean(path))
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1709,7 +1714,11 @@ func TestMarkdownReportResponseJSON(t *testing.T) {
 		t.Errorf("markdown file should exist")
 	}
 
-	want, err := os.ReadFile(filepath.Clean(filepath.Join("testdata", "sample.md")))
+	path := filepath.Join("testdata", "sample.md")
+	if runtime.GOOS == "windows" {
+		path = filepath.Join("testdata", "sample_windows.md")
+	}
+	want, err := os.ReadFile(filepath.Clean(path))
 	if err != nil {
 		t.Fatal(err)
 	}
