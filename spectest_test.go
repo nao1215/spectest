@@ -20,6 +20,7 @@ import (
 
 	"github.com/go-spectest/spectest"
 	"github.com/go-spectest/spectest/mocks"
+	"github.com/google/go-cmp/cmp"
 	"github.com/nao1215/gorky/file"
 )
 
@@ -1664,5 +1665,55 @@ func TestMarkdownReportWithImage(t *testing.T) {
 	}
 	if !file.Exists(filepath.Join(tmpDir, "sample_1.png")) {
 		t.Errorf("image file should exist")
+	}
+}
+
+func TestMarkdownReportResponseJSON(t *testing.T) {
+	handler := http.NewServeMux()
+
+	handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		if _, err := w.Write([]byte(`{"a": 12345}`)); err != nil {
+			t.Fatal(err)
+		}
+	})
+
+	tmpDir, err := os.MkdirTemp("", "spectest")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	spectest.New().
+		CustomReportName("sample").
+		Report(spectest.SequenceReport(spectest.ReportFormatterConfig{
+			Path: tmpDir,
+			Kind: spectest.ReportKindMarkdown,
+		})).
+		Handler(handler).
+		Post("/hello").
+		Expect(t).
+		Header("Content-Type", "application/json").
+		BodyFromFile(filepath.Join("testdata", "request_body.json")).
+		Status(http.StatusOK).
+		End()
+
+	if !file.Exists(filepath.Join(tmpDir, "sample.md")) {
+		t.Errorf("markdown file should exist")
+	}
+
+	want, err := os.ReadFile(filepath.Join("testdata", "sample.md"))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	got, err := os.ReadFile(filepath.Join(tmpDir, "sample.md"))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if diff := cmp.Diff(string(want), string(got)); diff != "" {
+		t.Errorf("markdown file mismatch (-want +got):\n%s", diff)
 	}
 }
