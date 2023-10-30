@@ -9,8 +9,12 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/go-spectest/diff v0.0.0-20231006143314-ce490574d4a9 h1:I05FIUaZLNe9Jo6ZCvODDGBqHMk3TYd7V/wV9dZhwXk=
 github.com/go-spectest/diff v0.0.0-20231006143314-ce490574d4a9/go.mod h1:wWRXl4ClWLDIPkL/lS8SSxojHRg1cGngvPcya/mYhf0=
-github.com/go-spectest/spectest v0.0.8 h1:mSaeTAusRVrXgZKO7/gs97pEZFpYlTdt11HC1ZpZ13Q=
-github.com/go-spectest/spectest v0.0.8/go.mod h1:6SlDj442dt7HlrG+lf8QtN4rk8vkL0e18Cl0yqL1w68=
+github.com/go-spectest/markdown v0.0.2 h1:9N+qfXNzsHbgPdWsYIb2jW7VBuE4ThIUJh7+BeLRKIg=
+github.com/go-spectest/markdown v0.0.2/go.mod h1:CA24IJfG0EjqL1s93XEfKOjvWg8zUTC2fZY/eQcTNnQ=
+github.com/go-spectest/mermaid v0.0.1 h1:Mi4dxGbdW1swgOqsUaSNQaKHO/mgO7Afk0Qwt4ASa2Y=
+github.com/go-spectest/mermaid v0.0.1/go.mod h1:S3YmRsGuV/EsSadoMn1C/XHr8+aXZ33UON8nuD+xi3w=
+github.com/go-spectest/spectest v0.0.11 h1:Mt+nI4VH3NdlsEg4hOdJQIklC3kvLWRcO7Mtsc1CkB8=
+github.com/go-spectest/spectest v0.0.11/go.mod h1:DgAHTBBWiClxsLvR9w+MCQe8fgH3mlYy+jt77PyoOGI=
 github.com/gofiber/fiber/v2 v2.50.0 h1:ia0JaB+uw3GpNSCR5nvC5dsaxXjRU5OEu36aytx+zGw=
 github.com/gofiber/fiber/v2 v2.50.0/go.mod h1:21eytvay9Is7S6z+OgPi7c7n4++tnClWmhpimVHMimw=
 github.com/google/go-cmp v0.6.0 h1:ofyhxvXcZhMsU5ulbFiLKl/XBFqE1GSq7atu8tAmTRI=
@@ -23,9 +27,12 @@ github.com/mattn/go-colorable v0.1.13/go.mod h1:7S9/ev0klgBDR4GtXTXX8a3vIGJpMovk
 github.com/mattn/go-isatty v0.0.16/go.mod h1:kYGgaQfpe5nmfYZH+SKPsOc2e4SrIfOl2e/yFXSvRLM=
 github.com/mattn/go-isatty v0.0.19 h1:JITubQf0MOLdlGRuRq+jtsDlekdYPia9ZFsB8h/APPA=
 github.com/mattn/go-isatty v0.0.19/go.mod h1:W+V8PltTTMOvKvAeJH7IuucS94S2C6jfK/D7dTCTo3Y=
+github.com/mattn/go-runewidth v0.0.9/go.mod h1:H031xJmbD/WCDINGzjvQ9THkh0rPKHF+m2gUSrubnMI=
 github.com/mattn/go-runewidth v0.0.15 h1:UNAjwbU9l54TA3KzvqLGxwWjHmMgBUVhBiTjelZgg3U=
 github.com/mattn/go-runewidth v0.0.15/go.mod h1:Jdepj2loyihRzMpdS35Xk/zdY8IAYHsh153qUoGf23w=
 github.com/nao1215/gorky v0.2.1 h1:kxXYhCNBbtGru9CCSYx+QC0JZfZJ1csY3uLbb5n2WKA=
+github.com/olekukonko/tablewriter v0.0.5 h1:P2Ga83D34wi1o9J6Wh1mRuqd4mF/x/lgBS7N7AbDhec=
+github.com/olekukonko/tablewriter v0.0.5/go.mod h1:hPp6KlRPjbx+hW8ykQs1w3UBbZlj6HuIJcUGPhkA7kY=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/rivo/uniseg v0.2.0 h1:S1pD9weZBuJdFmowNwbpi7BJ8TNftyUImj/0WQi72jY=
 github.com/rivo/uniseg v0.2.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=
