@@ -463,7 +463,7 @@ func (m *MarkdownFormatter) generateMarkdown(w io.Writer, recorder *Recorder, st
 			} else if strings.Contains(contentType, "application/json") {
 				markdown = markdown.CodeBlocks(md.SyntaxHighlightJSON, log.Body).LF()
 			} else {
-				markdown = markdown.PlainText(strings.ReplaceAll(log.Body, "\n", "  \n")).LF()
+				markdown = markdown.CodeBlocks(md.SyntaxHighlightText, log.Body).LF()
 			}
 		}
 		markdown = markdown.HorizontalRule().LF()
