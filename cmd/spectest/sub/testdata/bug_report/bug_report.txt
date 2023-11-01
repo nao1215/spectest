@@ -1,0 +1,10 @@
+bug-report opens the default browser to start a bug report which will include useful system information.
+
+Usage:
+  spectest bug-report [flags]
+
+Examples:
+   spectest bug-report
+
+Flags:
+  -h, --help   help for bug-report

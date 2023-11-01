@@ -5,3 +5,4 @@ coverage.html
 resources/_gen/images/
 .DS_Store
 .sequence
+spectest
