@@ -35,15 +35,15 @@ var openFuncMap = map[string]func(string) bool{
 }
 
 // bugReport opens the default browser to start a bug report which will include useful system information.
-func bugReport(cmd *cobra.Command, _ []string) error {
+func bugReport(_ *cobra.Command, _ []string) error {
 	openBrowser, ok := openFuncMap[runtime.GOOS]
 	if !ok {
 		openBrowser = func(s string) bool { return false }
 	}
-	return bugReportWithWriter(cmd, openBrowser)
+	return bugReportWithWriter(openBrowser)
 }
 
-func bugReportWithWriter(cmd *cobra.Command, openBrowser func(string) bool) error {
+func bugReportWithWriter(openBrowser func(string) bool) error {
 	const (
 		description = `## Description (About the problem)
 A clear description of the bug encountered.

@@ -1,3 +1,4 @@
+// Package sub is spectest sub-commands.
 package sub
 
 import (
