@@ -1,6 +1,6 @@
 .PHONY: test test-examples docs fmt vet
 
-APP         = spectest
+APP         = lion
 VERSION     = $(shell git describe --tags --abbrev=0)
 GIT_REVISION := $(shell git rev-parse HEAD)
 GO          = go
