@@ -6,8 +6,8 @@ github.com/go-spectest/markdown v0.0.2 h1:9N+qfXNzsHbgPdWsYIb2jW7VBuE4ThIUJh7+Be
 github.com/go-spectest/markdown v0.0.2/go.mod h1:CA24IJfG0EjqL1s93XEfKOjvWg8zUTC2fZY/eQcTNnQ=
 github.com/go-spectest/mermaid v0.0.1 h1:Mi4dxGbdW1swgOqsUaSNQaKHO/mgO7Afk0Qwt4ASa2Y=
 github.com/go-spectest/mermaid v0.0.1/go.mod h1:S3YmRsGuV/EsSadoMn1C/XHr8+aXZ33UON8nuD+xi3w=
-github.com/go-spectest/spectest v0.0.11 h1:Mt+nI4VH3NdlsEg4hOdJQIklC3kvLWRcO7Mtsc1CkB8=
-github.com/go-spectest/spectest v0.0.11/go.mod h1:DgAHTBBWiClxsLvR9w+MCQe8fgH3mlYy+jt77PyoOGI=
+github.com/go-spectest/spectest v0.0.12 h1:jlFF6Vpht2v2Oxx9fOAh43Cp5pykozCHE1eqSookcq0=
+github.com/go-spectest/spectest v0.0.12/go.mod h1:DgAHTBBWiClxsLvR9w+MCQe8fgH3mlYy+jt77PyoOGI=
 github.com/google/go-cmp v0.6.0 h1:ofyhxvXcZhMsU5ulbFiLKl/XBFqE1GSq7atu8tAmTRI=
 github.com/gorilla/mux v1.8.0 h1:i40aqfkR1h2SlN9hojwV5ZA91wcXFOvkdNIeFDP5koI=
 github.com/gorilla/mux v1.8.0/go.mod h1:DVbg23sWSpFRCP0SfiEN6jmj59UnW/n46BH5rLB71So=
