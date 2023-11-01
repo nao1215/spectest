@@ -35,7 +35,7 @@ go get -u github.com/go-spectest/spectest
 | Example                                                                                              | Comment                                                                                                    |
 | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
 | [gin](https://github.com/go-spectest/spectest/tree/main/examples/gin)                             | popular martini-like web framework                                                                         |
-| [graphql (broken)](https://github.com/go-spectest/spectest/tree/main/examples/graphql)                     | using gqlgen.com to generate a graphql server                                                              |
+| [graphql](https://github.com/go-spectest/spectest/tree/main/examples/graphql)                     | using gqlgen.com to generate a graphql server                                                              |
 | [gorilla](https://github.com/go-spectest/spectest/tree/main/examples/gorilla)                     | the gorilla web toolkit                                                                                    |
 | [iris (broken)](https://github.com/go-spectest/spectest/tree/main/examples/iris)                           | iris web framework                                                                                         |
 | [echo](https://github.com/go-spectest/spectest/tree/main/examples/echo)                           | High performance, extensible, minimalist Go web framework                                                  |
