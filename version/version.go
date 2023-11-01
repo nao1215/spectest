@@ -1,9 +1,9 @@
-// Package version manage command version
+// Package version manage spectest command version
 package version
 
 const (
 	// CommandName is cli command name
-	CommandName = "lion" //nolint
+	CommandName = "spectest" //nolint
 )
 
 var (
