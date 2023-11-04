@@ -9,7 +9,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1
 	github.com/go-spectest/diff v0.0.0-20231006143314-ce490574d4a9
 	github.com/go-spectest/imaging v1.0.6
-	github.com/go-spectest/markdown v0.0.2
+	github.com/go-spectest/markdown v0.0.6
 	github.com/go-spectest/mermaid v0.0.1
 	github.com/google/go-cmp v0.6.0
 	github.com/gorilla/websocket v1.5.0
@@ -28,6 +28,7 @@ require (
 	github.com/charmbracelet/lipgloss v0.8.0 // indirect
 	github.com/go-logfmt/logfmt v0.6.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
+	github.com/karrick/godirwalk v1.17.0 // indirect
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/mattn/go-isatty v0.0.18 // indirect
