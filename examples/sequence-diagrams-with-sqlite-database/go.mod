@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/go-spectest/spectest v0.0.12
-	github.com/gorilla/mux v1.8.0
+	github.com/gorilla/mux v1.8.1
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/mattn/go-sqlite3 v1.14.17
 	github.com/pressly/goose v2.7.0+incompatible
