@@ -5,8 +5,8 @@ github.com/go-spectest/diff v0.0.0-20231006143314-ce490574d4a9/go.mod h1:wWRXl4C
 github.com/go-spectest/spectest v0.0.8 h1:mSaeTAusRVrXgZKO7/gs97pEZFpYlTdt11HC1ZpZ13Q=
 github.com/go-spectest/spectest v0.0.8/go.mod h1:6SlDj442dt7HlrG+lf8QtN4rk8vkL0e18Cl0yqL1w68=
 github.com/google/go-cmp v0.6.0 h1:ofyhxvXcZhMsU5ulbFiLKl/XBFqE1GSq7atu8tAmTRI=
-github.com/gorilla/mux v1.8.0 h1:i40aqfkR1h2SlN9hojwV5ZA91wcXFOvkdNIeFDP5koI=
-github.com/gorilla/mux v1.8.0/go.mod h1:DVbg23sWSpFRCP0SfiEN6jmj59UnW/n46BH5rLB71So=
+github.com/gorilla/mux v1.8.1 h1:TuBL49tXwgrFYWhqrNgrUNEY92u81SPhu7sTdzQEiWY=
+github.com/gorilla/mux v1.8.1/go.mod h1:AKf9I4AEqPTmMytcMc0KkNouC66V3BtZ4qD5fmWSiMQ=
 github.com/nao1215/gorky v0.2.1 h1:kxXYhCNBbtGru9CCSYx+QC0JZfZJ1csY3uLbb5n2WKA=
 github.com/tenntenn/testtime v0.2.2 h1:y6K00BUNg7cRE9WpkBX/Bn+WgmV5/a3hsw7xGNyF2p0=
 github.com/tenntenn/testtime v0.2.2/go.mod h1:gXZpxnMoBEV+JZwooprQ65lIbR2Kzk5PpP/deHMn+Is=
