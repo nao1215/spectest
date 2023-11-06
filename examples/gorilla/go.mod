@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/go-spectest/spectest v0.0.12
-	github.com/gorilla/mux v1.8.0
+	github.com/gorilla/mux v1.8.1
 )
 
 require (
