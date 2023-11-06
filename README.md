@@ -13,6 +13,8 @@ A simple and extensible behavioral testing library. Supports mocking external ht
 
 **This project is forked from [steinfletcher/apitest](https://github.com/steinfletcher/apitest)** apitest was functionally complete. However, I wanted more features, so I decided to fork it to actively develop it further. I will mainly enhance document generation and integration with AWS. There are no plans for compatibility between apitest and spectest. Therefore, future development will include BREAKING CHANGES. 
 
+The spectest has its own unique use cases, [Use Cases of spectest](./doc/spectest.md). Please refer to this document for more information.
+
 ## Supported OS
 - Linux
 - Mac

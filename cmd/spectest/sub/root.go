@@ -23,8 +23,6 @@ func newRootCmd() *cobra.Command {
 		Short: "spectest is a tool for unit test.",
 		Long: `🦁 The spectest command provides utility for unit testing, not only API test.
 🦁 It provides features for all developers writing unit tests in Golang.
-🦁 ** Work in progress.** 
-===============================================================================
 `,
 	}
 	cmd.CompletionOptions.DisableDefaultCmd = true
@@ -32,5 +30,6 @@ func newRootCmd() *cobra.Command {
 	cmd.SilenceErrors = true
 	cmd.AddCommand(newVersionCmd())
 	cmd.AddCommand(newBugReportCmd())
+	cmd.AddCommand(newIndexCmd())
 	return cmd
 }
