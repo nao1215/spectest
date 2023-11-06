@@ -46,6 +46,6 @@ spectest index docs --title "naraku api result"
 
 ## Installation of spectest cli
 ```shell
-go install github.com/go-spectest/spectest/cmd/spectest
+go install github.com/go-spectest/spectest/cmd/spectest@latest
 ```
 
