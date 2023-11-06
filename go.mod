@@ -12,7 +12,7 @@ require (
 	github.com/go-spectest/markdown v0.0.6
 	github.com/go-spectest/mermaid v0.0.1
 	github.com/google/go-cmp v0.6.0
-	github.com/gorilla/websocket v1.5.0
+	github.com/gorilla/websocket v1.5.1
 	github.com/n7olkachev/imgdiff v1.0.2
 	github.com/nao1215/gorky v0.2.1
 	github.com/spf13/cobra v1.8.0
