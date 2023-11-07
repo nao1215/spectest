@@ -162,59 +162,63 @@ func (r *Response) End() Result {
 	}
 }
 
+// runTest runs the test. This method is not thread safe.
 func (r *Response) runTest() *http.Response {
-	a := r.specTest
-	a.interval.Start()
-	defer a.interval.End()
+	specTest := r.specTest
+	specTest.interval.Start()
+	defer specTest.interval.End()
 
-	if len(a.mocks) > 0 {
-		a.transport = newTransport(
-			a.mocks,
-			a.httpClient,
-			a.debug,
-			a.mockResponseDelayEnabled,
-			a.mocksObservers,
+	if len(specTest.mocks) > 0 {
+		specTest.transport = newTransport(
+			specTest.mocks,
+			specTest.httpClient,
+			specTest.debug,
+			specTest.mockResponseDelayEnabled,
+			specTest.mocksObservers,
 			r.specTest,
 		)
-		defer a.transport.Reset()
-		a.transport.Hijack()
+		defer specTest.transport.Reset()
+		specTest.transport.Hijack()
 	}
-	res, req := a.doRequest()
+	res, req := specTest.doRequest()
 
 	defer func() {
-		if len(a.observers) > 0 {
-			for _, observe := range a.observers {
-				observe(res, req, a)
+		if len(specTest.observers) > 0 {
+			for _, observe := range specTest.observers {
+				observe(res, req, specTest)
 			}
 		}
 	}()
 
-	if a.verifier == nil {
-		a.verifier = DefaultVerifier{}
+	if specTest.verifier == nil {
+		specTest.verifier = DefaultVerifier{}
 	}
-
-	a.assertMocks()
-	a.assertResponse(res)
-	a.assertHeaders(res)
-	a.assertCookies(res)
-	a.assertFunc(res, req)
-
+	specTest.assertAll(res, req)
 	return copyHTTPResponse(res)
 }
 
+// assertAll runs all the assertions.
+func (s *SpecTest) assertAll(res *http.Response, req *http.Request) {
+	s.assertMocks()
+	s.assertResponse(res)
+	s.assertHeaders(res)
+	s.assertCookies(res)
+	s.assertFunc(res, req)
+}
+
+// copyHTTPResponse copies the given http.Response
 func copyHTTPResponse(response *http.Response) *http.Response {
 	if response == nil {
 		return nil
 	}
-
 	var resBodyBytes []byte
 	if response.Body != nil {
 		resBodyBytes, _ = io.ReadAll(response.Body)
 		response.Body = io.NopCloser(bytes.NewBuffer(resBodyBytes))
 	}
 
-	resCopy := &http.Response{
-		Header:        map[string][]string{},
+	return &http.Response{
+		Header:        copyHeader(response.Header),
 		StatusCode:    response.StatusCode,
 		Status:        response.Status,
 		Body:          io.NopCloser(bytes.NewBuffer(resBodyBytes)),
@@ -223,10 +227,13 @@ func copyHTTPResponse(response *http.Response) *http.Response {
 		ProtoMajor:    response.ProtoMajor,
 		ContentLength: response.ContentLength,
 	}
+}
 
-	for name, values := range response.Header {
-		resCopy.Header[name] = values
+// copyHeader copies the given http.Header.
+func copyHeader(src http.Header) http.Header {
+	header := http.Header{}
+	for name, values := range src {
+		header[name] = values
 	}
-
-	return resCopy
+	return header
 }
