@@ -417,6 +417,8 @@ func (s SpecTest) recordResult(capture *capture) {
 	})
 }
 
+// assertMocks will assert that all mocks were invoked the expected number of times.
+// If a mock was not invoked the expected number of times, the test will fail.
 func (s *SpecTest) assertMocks() {
 	for _, mock := range s.mocks {
 		if !mock.state.isRunning() && mock.execCount.isComplete() {
@@ -425,6 +427,8 @@ func (s *SpecTest) assertMocks() {
 	}
 }
 
+// assertFunc will run the assert functions.
+// If an assert function fails, the test will fail.
 func (s *SpecTest) assertFunc(res *http.Response, req *http.Request) {
 	if len(s.response.assert) > 0 {
 		for _, assertFn := range s.response.assert {
@@ -436,13 +440,15 @@ func (s *SpecTest) assertFunc(res *http.Response, req *http.Request) {
 	}
 }
 
+// doRequest will build the request and execute it.
+// It will return the response and the request.
+// If networking is disabled, the request will be served by the http handler.
 func (s *SpecTest) doRequest() (*http.Response, *http.Request) {
 	req := s.buildRequest()
 	if s.request.interceptor != nil {
 		s.request.interceptor(req)
 	}
 	resRecorder := httptest.NewRecorder()
-
 	s.debug.dumpRequest(req)
 
 	var res *http.Response
@@ -456,145 +462,163 @@ func (s *SpecTest) doRequest() (*http.Response, *http.Request) {
 			s.t.Fatal(err)
 		}
 	}
-
 	s.debug.dumpResponse(res)
 
 	return res, req
 }
 
+// serveHTTP will serve the request using the http handler.
 func (s *SpecTest) serveHTTP(res *httptest.ResponseRecorder, req *http.Request) {
 	defer func() {
 		if err := recover(); err != nil {
 			s.t.Fatalf("%s: %s", err, runtimeDebug.Stack())
 		}
 	}()
-
 	s.handler.ServeHTTP(res, req)
 }
 
+// assertResponse will assert the response.
+// If the response does not match the expected response, the test will fail.
 func (s *SpecTest) assertResponse(res *http.Response) {
 	if s.response.status != 0 {
 		s.verifier.Equal(s.t, s.response.status, res.StatusCode, fmt.Sprintf("Status code %d not equal to %d", res.StatusCode, s.response.status), failureMessageArgs{Name: s.name})
 	}
 
-	if s.response.body != "" {
-		var resBodyBytes []byte
-		if res.Body != nil {
-			resBodyBytes, _ = io.ReadAll(res.Body)
-			res.Body = io.NopCloser(bytes.NewBuffer(resBodyBytes))
-		}
-		if json.Valid([]byte(s.response.body)) {
-			s.verifier.JSONEq(s.t, s.response.body, string(resBodyBytes), failureMessageArgs{Name: s.name})
-		} else {
-			s.verifier.Equal(s.t, s.response.body, string(resBodyBytes), failureMessageArgs{Name: s.name})
-		}
+	if s.response.body == "" {
+		return
+	}
+
+	var resBodyBytes []byte
+	if res.Body != nil {
+		resBodyBytes, _ = io.ReadAll(res.Body)
+		res.Body = io.NopCloser(bytes.NewBuffer(resBodyBytes))
+	}
+	if json.Valid([]byte(s.response.body)) {
+		s.verifier.JSONEq(s.t, s.response.body, string(resBodyBytes), failureMessageArgs{Name: s.name})
+	} else {
+		s.verifier.Equal(s.t, s.response.body, string(resBodyBytes), failureMessageArgs{Name: s.name})
 	}
 }
 
+// assertCookies will assert the cookies using the helper functions.
+// If the cookies do not match the expected cookies, the test will fail.
 func (s *SpecTest) assertCookies(response *http.Response) {
-	if len(s.response.cookies) > 0 {
-		for _, expectedCookie := range s.response.cookies {
-			var mismatchedFields []string
-			foundCookie := false
-			for _, actualCookie := range response.Cookies() {
-				cookieFound, errors := compareCookies(expectedCookie, actualCookie)
-				if cookieFound {
-					foundCookie = true
-					mismatchedFields = append(mismatchedFields, errors...)
-				}
-			}
-			s.verifier.Equal(s.t, true, foundCookie, "ExpectedCookie not found - "+*expectedCookie.name, failureMessageArgs{Name: s.name})
-			s.verifier.Equal(s.t, 0, len(mismatchedFields), strings.Join(mismatchedFields, ","), failureMessageArgs{Name: s.name})
-		}
+	for _, expectedCookie := range s.response.cookies {
+		s.assertExpectedCookie(response, expectedCookie)
 	}
 
-	if len(s.response.cookiesPresent) > 0 {
-		for _, cookieName := range s.response.cookiesPresent {
-			foundCookie := false
-			for _, cookie := range response.Cookies() {
-				if cookie.Name == cookieName {
-					foundCookie = true
-				}
-			}
-			s.verifier.Equal(s.t, true, foundCookie, "ExpectedCookie not found - "+cookieName, failureMessageArgs{Name: s.name})
-		}
+	for _, cookieName := range s.response.cookiesPresent {
+		s.assertPresentCookie(response, cookieName)
 	}
 
-	if len(s.response.cookiesNotPresent) > 0 {
-		for _, cookieName := range s.response.cookiesNotPresent {
-			foundCookie := false
-			for _, cookie := range response.Cookies() {
-				if cookie.Name == cookieName {
-					foundCookie = true
-				}
-			}
-			s.verifier.Equal(s.t, false, foundCookie, "ExpectedCookie found - "+cookieName, failureMessageArgs{Name: s.name})
-		}
+	for _, cookieName := range s.response.cookiesNotPresent {
+		s.assertNotPresentCookie(response, cookieName)
 	}
 }
 
+// assertExpectedCookie checks if the expected cookie is found in the response's cookies.
+func (s *SpecTest) assertExpectedCookie(response *http.Response, expectedCookie *Cookie) {
+	var mismatchedFields []string
+	foundCookie := false
+	for _, actualCookie := range response.Cookies() {
+		cookieFound, errors := compareCookies(expectedCookie, actualCookie)
+		if cookieFound {
+			foundCookie = true
+			mismatchedFields = append(mismatchedFields, errors...)
+		}
+	}
+	s.verifier.Equal(s.t, true, foundCookie, "ExpectedCookie not found - "+*expectedCookie.name, failureMessageArgs{Name: s.name})
+	s.verifier.Equal(s.t, 0, len(mismatchedFields), strings.Join(mismatchedFields, ","), failureMessageArgs{Name: s.name})
+}
+
+// assertPresentCookie checks if the given cookie name is present in the response's cookies.
+func (s *SpecTest) assertPresentCookie(response *http.Response, cookieName string) {
+	foundCookie := false
+	for _, cookie := range response.Cookies() {
+		if cookie.Name == cookieName {
+			foundCookie = true
+			break
+		}
+	}
+	s.verifier.Equal(s.t, true, foundCookie, "ExpectedCookie not found - "+cookieName, failureMessageArgs{Name: s.name})
+}
+
+// assertNotPresentCookie checks if the given cookie name is not present in the response's cookies.
+func (s *SpecTest) assertNotPresentCookie(response *http.Response, cookieName string) {
+	foundCookie := false
+	for _, cookie := range response.Cookies() {
+		if cookie.Name == cookieName {
+			foundCookie = true
+			break
+		}
+	}
+	s.verifier.Equal(s.t, false, foundCookie, "ExpectedCookie found - "+cookieName, failureMessageArgs{Name: s.name})
+}
+
+// assertHeaders will assert the headers.
+// If the headers do not match the expected headers, the test will fail.
 func (s *SpecTest) assertHeaders(res *http.Response) {
 	for expectedHeader, expectedValues := range s.response.headers {
-		resHeaderValues, foundHeader := res.Header[expectedHeader]
-		s.verifier.Equal(s.t, true, foundHeader, fmt.Sprintf("expected header '%s' not present in response", expectedHeader), failureMessageArgs{Name: s.name})
-
-		if foundHeader {
-			for _, expectedValue := range expectedValues {
-				foundValue := false
-				for _, resValue := range resHeaderValues {
-					if expectedValue == resValue {
-						foundValue = true
-						break
-					}
-				}
-				s.verifier.Equal(s.t, true, foundValue, fmt.Sprintf("mismatched values for header '%s'. Expected %s but received %s", expectedHeader, expectedValue, strings.Join(resHeaderValues, ",")), failureMessageArgs{Name: s.name})
-			}
-		}
+		s.assertExpectedHeaders(res, expectedHeader, expectedValues)
 	}
-
-	if len(s.response.headersPresent) > 0 {
-		for _, expectedName := range s.response.headersPresent {
-			if res.Header.Get(expectedName) == "" {
-				s.verifier.Fail(s.t, fmt.Sprintf("expected header '%s' not present in response", expectedName), failureMessageArgs{Name: s.name})
-			}
-		}
+	for _, expectedName := range s.response.headersPresent {
+		s.assertPresentHeaders(res, expectedName)
 	}
-
-	if len(s.response.headersNotPresent) > 0 {
-		for _, name := range s.response.headersNotPresent {
-			if res.Header.Get(name) != "" {
-				s.verifier.Fail(s.t, fmt.Sprintf("did not expect header '%s' in response", name), failureMessageArgs{Name: s.name})
-			}
-		}
+	for _, name := range s.response.headersNotPresent {
+		s.assertNotPresentHeaders(res, name)
 	}
 }
 
+// assertExpectedHeaders checks if the expected headers and their values are present in the response.
+func (s *SpecTest) assertExpectedHeaders(res *http.Response, expectedHeader string, expectedValues []string) {
+	resHeaderValues, foundHeader := res.Header[expectedHeader]
+	s.verifier.Equal(s.t, true, foundHeader, fmt.Sprintf("expected header '%s' not present in response", expectedHeader), failureMessageArgs{Name: s.name})
+
+	if !foundHeader {
+		return
+	}
+
+	for _, expectedValue := range expectedValues {
+		foundValue := false
+		for _, resValue := range resHeaderValues {
+			if expectedValue == resValue {
+				foundValue = true
+				break
+			}
+		}
+		s.verifier.Equal(s.t, true, foundValue, fmt.Sprintf("mismatched values for header '%s'. Expected %s but received %s", expectedHeader, expectedValue, strings.Join(resHeaderValues, ",")), failureMessageArgs{Name: s.name})
+	}
+}
+
+// assertPresentHeaders checks if the given headers are present in the response's headers.
+func (s *SpecTest) assertPresentHeaders(res *http.Response, expectedName string) {
+	if res.Header.Get(expectedName) == "" {
+		s.verifier.Fail(s.t, fmt.Sprintf("expected header '%s' not present in response", expectedName), failureMessageArgs{Name: s.name})
+	}
+}
+
+// assertNotPresentHeaders checks if the given headers are not present in the response's headers.
+func (s *SpecTest) assertNotPresentHeaders(res *http.Response, name string) {
+	if res.Header.Get(name) != "" {
+		s.verifier.Fail(s.t, fmt.Sprintf("did not expect header '%s' in response", name), failureMessageArgs{Name: s.name})
+	}
+}
+
+// buildRequest will build the request.
 func (s *SpecTest) buildRequest() *http.Request {
 	if s.httpRequest != nil {
 		return s.httpRequest
 	}
 
 	if len(s.request.formData) > 0 {
-		form := url.Values{}
-		for k := range s.request.formData {
-			for _, value := range s.request.formData[k] {
-				form.Add(k, value)
-			}
-		}
-		s.request.Body(form.Encode())
+		s.request.Body(s.buildFormRequestBody())
 	}
 
 	if s.request.multipart != nil {
-		err := s.request.multipart.Close()
-		if err != nil {
-			s.request.specTest.t.Fatal(err)
-		}
-
-		s.request.Header("Content-Type", s.request.multipart.FormDataContentType())
-		s.request.Body(s.request.multipartBody.String())
+		s.setMultipartHeaders()
 	}
 
-	req, _ := http.NewRequest(s.request.method, s.request.url, bytes.NewBufferString(s.request.body))
+	req, _ := http.NewRequest(s.request.method, s.request.url, bytes.NewBufferString(s.request.body)) // TODO: handle error
 	if s.request.context != nil {
 		req = req.WithContext(s.request.context)
 	}
@@ -623,6 +647,28 @@ func (s *SpecTest) buildRequest() *http.Request {
 	return req
 }
 
+// buildFormRequestBody builds the request body for form data.
+func (s *SpecTest) buildFormRequestBody() string {
+	form := url.Values{}
+	for k := range s.request.formData {
+		for _, value := range s.request.formData[k] {
+			form.Add(k, value)
+		}
+	}
+	return form.Encode()
+}
+
+// setMultipartHeaders sets the Content-Type header for multipart requests.
+func (s *SpecTest) setMultipartHeaders() {
+	err := s.request.multipart.Close()
+	if err != nil {
+		s.request.specTest.t.Fatal(err)
+	}
+	s.request.Header("Content-Type", s.request.multipart.FormDataContentType())
+	s.request.Body(s.request.multipartBody.String())
+}
+
+// formatQuery will format the query parameters.
 func formatQuery(request *Request) string {
 	var out url.Values = map[string][]string{}
 
