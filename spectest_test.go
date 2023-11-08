@@ -1752,7 +1752,7 @@ func TestGoldenFile(t *testing.T) {
 			Handler(handler).
 			Get("/hello").
 			Expect(t).
-			BodyFronGoldenFile(filepath.Join(tmpDir, "golden.json")).
+			BodyFromGoldenFile(filepath.Join(tmpDir, "golden.json")).
 			Status(http.StatusOK).
 			End()
 	})

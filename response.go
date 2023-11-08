@@ -63,10 +63,10 @@ func (r *Response) BodyFromFile(path string) *Response {
 	return r
 }
 
-// BodyFronGoldenFile reads the given file and uses the content as the expected response body.
+// BodyFromGoldenFile reads the given file and uses the content as the expected response body.
 // If the update flag is set, the golden file will be updated with the actual response body.
 // Example: go test -update
-func (r *Response) BodyFronGoldenFile(path string) *Response {
+func (r *Response) BodyFromGoldenFile(path string) *Response {
 	update := false
 	flag.BoolVar(&update, "update", false, "update golden files")
 

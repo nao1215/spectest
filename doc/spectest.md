@@ -71,7 +71,7 @@ Golden File reduces your effort to create expected value data. The spectest can 
 			Handler(handler).
 			Get("/hello").
 			Expect(t).
-			BodyFronGoldenFile(filepath.Join("testdata", "golden.json")). // use golden file
+			BodyFromGoldenFile(filepath.Join("testdata", "golden.json")). // use golden file
 			Status(http.StatusOK).
 			End()
 ```
