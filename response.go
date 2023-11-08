@@ -67,8 +67,10 @@ func (r *Response) BodyFromFile(path string) *Response {
 // If the update flag is set, the golden file will be updated with the actual response body.
 // Example: go test -update
 func (r *Response) BodyFronGoldenFile(path string) *Response {
-	r.goldenFile = newGoldenFile(path, *flag.Bool("update", false, "update golden files"), &defaultFileSystem{})
+	update := false
+	flag.BoolVar(&update, "update", false, "update golden files")
 
+	r.goldenFile = newGoldenFile(path, update, &defaultFileSystem{})
 	if !r.goldenFile.update {
 		if !file.IsFile(path) {
 			r.goldenFile.update = true // create a new golden file
