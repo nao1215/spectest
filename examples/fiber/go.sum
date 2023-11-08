@@ -13,8 +13,8 @@ github.com/go-spectest/markdown v0.0.6 h1:S1KBMTYLwaF+gscqdG2XU4ne0axqAWDuFuGrOO
 github.com/go-spectest/markdown v0.0.6/go.mod h1:OaFedfVlu5+eqe5tI2j3+LD/39T7k5JZAklxTul98EQ=
 github.com/go-spectest/mermaid v0.0.1 h1:Mi4dxGbdW1swgOqsUaSNQaKHO/mgO7Afk0Qwt4ASa2Y=
 github.com/go-spectest/mermaid v0.0.1/go.mod h1:S3YmRsGuV/EsSadoMn1C/XHr8+aXZ33UON8nuD+xi3w=
-github.com/go-spectest/spectest v0.0.13 h1:u+7zTfDXgu+/kiRapQ45KbeJAbHJSfZYtyYKkuc2s1M=
-github.com/go-spectest/spectest v0.0.13/go.mod h1:4YPpb3U4XCTi0cBZsrtzsBCIFJCvPxaSlywt3WKdHRM=
+github.com/go-spectest/spectest v0.0.15 h1:eSKPVVjnD+gNYOxZ8vfV3B7gR/e3yi6/kc9lqQddNFs=
+github.com/go-spectest/spectest v0.0.15/go.mod h1:fgAZM8EeVPEE5/dIS0AHY9SPzy5IYVu+ZxLZXstqA1U=
 github.com/gofiber/fiber/v2 v2.50.0 h1:ia0JaB+uw3GpNSCR5nvC5dsaxXjRU5OEu36aytx+zGw=
 github.com/gofiber/fiber/v2 v2.50.0/go.mod h1:21eytvay9Is7S6z+OgPi7c7n4++tnClWmhpimVHMimw=
 github.com/google/go-cmp v0.6.0 h1:ofyhxvXcZhMsU5ulbFiLKl/XBFqE1GSq7atu8tAmTRI=
@@ -33,6 +33,7 @@ github.com/mattn/go-runewidth v0.0.9/go.mod h1:H031xJmbD/WCDINGzjvQ9THkh0rPKHF+m
 github.com/mattn/go-runewidth v0.0.15 h1:UNAjwbU9l54TA3KzvqLGxwWjHmMgBUVhBiTjelZgg3U=
 github.com/mattn/go-runewidth v0.0.15/go.mod h1:Jdepj2loyihRzMpdS35Xk/zdY8IAYHsh153qUoGf23w=
 github.com/nao1215/gorky v0.2.1 h1:kxXYhCNBbtGru9CCSYx+QC0JZfZJ1csY3uLbb5n2WKA=
+github.com/nao1215/gorky v0.2.1/go.mod h1:fJNLiXzn3YkteARC8xghfHjkt+C5xtHOaRgmVnJEMOs=
 github.com/olekukonko/tablewriter v0.0.5 h1:P2Ga83D34wi1o9J6Wh1mRuqd4mF/x/lgBS7N7AbDhec=
 github.com/olekukonko/tablewriter v0.0.5/go.mod h1:hPp6KlRPjbx+hW8ykQs1w3UBbZlj6HuIJcUGPhkA7kY=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
