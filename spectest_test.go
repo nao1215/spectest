@@ -1725,7 +1725,35 @@ func TestMarkdownReportResponseJSON(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if diff := cmp.Diff(want, got); diff != "" {
+	wantStr := strings.ReplaceAll(string(want), "\r", "")
+	gotStr := strings.ReplaceAll(string(got), "\r", "")
+	if diff := cmp.Diff(wantStr, gotStr); diff != "" {
 		t.Errorf("markdown file mismatch (-want +got):\n%s", diff)
 	}
+}
+
+func TestGoldenFile(t *testing.T) {
+	t.Run("Because there is no golden file in the specified path, a golden file is automatically created.", func(t *testing.T) {
+		handler := http.NewServeMux()
+		handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+			w.Header().Set("Content-Type", "application/json")
+			if _, err := w.Write([]byte(`{"a": 12345}`)); err != nil {
+				t.Fatal(err)
+			}
+		})
+
+		tmpDir, err := os.MkdirTemp("", "spectest")
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		spectest.New().
+			Handler(handler).
+			Get("/hello").
+			Expect(t).
+			BodyFronGoldenFile(filepath.Join(tmpDir, "golden.json")).
+			Status(http.StatusOK).
+			End()
+	})
 }

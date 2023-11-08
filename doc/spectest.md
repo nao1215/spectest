@@ -1,4 +1,10 @@
-## Use Cases of spectest
+# Use Cases of spectest
+## Installation of spectest cli
+```shell
+go install github.com/go-spectest/spectest/cmd/spectest@latest
+```
+
+## Generating Markdown documents from E2E test results
 The spectest offers numerous features that are not available in its forked counterpart, [steinfletcher/apitest](https://github.com/steinfletcher/apitest). While apitest was a simple library, spectest provides functionalities both as a library and a CLI (Command Line Interface).
   
 The current version of spectest is gradually upgrading its documentation generation capabilities. Instead of generating HTML documents, it aims to preserve End-to-End (E2E) test results as documents in Markdown format for developers working on GitHub.
@@ -44,8 +50,28 @@ spectest index docs --title "naraku api result"
 [Output](https://github.com/go-spectest/naraku/blob/main/docs/index.md):  
 ![index_result](./image/index.png)
 
-## Installation of spectest cli
-```shell
-go install github.com/go-spectest/spectest/cmd/spectest@latest
-```
 
+## Use golden file for E2E test
+Golden File reduces your effort to create expected value data. The spectest can use a Golden File as the response body for the expected value. The Golden File will be overwritten with the actual response data in one of the following cases;
+- If the Golden File does not exist in the specified path
+- If you run the test with `go test -update . /...`
+
+### How to use
+```go
+		handler := http.NewServeMux()
+		handler.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+			w.Header().Set("Content-Type", "application/json")
+			if _, err := w.Write([]byte(`{"a": 12345}`)); err != nil {
+				t.Fatal(err)
+			}
+		})
+
+		spectest.New().
+			Handler(handler).
+			Get("/hello").
+			Expect(t).
+			BodyFronGoldenFile(filepath.Join("testdata", "golden.json")). // use golden file
+			Status(http.StatusOK).
+			End()
+```

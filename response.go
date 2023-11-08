@@ -2,12 +2,15 @@ package spectest
 
 import (
 	"bytes"
+	"flag"
 	"fmt"
 	"io"
 	"net/http"
 	"net/textproto"
 	"os"
 	"path/filepath"
+
+	"github.com/nao1215/gorky/file"
 )
 
 // Response is the user defined expected response from the application under test
@@ -22,6 +25,7 @@ type Response struct {
 	cookiesPresent    []string
 	cookiesNotPresent []string
 	assert            []Assert
+	goldenFile        *goldenFile
 }
 
 func newResponse(s *SpecTest) *Response {
@@ -33,6 +37,7 @@ func newResponse(s *SpecTest) *Response {
 		cookies:           []*Cookie{},
 		cookiesPresent:    []string{},
 		cookiesNotPresent: []string{},
+		goldenFile:        &goldenFile{},
 	}
 }
 
@@ -49,12 +54,34 @@ func (r *Response) Bodyf(format string, args ...interface{}) *Response {
 }
 
 // BodyFromFile reads the given file and uses the content as the expected response body
-func (r *Response) BodyFromFile(f string) *Response {
-	b, err := os.ReadFile(filepath.Clean(f))
+func (r *Response) BodyFromFile(path string) *Response {
+	b, err := os.ReadFile(filepath.Clean(path))
 	if err != nil {
 		r.specTest.t.Fatal(err)
 	}
 	r.body = string(b)
+	return r
+}
+
+// BodyFronGoldenFile reads the given file and uses the content as the expected response body.
+// If the update flag is set, the golden file will be updated with the actual response body.
+// Example: go test -update
+func (r *Response) BodyFronGoldenFile(path string) *Response {
+	update := false
+	flag.BoolVar(&update, "update", false, "update golden files")
+
+	r.goldenFile = newGoldenFile(path, update, &defaultFileSystem{})
+	if !r.goldenFile.update {
+		if !file.IsFile(path) {
+			r.goldenFile.update = true // create a new golden file
+		} else {
+			b, err := r.goldenFile.read()
+			if err != nil {
+				r.specTest.t.Fatal(err)
+			}
+			r.body = string(b)
+		}
+	}
 	return r
 }
 
@@ -130,36 +157,24 @@ func (r *Response) Assert(fn func(*http.Response, *http.Request) error) *Respons
 
 // End runs the test returning the result to the caller
 func (r *Response) End() Result {
-	specTest := r.specTest
 	defer func() {
-		specTest.debug.duration(specTest.interval)
+		r.specTest.debug.duration(r.specTest.interval)
 	}()
-
-	if specTest.handler == nil && !specTest.network.isEnable() {
-		specTest.t.Fatal("either define a http.Handler or enable networking")
-	}
-
-	var res *http.Response
-	if specTest.reporter != nil {
-		res = specTest.report()
-	} else {
-		res = r.runTest()
-	}
-
-	var unmatchedMocks []UnmatchedMock
-	for _, m := range r.specTest.mocks {
-		if !m.state.isRunning() {
-			unmatchedMocks = append(unmatchedMocks, UnmatchedMock{
-				URL: *m.request.url,
-			})
-			break
-		}
-	}
+	r.specTest.assertValidHandlerOrNetwork()
 
 	return Result{
-		Response:       res,
-		unmatchedMocks: unmatchedMocks,
+		Response:       r.runTestAndGenerateReportIfNeeded(),
+		unmatchedMocks: r.specTest.mocks.findUnmatchedMocks(),
 	}
+}
+
+// runTestWithReportIfNeeded runs the test and returns the response.
+// If the reporter is set, it will return the report response.
+func (r *Response) runTestAndGenerateReportIfNeeded() *http.Response {
+	if r.specTest.reporter != nil {
+		return r.specTest.report()
+	}
+	return r.runTest()
 }
 
 // runTest runs the test. This method is not thread safe.
@@ -168,7 +183,7 @@ func (r *Response) runTest() *http.Response {
 	specTest.interval.Start()
 	defer specTest.interval.End()
 
-	if len(specTest.mocks) > 0 {
+	if specTest.mocks.len() > 0 {
 		specTest.transport = newTransport(
 			specTest.mocks,
 			specTest.httpClient,
@@ -190,15 +205,31 @@ func (r *Response) runTest() *http.Response {
 		}
 	}()
 
-	if specTest.verifier == nil {
-		specTest.verifier = DefaultVerifier{}
+	if err := r.updateGoldenFileIfNeeded(res); err != nil {
+		r.specTest.t.Fatal(err)
 	}
 	specTest.assertAll(res, req)
 	return copyHTTPResponse(res)
 }
 
+// updateGoldenFileIfNeeded updates the golden file if needed.
+func (r *Response) updateGoldenFileIfNeeded(res *http.Response) error {
+	if !r.goldenFile.update || res == nil || res.Body == nil {
+		return nil
+	}
+	copyRes := copyHTTPResponse(res)
+	body, err := io.ReadAll(copyRes.Body)
+	if err != nil {
+		return err
+	}
+	return r.goldenFile.write(body)
+}
+
 // assertAll runs all the assertions.
 func (s *SpecTest) assertAll(res *http.Response, req *http.Request) {
+	if s.verifier == nil {
+		s.verifier = DefaultVerifier{}
+	}
 	s.assertMocks()
 	s.assertResponse(res)
 	s.assertHeaders(res)

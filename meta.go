@@ -7,10 +7,10 @@ import (
 )
 
 // ConsumerDefaultName default consumer name
-const ConsumerDefaultName = "cli"
+const ConsumerDefaultName = "client"
 
 // SystemUnderTestDefaultName default name for system under test
-const SystemUnderTestDefaultName = "sut"
+const SystemUnderTestDefaultName = "server"
 
 // Meta represents the meta data for the report.
 type Meta struct {

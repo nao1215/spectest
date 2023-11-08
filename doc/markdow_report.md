@@ -4,15 +4,15 @@
 ```mermaid
 sequenceDiagram
     autonumber
-    cli->>sut: GET /image
-    sut-->>cli: 200
+    client->>server: GET /image
+    server-->>client: 200
 ```
   
 ## Event log
 #### Event 1
   
 GET /image HTTP/1.1  
-Host: sut  
+Host: server  
   
 
   

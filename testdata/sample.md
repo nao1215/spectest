@@ -4,15 +4,15 @@
 ```mermaid
 sequenceDiagram
     autonumber
-    cli->>sut: POST /hello
-    sut-->>cli: 200
+    client->>server: POST /hello
+    server-->>client: 200
 ```
   
 ## Event log
 #### Event 1
   
 POST /hello HTTP/1.1  
-Host: sut  
+Host: server  
   
 
   
