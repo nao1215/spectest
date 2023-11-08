@@ -130,36 +130,24 @@ func (r *Response) Assert(fn func(*http.Response, *http.Request) error) *Respons
 
 // End runs the test returning the result to the caller
 func (r *Response) End() Result {
-	specTest := r.specTest
 	defer func() {
-		specTest.debug.duration(specTest.interval)
+		r.specTest.debug.duration(r.specTest.interval)
 	}()
-
-	if specTest.handler == nil && !specTest.network.isEnable() {
-		specTest.t.Fatal("either define a http.Handler or enable networking")
-	}
-
-	var res *http.Response
-	if specTest.reporter != nil {
-		res = specTest.report()
-	} else {
-		res = r.runTest()
-	}
-
-	var unmatchedMocks []UnmatchedMock
-	for _, m := range r.specTest.mocks {
-		if !m.state.isRunning() {
-			unmatchedMocks = append(unmatchedMocks, UnmatchedMock{
-				URL: *m.request.url,
-			})
-			break
-		}
-	}
+	r.specTest.assertValidHandlerOrNetwork()
 
 	return Result{
-		Response:       res,
-		unmatchedMocks: unmatchedMocks,
+		Response:       r.runTestAndGenerateReportIfNeeded(),
+		unmatchedMocks: r.specTest.mocks.findUnmatchedMocks(),
 	}
+}
+
+// runTestWithReportIfNeeded runs the test and returns the response.
+// If the reporter is set, it will return the report response.
+func (r *Response) runTestAndGenerateReportIfNeeded() *http.Response {
+	if r.specTest.reporter != nil {
+		return r.specTest.report()
+	}
+	return r.runTest()
 }
 
 // runTest runs the test. This method is not thread safe.
@@ -168,7 +156,7 @@ func (r *Response) runTest() *http.Response {
 	specTest.interval.Start()
 	defer specTest.interval.End()
 
-	if len(specTest.mocks) > 0 {
+	if specTest.mocks.len() > 0 {
 		specTest.transport = newTransport(
 			specTest.mocks,
 			specTest.httpClient,

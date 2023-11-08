@@ -104,10 +104,10 @@ func TestWebSequenceDiagramGeneratesDSL(t *testing.T) {
 
 		actual := wsd.String()
 
-		expected := `"cli"->"sut": (1) request1
-"sut"->"C": (2) request2
-"C"->>"sut": (3) response1
-"sut"->>"cli": (4) response2
+		expected := `"client"->"server": (1) request1
+"server"->"C": (2) request2
+"C"->>"server": (3) response1
+"server"->>"client": (4) response2
 `
 		if expected != actual {
 			t.Fatalf("expected=%s != \nactual=%s", expected, actual)

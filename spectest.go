@@ -44,7 +44,7 @@ type SpecTest struct {
 	// It is used to capture the mock request and response.
 	mocksObservers []Observe
 	// mocks is a list of mocks that will be used to intercept the request.
-	mocks []*Mock
+	mocks Mocks
 	// t is the testing.T instance.
 	t TestingT
 	// httpClient is the http client used when networking is enabled
@@ -158,7 +158,7 @@ func (s *SpecTest) HandlerFunc(handlerFunc http.HandlerFunc) *SpecTest {
 // A mock that expects multiple executions will reset the expected call
 // count to 1 when generated as a mock that expects a single execution.
 func (s *SpecTest) Mocks(mocks ...*Mock) *SpecTest {
-	var m []*Mock
+	var m Mocks
 	for i := range mocks {
 		times := mocks[i].response.mock.execCount.expect
 		for j := 1; j <= int(times); j++ {
@@ -352,11 +352,9 @@ func (s *SpecTest) report() *http.Response {
 	defer s.recorder.Reset()
 
 	res := s.response.runTest()
-
 	s.recordResult(capture)
 	s.recorder.AddMeta(s.newMeta(capture))
 	s.reporter.Format(s.recorder)
-
 	return res
 }
 
@@ -601,6 +599,13 @@ func (s *SpecTest) assertPresentHeaders(res *http.Response, expectedName string)
 func (s *SpecTest) assertNotPresentHeaders(res *http.Response, name string) {
 	if res.Header.Get(name) != "" {
 		s.verifier.Fail(s.t, fmt.Sprintf("did not expect header '%s' in response", name), failureMessageArgs{Name: s.name})
+	}
+}
+
+// assertValidHandlerOrNetwork will assert that either a http.Handler is defined or networking is enabled.
+func (s *SpecTest) assertValidHandlerOrNetwork() {
+	if s.handler == nil && !s.network.isEnable() {
+		s.t.Fatal("either define a http.Handler or enable networking")
 	}
 }
 

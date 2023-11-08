@@ -26,7 +26,7 @@ type Transport struct {
 	// httpClient is the http client used when networking is enabled.
 	httpClient *http.Client
 	// mocks is the list of mocks to use when mocking the request
-	mocks []*Mock
+	mocks Mocks
 	// mockResponseDelayEnabled will enable mock response delay
 	mockResponseDelayEnabled bool
 	// observers is the list of observers to use when observing the request and response
@@ -43,7 +43,7 @@ type Transport struct {
 // If you set httpClient to nil, http.DefaultClient will be used.
 // If you set debug to nil, debug will be disabled.
 func newTransport(
-	mocks []*Mock,
+	mocks Mocks,
 	httpClient *http.Client,
 	debug *debug,
 	mockResponseDelayEnabled bool,
@@ -176,6 +176,29 @@ type Mock struct {
 	execCount *execCount
 }
 
+// Mocks is a slice of Mock
+type Mocks []*Mock
+
+// len returns the length of the mocks
+func (mocks Mocks) len() int {
+	return len(mocks)
+}
+
+// findUnmatchedMocks returns a list of unmatched mocks.
+// An unmatched mock is a mock that was not used, e.g. there was not a matching http Request for the mock
+func (mocks Mocks) findUnmatchedMocks() []UnmatchedMock {
+	var unmatchedMocks []UnmatchedMock
+	for _, m := range mocks {
+		if !m.state.isRunning() {
+			unmatchedMocks = append(unmatchedMocks, UnmatchedMock{
+				URL: *m.request.url,
+			})
+			break
+		}
+	}
+	return unmatchedMocks
+}
+
 // Matches checks whether the given request matches the mock
 func (m *Mock) Matches(req *http.Request) []error {
 	var errs []error
@@ -275,7 +298,7 @@ func newMockResponse(m *Mock) *MockResponse {
 
 // StandaloneMocks for using mocks outside of API tests context
 type StandaloneMocks struct {
-	mocks      []*Mock
+	mocks      Mocks
 	httpClient *http.Client
 	debug      *debug
 }
@@ -465,7 +488,7 @@ func (m *Mock) parseURL(u string) {
 }
 
 // matches checks whether the given request matches any of the given mocks
-func matches(req *http.Request, mocks []*Mock) (*MockResponse, error) {
+func matches(req *http.Request, mocks Mocks) (*MockResponse, error) {
 	mockError := newUnmatchedMockError()
 	for mockNumber, mock := range mocks {
 		mock.m.Lock() // lock is for isUsed when matches is called concurrently by RoundTripper
@@ -741,7 +764,7 @@ func (r *MockResponse) End() *Mock {
 // EndStandalone finalizes the response definition of standalone mocks
 func (r *MockResponse) EndStandalone(other ...*Mock) func() {
 	transport := newTransport(
-		append([]*Mock{r.mock}, other...),
+		append(Mocks{r.mock}, other...),
 		r.mock.httpClient,
 		r.mock.debugStandalone,
 		false,

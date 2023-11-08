@@ -1725,7 +1725,9 @@ func TestMarkdownReportResponseJSON(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if diff := cmp.Diff(want, got); diff != "" {
+	wantStr := strings.ReplaceAll(string(want), "\r", "")
+	gotStr := strings.ReplaceAll(string(got), "\r", "")
+	if diff := cmp.Diff(wantStr, gotStr); diff != "" {
 		t.Errorf("markdown file mismatch (-want +got):\n%s", diff)
 	}
 }

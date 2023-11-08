@@ -733,7 +733,7 @@ func TestMocksAddMatcher(t *testing.T) {
 				Status(http.StatusOK).
 				End()
 
-			mockResponse, matchErrors := matches(req, []*Mock{testMock})
+			mockResponse, matchErrors := matches(req, Mocks{testMock})
 
 			assert.Equal(t, test.matchErrors, matchErrors)
 			if test.mockResponse == nil {
@@ -791,7 +791,7 @@ func TestMocksMatches(t *testing.T) {
 		BodyFromFile("testdata/mock_response_body.json").
 		End()
 
-	mockResponse, matchErrors := matches(req, []*Mock{getUser, getPreferences})
+	mockResponse, matchErrors := matches(req, Mocks{getUser, getPreferences})
 
 	assert.Equal(t, true, matchErrors == nil)
 	assert.Equal(t, true, mockResponse != nil)
@@ -815,7 +815,7 @@ func TestMocksMatchesErrors(t *testing.T) {
 		Status(http.StatusOK).
 		End()
 
-	mockResponse, matchErrors := matches(req, []*Mock{testMock})
+	mockResponse, matchErrors := matches(req, Mocks{testMock})
 
 	assert.Equal(t, true, mockResponse == nil)
 	assert.Equal(t, &unmatchedMockError{errors: map[int][]error{
@@ -832,7 +832,7 @@ func TestMocksMatchesErrors(t *testing.T) {
 func TestMocksMatchesNilIfNoMatch(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/preferences/12345", nil)
 
-	mockResponse, matchErrors := matches(req, []*Mock{})
+	mockResponse, matchErrors := matches(req, Mocks{})
 
 	if mockResponse != nil {
 		t.Fatal("Expected nil")
@@ -857,7 +857,7 @@ func TestMocksMatchesErrorsMatchUnmatchedMocks(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/preferences/12345", nil)
 
 	mockResponse, matchErrors := matches(req,
-		[]*Mock{
+		Mocks{
 			NewMock().
 				Get("/preferences/123456").
 				RespondWith().
