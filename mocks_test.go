@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"path/filepath"
 	"reflect"
 	"strings"
 	"testing"
@@ -788,7 +789,7 @@ func TestMocksMatches(t *testing.T) {
 		Get("/user/1234").
 		RespondWith().
 		Status(http.StatusOK).
-		BodyFromFile("testdata/mock_response_body.json").
+		BodyFromFile(filepath.Join("testdata", "mock_response_body.json")).
 		End()
 
 	mockResponse, matchErrors := matches(req, Mocks{getUser, getPreferences})

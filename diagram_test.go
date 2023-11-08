@@ -140,9 +140,7 @@ func TestWebSequenceDiagramGeneratesDSL(t *testing.T) {
 }
 
 func TestNewSequenceDiagramFormatterStoragePath(t *testing.T) {
-	t.Parallel()
 	t.Run("should use default storage path", func(t *testing.T) {
-		t.Parallel()
 		formatter := SequenceDiagram()
 		v, ok := formatter.(*SequenceDiagramFormatter)
 		if !ok {
@@ -152,7 +150,6 @@ func TestNewSequenceDiagramFormatterStoragePath(t *testing.T) {
 	})
 
 	t.Run("should use custom storage path", func(t *testing.T) {
-		t.Parallel()
 		formatter := SequenceDiagram(".sequence-diagram")
 		v, ok := formatter.(*SequenceDiagramFormatter)
 		if !ok {
@@ -502,8 +499,6 @@ func Test_toImageExt(t *testing.T) {
 }
 
 func Test_imageName(t *testing.T) {
-	t.Parallel()
-
 	type args struct {
 		name        string
 		contentType string
@@ -527,7 +522,6 @@ func Test_imageName(t *testing.T) {
 	for _, tt := range tests {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
 			if got := imageName(tt.args.name, tt.args.contentType, tt.args.index); got != tt.want {
 				t.Errorf("imageName() = %v, want %v", got, tt.want)
 			}
