@@ -3,7 +3,7 @@ module github.com/go-spectest/spectest/examples/echo
 go 1.18
 
 require (
-	github.com/go-spectest/spectest v0.0.13
+	github.com/go-spectest/spectest v0.0.15
 	github.com/labstack/echo v3.3.10+incompatible
 )
 
@@ -19,6 +19,7 @@ require (
 	github.com/mattn/go-colorable v0.1.11 // indirect
 	github.com/mattn/go-isatty v0.0.18 // indirect
 	github.com/mattn/go-runewidth v0.0.14 // indirect
+	github.com/nao1215/gorky v0.2.1 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/tenntenn/testtime v0.2.2 // indirect
