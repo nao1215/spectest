@@ -2,7 +2,8 @@
 package sub
 
 import (
-	"github.com/charmbracelet/log"
+	"fmt"
+
 	"github.com/spf13/cobra"
 )
 
@@ -11,7 +12,7 @@ func Execute() int {
 	rootCmd := newRootCmd()
 
 	if err := rootCmd.Execute(); err != nil {
-		log.Error(err)
+		fmt.Println(err.Error())
 		return 1
 	}
 	return 0
