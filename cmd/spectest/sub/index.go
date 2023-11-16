@@ -2,6 +2,7 @@ package sub
 
 import (
 	"fmt"
+	"path/filepath"
 
 	"github.com/go-spectest/markdown"
 	"github.com/spf13/cobra"
@@ -58,7 +59,11 @@ func newIndexer(cmd *cobra.Command, args []string) (*indexer, error) {
 
 // run generate an index for a directory full of markdown files.
 func (i *indexer) run() error {
-	return markdown.GenerateIndex(i.target, markdown.WithTitle(i.title), markdown.WithDescription(i.description))
+	if err := markdown.GenerateIndex(i.target, markdown.WithTitle(i.title), markdown.WithDescription(i.description)); err != nil {
+		return err
+	}
+	fmt.Printf("generated index markdown at %s\n", filepath.Join(i.target, "index.md"))
+	return nil
 }
 
 // index generate an index for a directory full of markdown files.
