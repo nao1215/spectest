@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"os/exec"
 	"os/signal"
@@ -129,7 +128,7 @@ func (s *spectester) runTest() error {
 		args = append(args, "-v") // This option is required to count the number of tests.
 	}
 
-	cmd := exec.Command("go", args...) //nolint
+	cmd := exec.Command("go", args...) //#nosec
 	cmd.Stderr = w
 	cmd.Stdout = w
 	cmd.Env = os.Environ()
@@ -189,7 +188,7 @@ func (s *spectester) consume(wg *sync.WaitGroup, r io.Reader) {
 			return
 		}
 		if err != nil {
-			log.Print(err)
+			fmt.Fprintln(os.Stderr, err.Error())
 			return
 		}
 		s.parse(string(l))
@@ -270,6 +269,7 @@ func (s *spectester) testResult() {
 	}
 }
 
+// extractFailTestMessage extracts the error message of the failed test.
 func extractFailTestMessage(testResultMsgs []string) []string {
 	failTestMessages := []string{}
 	beforeRunPos := 0
