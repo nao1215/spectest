@@ -9,6 +9,8 @@ The spectest offers a wrapper for the `go test` command. The spectest command ad
 
 ![spectest_wrapper](./image/go_test_wrapper.png)
 
+Some portions of the code in this feature were forked from [rakyll/gotest](https://github.com/rakyll/gotest). gotest command is licensed under [the BSD 3-Clause "New" or "Revised" License](./gotest/LICENSE).
+
 ## Generating Markdown documents from E2E test results
 The spectest offers numerous features that are not available in its forked counterpart, [steinfletcher/apitest](https://github.com/steinfletcher/apitest). While apitest was a simple library, spectest provides functionalities both as a library and a CLI (Command Line Interface).
   
