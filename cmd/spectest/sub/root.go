@@ -3,6 +3,7 @@ package sub
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -121,14 +122,14 @@ func (s *spectester) runTest() error {
 	defer wg.Wait()
 
 	r, w := io.Pipe()
-	defer w.Close()
+	defer w.Close() //nolint
 
 	args := append([]string{"test"}, s.args...)
 	if !slices.Contains(args, "-v") {
 		args = append(args, "-v") // This option is required to count the number of tests.
 	}
 
-	cmd := exec.Command("go", args...)
+	cmd := exec.Command("go", args...) //nolint
 	cmd.Stderr = w
 	cmd.Stdout = w
 	cmd.Env = os.Environ()
@@ -145,7 +146,7 @@ func (s *spectester) runTest() error {
 		s.testResult()
 	}()
 
-	sigc := make(chan os.Signal)
+	sigc := make(chan os.Signal, 1)
 	done := make(chan struct{})
 	defer func() {
 		done <- struct{}{}
@@ -156,7 +157,12 @@ func (s *spectester) runTest() error {
 		for {
 			select {
 			case sig := <-sigc:
-				cmd.Process.Signal(sig)
+				if err := cmd.Process.Signal(sig); err != nil {
+					if errors.Is(err, os.ErrProcessDone) {
+						break
+					}
+					fmt.Fprintf(os.Stderr, "failed to send signal: %s", err.Error())
+				}
 			case <-done:
 				return
 			}

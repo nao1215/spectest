@@ -4,6 +4,11 @@
 go install github.com/go-spectest/spectest/cmd/spectest@latest
 ```
 
+## User-friendly 'go test'  
+The spectest offers a wrapper for the `go test` command. The spectest command adds the "-v" option to the go test options provided by the user and executes the tests. Successful test results are represented by green ".", while failed tests are represented by red ".". Upon completion of the tests, it displays information about the failed tests and summarizes the test results.
+
+![spectest_wrapper](./image/go_test_wrapper.png)
+
 ## Generating Markdown documents from E2E test results
 The spectest offers numerous features that are not available in its forked counterpart, [steinfletcher/apitest](https://github.com/steinfletcher/apitest). While apitest was a simple library, spectest provides functionalities both as a library and a CLI (Command Line Interface).
   
