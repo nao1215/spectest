@@ -95,7 +95,7 @@ func (a DefaultVerifier) Equal(t TestingT, expected, actual interface{}, msgAndA
 // Fail reports a failure
 func (a DefaultVerifier) Fail(t TestingT, failureMessage string, msgAndArgs ...interface{}) bool {
 	content := []labeledContent{
-		{"Error Trace", strings.Join(callerInfo(), "\n\t\t\t")},
+		{"Error Trace", strings.Join(callerInfo(), "\n")},
 		{"Error", failureMessage},
 	}
 
