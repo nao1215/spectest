@@ -7,7 +7,7 @@ go install github.com/go-spectest/spectest/cmd/spectest@latest
 ## User-friendly 'go test'  
 The spectest offers a wrapper for the `go test` command. The spectest command adds the "-v" option to the go test options provided by the user and executes the tests. Successful test results are represented by green ".", while failed tests are represented by red ".". Upon completion of the tests, it displays information about the failed tests and summarizes the test results.
 
-![spectest_wrapper](./image/go_test_wrapper.png)
+![spectest_wrapper](./image/go_test_wrapper.gif)
 
 Some portions of the code in this feature were forked from [rakyll/gotest](https://github.com/rakyll/gotest). gotest command is licensed under [the BSD 3-Clause "New" or "Revised" License](./gotest/LICENSE).
 
