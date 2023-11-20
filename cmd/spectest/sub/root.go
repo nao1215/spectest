@@ -335,6 +335,19 @@ func extractFailTestMessage(testResultMsgs []string) []string {
 		default:
 		}
 	}
+
+	if beforeRunPos < lastFailPos {
+		for _, v := range testResultMsgs[beforeRunPos:lastFailPos] {
+			if !strings.Contains(v, "--- FAIL") &&
+				!strings.Contains(v, "--- PASS") &&
+				!strings.Contains(v, "--- SKIP") &&
+				!strings.Contains(v, "=== RUN") &&
+				!strings.Contains(v, "=== CONT") &&
+				!strings.Contains(v, "=== PAUSE") {
+				failTestMessages = append(failTestMessages, fmt.Sprintf("    %s", color.RedString(v)))
+			}
+		}
+	}
 	return failTestMessages
 }
 
