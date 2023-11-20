@@ -327,7 +327,7 @@ func extractFailTestMessage(testResultMsgs []string) []string {
 					}
 				}
 			}
-			lastRunMsg = msg
+			lastRunMsg = extractStringBeforeThrash(msg)
 			beforeRunPos = i
 		case strings.Contains(msg, "--- FAIL"):
 			lastFailPos = i
@@ -336,4 +336,11 @@ func extractFailTestMessage(testResultMsgs []string) []string {
 		}
 	}
 	return failTestMessages
+}
+
+func extractStringBeforeThrash(s string) string {
+	if index := strings.Index(s, "/"); index != -1 {
+		return s[:index]
+	}
+	return s
 }
