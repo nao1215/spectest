@@ -339,8 +339,7 @@ func extractFailTestMessage(testResultMsgs []string) []string {
 }
 
 func extractStringBeforeThrash(s string) string {
-	index := strings.Index(s, "/")
-	if index != -1 {
+	if index := strings.Index(s, "/"); index != -1 {
 		return s[:index]
 	}
 	return s
