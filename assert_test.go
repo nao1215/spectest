@@ -1,6 +1,7 @@
 package spectest
 
 import (
+	"fmt"
 	"net/http"
 	"testing"
 )
@@ -212,6 +213,39 @@ func Test_DefaultVerifier_Fail(t *testing.T) {
 			res := verifier.Fail(tt.t, tt.name, tt.args...)
 			if res {
 				t.Fatal("Expected false but received true")
+			}
+		})
+	}
+}
+
+func Test_DefaultVerifier_NoError(t *testing.T) {
+	t.Parallel()
+
+	verifier := &DefaultVerifier{}
+	mock := &mockTestingT{}
+
+	tests := []struct {
+		name string
+		args error
+		want bool
+	}{
+		{
+			name: "should return true",
+			args: nil,
+			want: true,
+		},
+		{
+			name: "should return false",
+			args: fmt.Errorf("error"),
+			want: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := verifier.NoError(mock, tt.args)
+			if actual != tt.want {
+				t.Fatalf("Expected %t but received %t", actual, tt.want)
 			}
 		})
 	}
