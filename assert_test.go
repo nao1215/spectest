@@ -10,6 +10,7 @@ type mockTestingT struct{}
 func (m *mockTestingT) Errorf(format string, args ...interface{}) {}
 func (m *mockTestingT) Fatal(args ...interface{})                 {}
 func (m *mockTestingT) Fatalf(format string, args ...interface{}) {}
+func (m *mockTestingT) Name() string                              { return "mock" }
 
 func TestApiTestAssertStatusCodes(t *testing.T) {
 	tests := []struct {
@@ -126,7 +127,6 @@ func Test_DefaultVerifier_JSONEq(t *testing.T) {
 			}
 		})
 	}
-
 }
 
 func Test_DefaultVerifier_Equal(t *testing.T) {
@@ -135,7 +135,7 @@ func Test_DefaultVerifier_Equal(t *testing.T) {
 	verifier := &DefaultVerifier{}
 	mock := &mockTestingT{}
 
-	var notOperationFunc = func() { return }
+	var notOperationFunc = func() {}
 
 	type args struct {
 		expected interface{}
@@ -178,6 +178,40 @@ func Test_DefaultVerifier_Equal(t *testing.T) {
 			actual := verifier.Equal(mock, tt.args.expected, tt.args.actual)
 			if actual != tt.want {
 				t.Fatalf("Expected %t but received %t", actual, tt.want)
+			}
+		})
+	}
+}
+
+func Test_DefaultVerifier_Fail(t *testing.T) {
+	t.Parallel()
+
+	verifier := &DefaultVerifier{}
+	mock := &mockTestingT{}
+
+	tests := []struct {
+		name string
+		args []interface{}
+		t    TestingT
+	}{
+		{
+			// FIXME: change the name of this test more better
+			name: "pat1",
+			args: []interface{}{},
+			t:    mock,
+		},
+		{
+			name: "pat2",
+			args: []interface{}{"foo"},
+			t:    mock,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			res := verifier.Fail(tt.t, tt.name, tt.args...)
+			if res {
+				t.Fatal("Expected false but received true")
 			}
 		})
 	}
