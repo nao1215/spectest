@@ -128,3 +128,57 @@ func Test_DefaultVerifier_JSONEq(t *testing.T) {
 	}
 
 }
+
+func Test_DefaultVerifier_Equal(t *testing.T) {
+	t.Parallel()
+
+	verifier := &DefaultVerifier{}
+	mock := &mockTestingT{}
+
+	var notOperationFunc = func() { return }
+
+	type args struct {
+		expected interface{}
+		actual   interface{}
+	}
+
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{
+			name: "should return true",
+			args: args{
+				expected: 1,
+				actual:   1,
+			},
+			want: true,
+		},
+		{
+			name: "should return false because not operation function was given",
+			args: args{
+				expected: notOperationFunc,
+				actual:   notOperationFunc,
+			},
+			want: false,
+		},
+		{
+			name: "should return false because different values",
+			args: args{
+				expected: 1,
+				actual:   2,
+			},
+			want: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := verifier.Equal(mock, tt.args.expected, tt.args.actual)
+			if actual != tt.want {
+				t.Fatalf("Expected %t but received %t", actual, tt.want)
+			}
+		})
+	}
+}
