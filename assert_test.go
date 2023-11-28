@@ -5,6 +5,12 @@ import (
 	"testing"
 )
 
+type mockTestingT struct{}
+
+func (m *mockTestingT) Errorf(format string, args ...interface{}) {}
+func (m *mockTestingT) Fatal(args ...interface{})                 {}
+func (m *mockTestingT) Fatalf(format string, args ...interface{}) {}
+
 func TestApiTestAssertStatusCodes(t *testing.T) {
 	tests := []struct {
 		responseStatus []int
@@ -28,5 +34,36 @@ func TestApiTestAssertStatusCodes(t *testing.T) {
 				t.Fatalf("Expected error but didn't receive one")
 			}
 		}
+	}
+}
+
+func Test_DefaultVerifier_True(t *testing.T) {
+	t.Parallel()
+	verifier := &DefaultVerifier{}
+	mock := &mockTestingT{}
+	tests := []struct {
+		name string
+		args bool
+		want bool
+	}{
+		{
+			name: "should return true",
+			args: true,
+			want: true,
+		},
+		{
+			name: "should return false",
+			args: false,
+			want: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := verifier.True(mock, tt.args)
+			if actual != tt.want {
+				t.Fatalf("Expected %t but received %t", actual, tt.want)
+			}
+		})
 	}
 }
