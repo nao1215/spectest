@@ -67,3 +67,64 @@ func Test_DefaultVerifier_True(t *testing.T) {
 		})
 	}
 }
+
+func Test_DefaultVerifier_JSONEq(t *testing.T) {
+	t.Parallel()
+
+	verifier := &DefaultVerifier{}
+	mock := &mockTestingT{}
+
+	type args struct {
+		expected string
+		actual   string
+	}
+
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{
+			name: "should return true",
+			args: args{
+				expected: `{"name":"John","age":30,"car":null}`,
+				actual:   `{"name":"John","age":30,"car":null}`,
+			},
+			want: true,
+		},
+		{
+			name: "should failure with different values",
+			args: args{
+				expected: `{"name":"John","age":30,"car":null}`,
+				actual:   `{"name":"John","age":31,"car":null}`,
+			},
+			want: false,
+		},
+		{
+			name: "should failure to parse expected",
+			args: args{
+				expected: `{"name":"John","age":30,"car":null`,
+				actual:   `{"name":"John","age":30,"car":null}`,
+			},
+			want: false,
+		},
+		{
+			name: "should failure to parse actual",
+			args: args{
+				expected: `{"name":"John","age":30,"car":null}`,
+				actual:   `{"name":"John","age":30,"car":null`,
+			},
+			want: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := verifier.JSONEq(mock, tt.args.expected, tt.args.actual)
+			if actual != tt.want {
+				t.Fatalf("Expected %t but received %t", actual, tt.want)
+			}
+		})
+	}
+
+}
