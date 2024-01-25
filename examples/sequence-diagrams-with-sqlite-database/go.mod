@@ -6,7 +6,7 @@ require (
 	github.com/go-spectest/spectest v0.0.18
 	github.com/gorilla/mux v1.8.1
 	github.com/jmoiron/sqlx v1.3.5
-	github.com/mattn/go-sqlite3 v1.14.19
+	github.com/mattn/go-sqlite3 v1.14.20
 	github.com/pressly/goose v2.7.0+incompatible
 	github.com/satori/go.uuid v1.2.0
 )
