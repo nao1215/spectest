@@ -16,7 +16,7 @@ require (
 	github.com/n7olkachev/imgdiff v1.0.2
 	github.com/nao1215/gorky v0.2.1
 	github.com/spf13/cobra v1.8.0
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.9.0
 	github.com/tenntenn/testtime v0.2.2
 	github.com/xeipuuv/gojsonschema v1.2.0
 	golang.org/x/exp v0.0.0-20231110203233-9a3e6036ecaa
