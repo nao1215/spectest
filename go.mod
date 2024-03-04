@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/PaesslerAG/jsonpath v0.1.1
-	github.com/PuerkitoBio/goquery v1.9.0
+	github.com/PuerkitoBio/goquery v1.9.1
 	github.com/davecgh/go-spew v1.1.1
 	github.com/fatih/color v1.16.0
 	github.com/go-spectest/diff v0.0.0-20231006143314-ce490574d4a9
