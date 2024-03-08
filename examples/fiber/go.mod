@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/go-spectest/spectest v0.0.15
-	github.com/gofiber/fiber/v2 v2.52.0
+	github.com/gofiber/fiber/v2 v2.52.2
 )
 
 require (
