@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/go-spectest/spectest v0.0.15
-	github.com/go-sql-driver/mysql v1.7.1
+	github.com/go-sql-driver/mysql v1.8.0
 	github.com/gorilla/mux v1.8.1
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/pressly/goose v2.7.0+incompatible
@@ -12,6 +12,7 @@ require (
 )
 
 require (
+	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/go-spectest/diff v0.0.0-20231006143314-ce490574d4a9 // indirect
 	github.com/go-spectest/markdown v0.0.6 // indirect
