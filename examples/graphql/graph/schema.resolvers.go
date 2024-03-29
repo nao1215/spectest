@@ -7,7 +7,7 @@ package graph
 import (
 	"context"
 
-	"github.com/go-spectest/spectest/examples/graphql/graph/model"
+	"github.com/nao1215/spectest/examples/graphql/graph/model"
 )
 
 // CreateTodo is the resolver for the createTodo field.

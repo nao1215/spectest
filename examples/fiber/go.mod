@@ -1,9 +1,9 @@
-module github.com/go-spectest/spectest/examples/fiber
+module github.com/nao1215/spectest/examples/fiber
 
 go 1.18
 
 require (
-	github.com/go-spectest/spectest v0.0.15
+	github.com/nao1215/spectest v0.0.15
 	github.com/gofiber/fiber/v2 v2.52.4
 )
 
@@ -12,9 +12,9 @@ require (
 	github.com/PaesslerAG/jsonpath v0.1.1 // indirect
 	github.com/andybalholm/brotli v1.0.5 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/go-spectest/diff v0.0.0-20231006143314-ce490574d4a9 // indirect
-	github.com/go-spectest/markdown v0.0.6 // indirect
-	github.com/go-spectest/mermaid v0.0.1 // indirect
+	github.com/nao1215/diff v0.0.0-20231006143314-ce490574d4a9 // indirect
+	github.com/nao1215/markdown v0.0.6 // indirect
+	github.com/nao1215/mermaid v0.0.1 // indirect
 	github.com/google/uuid v1.5.0 // indirect
 	github.com/karrick/godirwalk v1.17.0 // indirect
 	github.com/klauspost/compress v1.17.0 // indirect

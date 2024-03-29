@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/go-spectest/spectest"
+	"github.com/nao1215/spectest"
 )
 
 func TestWritesTheMeta(t *testing.T) {

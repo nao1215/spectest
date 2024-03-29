@@ -6,9 +6,9 @@ import (
 	"testing"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/go-spectest/spectest"
+	"github.com/nao1215/spectest"
 
-	selector "github.com/go-spectest/spectest/css-selector"
+	selector "github.com/nao1215/spectest/css-selector"
 )
 
 func TestTextExists(t *testing.T) {

@@ -8,10 +8,10 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/go-spectest/spectest"
+	"github.com/nao1215/spectest"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/go-spectest/spectest/jsonpath"
+	"github.com/nao1215/spectest/jsonpath"
 )
 
 func TestApiTestContains(t *testing.T) {

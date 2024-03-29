@@ -7,8 +7,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/go-spectest/spectest"
-	"github.com/go-spectest/spectest/x/db"
+	"github.com/nao1215/spectest"
+	"github.com/nao1215/spectest/x/db"
 	"github.com/jmoiron/sqlx"
 	uuid "github.com/satori/go.uuid"
 )

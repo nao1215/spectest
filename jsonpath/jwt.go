@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/go-spectest/spectest/jsonpath/jsonpath"
+	"github.com/nao1215/spectest/jsonpath/jsonpath"
 )
 
 const (

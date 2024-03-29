@@ -1,10 +1,10 @@
 # plantuml
-Formats the results of an [spectest](https://github.com/go-spectest/spectest) run as plant uml markup.
+Formats the results of an [spectest](https://github.com/nao1215/spectest) run as plant uml markup.
 
 ## Installation
 
 ```bash
-go get -u github.com/go-spectest/plantuml
+go get -u github.com/nao1215/plantuml
 ```
 
 ## Example

@@ -1,7 +1,7 @@
 package graph
 
 import (
-	"github.com/go-spectest/spectest/examples/graphql/graph/model"
+	"github.com/nao1215/spectest/examples/graphql/graph/model"
 )
 
 // This file will not be regenerated automatically.
