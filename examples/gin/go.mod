@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/gin-gonic/gin v1.9.1
-	github.com/nao1215/spectest v0.0.18
+	github.com/nao1215/spectest v0.0.20
 )
 
 require (

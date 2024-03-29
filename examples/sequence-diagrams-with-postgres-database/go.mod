@@ -3,7 +3,7 @@ module github.com/nao1215/spectest/examples/sequence-diagrams-with-postgres-data
 go 1.18
 
 require (
-	github.com/nao1215/spectest v0.0.18
+	github.com/nao1215/spectest v0.0.20
 	github.com/gorilla/mux v1.8.1
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/lib/pq v1.10.9

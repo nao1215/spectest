@@ -3,7 +3,7 @@ module github.com/nao1215/spectest/examples/ginkgo
 go 1.18
 
 require (
-	github.com/nao1215/spectest v0.0.18
+	github.com/nao1215/spectest v0.0.20
 	github.com/gorilla/mux v1.8.1
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.31.1

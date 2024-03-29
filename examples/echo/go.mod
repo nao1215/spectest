@@ -3,7 +3,7 @@ module github.com/nao1215/spectest/examples/echo
 go 1.18
 
 require (
-	github.com/nao1215/spectest v0.0.18
+	github.com/nao1215/spectest v0.0.20
 	github.com/labstack/echo v3.3.10+incompatible
 )
 
