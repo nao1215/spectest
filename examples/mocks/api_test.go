@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/go-spectest/spectest"
+	"github.com/nao1215/spectest"
 )
 
 func TestGetUserSuccess(t *testing.T) {

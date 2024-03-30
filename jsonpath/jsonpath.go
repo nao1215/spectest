@@ -7,8 +7,8 @@ import (
 	"reflect"
 	regex "regexp"
 
-	httputil "github.com/go-spectest/spectest/jsonpath/http"
-	"github.com/go-spectest/spectest/jsonpath/jsonpath"
+	httputil "github.com/nao1215/spectest/jsonpath/http"
+	"github.com/nao1215/spectest/jsonpath/jsonpath"
 )
 
 // Contains is a convenience function to assert that a jsonpath expression extracts a value in an array

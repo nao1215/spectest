@@ -1,7 +1,7 @@
 package mocks
 
 import (
-	"github.com/go-spectest/spectest"
+	"github.com/nao1215/spectest"
 )
 
 var _ spectest.Verifier = &MockVerifier{}

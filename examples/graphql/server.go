@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/go-spectest/spectest/examples/graphql/graph"
+	"github.com/nao1215/spectest/examples/graphql/graph"
 )
 
 const defaultPort = "8080"

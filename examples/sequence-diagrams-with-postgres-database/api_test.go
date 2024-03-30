@@ -6,9 +6,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/go-spectest/spectest"
-	"github.com/go-spectest/spectest/examples/sequence-diagrams-with-postgres-database/test"
-	_ "github.com/go-spectest/spectest/examples/sequence-diagrams-with-postgres-database/test"
+	"github.com/nao1215/spectest"
+	"github.com/nao1215/spectest/examples/sequence-diagrams-with-postgres-database/test"
+	_ "github.com/nao1215/spectest/examples/sequence-diagrams-with-postgres-database/test"
 	"github.com/jmoiron/sqlx"
 	uuid "github.com/satori/go.uuid"
 )

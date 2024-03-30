@@ -11,7 +11,7 @@ import (
 	"io"
 	"time"
 
-	"github.com/go-spectest/spectest"
+	"github.com/nao1215/spectest"
 )
 
 // WrapWithRecorder wraps an existing driver with a Recorder

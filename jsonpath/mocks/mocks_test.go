@@ -8,9 +8,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/go-spectest/spectest/jsonpath/mocks"
+	"github.com/nao1215/spectest/jsonpath/mocks"
 
-	"github.com/go-spectest/spectest"
+	"github.com/nao1215/spectest"
 )
 
 func TestMocks(t *testing.T) {

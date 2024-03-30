@@ -5,8 +5,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/go-spectest/spectest"
-	"github.com/go-spectest/spectest/plantuml"
+	"github.com/nao1215/spectest"
+	"github.com/nao1215/spectest/plantuml"
 )
 
 func TestGetUser(t *testing.T) {

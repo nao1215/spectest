@@ -5,9 +5,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/go-spectest/spectest"
-	"github.com/go-spectest/spectest/jsonschema"
-	"github.com/go-spectest/spectest/mocks"
+	"github.com/nao1215/spectest"
+	"github.com/nao1215/spectest/jsonschema"
+	"github.com/nao1215/spectest/mocks"
 )
 
 const schema = `{

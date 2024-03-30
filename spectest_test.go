@@ -19,8 +19,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/go-spectest/spectest"
-	"github.com/go-spectest/spectest/mocks"
+	"github.com/nao1215/spectest"
+	"github.com/nao1215/spectest/mocks"
 	"github.com/google/go-cmp/cmp"
 	"github.com/nao1215/gorky/file"
 )

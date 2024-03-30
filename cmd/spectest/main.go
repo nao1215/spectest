@@ -4,7 +4,7 @@ package main
 import (
 	"os"
 
-	"github.com/go-spectest/spectest/cmd/spectest/sub"
+	"github.com/nao1215/spectest/cmd/spectest/sub"
 )
 
 // osExit is wrapper for  os.Exit(). It's for unit test.

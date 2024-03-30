@@ -1,10 +1,10 @@
-module github.com/go-spectest/spectest/examples/gin
+module github.com/nao1215/spectest/examples/gin
 
 go 1.18
 
 require (
 	github.com/gin-gonic/gin v1.9.1
-	github.com/go-spectest/spectest v0.0.18
+	github.com/nao1215/spectest v0.0.18
 )
 
 require (
@@ -18,9 +18,9 @@ require (
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.14.0 // indirect
-	github.com/go-spectest/diff v0.0.0-20231006143314-ce490574d4a9 // indirect
-	github.com/go-spectest/markdown v0.0.7 // indirect
-	github.com/go-spectest/mermaid v0.0.1 // indirect
+	github.com/nao1215/diff v0.0.0-20231006143314-ce490574d4a9 // indirect
+	github.com/nao1215/markdown v0.0.7 // indirect
+	github.com/nao1215/mermaid v0.0.1 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/karrick/godirwalk v1.17.0 // indirect

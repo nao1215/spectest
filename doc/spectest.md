@@ -1,7 +1,7 @@
 # Use Cases of spectest
 ## Installation of spectest cli
 ```shell
-go install github.com/go-spectest/spectest/cmd/spectest@latest
+go install github.com/nao1215/spectest/cmd/spectest@latest
 ```
 
 ## User-friendly 'go test'  
@@ -54,7 +54,7 @@ You execute the following command to generate an index file:
 spectest index docs --title "naraku api result" 
 ```
 
-[Output](https://github.com/go-spectest/naraku/blob/main/docs/index.md):  
+[Output](https://github.com/nao1215/naraku/blob/main/docs/index.md):  
 ![index_result](./image/index.png)
 
 
