@@ -1,9 +1,9 @@
-module github.com/go-spectest/spectest/examples/echo
+module github.com/nao1215/spectest/examples/echo
 
 go 1.18
 
 require (
-	github.com/go-spectest/spectest v0.0.18
+	github.com/nao1215/spectest v0.0.18
 	github.com/labstack/echo v3.3.10+incompatible
 )
 
@@ -11,9 +11,9 @@ require (
 	github.com/PaesslerAG/gval v1.0.0 // indirect
 	github.com/PaesslerAG/jsonpath v0.1.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/go-spectest/diff v0.0.0-20231006143314-ce490574d4a9 // indirect
-	github.com/go-spectest/markdown v0.0.7 // indirect
-	github.com/go-spectest/mermaid v0.0.1 // indirect
+	github.com/nao1215/diff v0.0.1 // indirect
+	github.com/nao1215/markdown v0.0.7 // indirect
+	github.com/nao1215/mermaid v0.0.1 // indirect
 	github.com/karrick/godirwalk v1.17.0 // indirect
 	github.com/labstack/gommon v0.4.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect

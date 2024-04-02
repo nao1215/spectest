@@ -13,8 +13,8 @@ import (
 	"strconv"
 	"strings"
 
-	md "github.com/go-spectest/markdown"
-	"github.com/go-spectest/mermaid/sequence"
+	md "github.com/nao1215/markdown"
+	"github.com/nao1215/mermaid/sequence"
 )
 
 type (

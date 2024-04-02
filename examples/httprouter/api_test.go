@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/go-spectest/spectest"
-	"github.com/go-spectest/spectest/jsonpath"
+	"github.com/nao1215/spectest"
+	"github.com/nao1215/spectest/jsonpath"
 )
 
 func TestGetUserCookieMatching(t *testing.T) {

@@ -3,9 +3,9 @@ package server_test
 import (
 	"net/http"
 
-	"github.com/go-spectest/spectest"
-	server "github.com/go-spectest/spectest/examples/ginkgo"
-	"github.com/go-spectest/spectest/jsonpath"
+	"github.com/nao1215/spectest"
+	server "github.com/nao1215/spectest/examples/ginkgo"
+	"github.com/nao1215/spectest/jsonpath"
 	"github.com/gorilla/mux"
 	. "github.com/onsi/ginkgo"
 )

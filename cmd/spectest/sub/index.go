@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/go-spectest/markdown"
+	"github.com/nao1215/markdown"
 	"github.com/spf13/cobra"
 )
 

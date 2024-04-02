@@ -47,7 +47,7 @@ import (
 	"syscall"
 
 	"github.com/fatih/color"
-	"github.com/go-spectest/spectest"
+	"github.com/nao1215/spectest"
 	"github.com/spf13/cobra"
 	"golang.org/x/exp/slices"
 )

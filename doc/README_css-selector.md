@@ -1,6 +1,6 @@
 # css-selector
 
-Assertions for [spectest](https://github.com/go-spectest/spectest) using css selectors.
+Assertions for [spectest](https://github.com/nao1215/spectest) using css selectors.
 
 ## Examples
 

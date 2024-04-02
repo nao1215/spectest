@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/go-spectest/imaging"
+	"github.com/nao1215/imaging"
 	"github.com/n7olkachev/imgdiff/pkg/imgdiff"
 )
 

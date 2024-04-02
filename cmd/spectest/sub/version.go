@@ -3,7 +3,7 @@ package sub
 import (
 	"fmt"
 
-	ver "github.com/go-spectest/spectest/version"
+	ver "github.com/nao1215/spectest/version"
 	"github.com/spf13/cobra"
 )
 

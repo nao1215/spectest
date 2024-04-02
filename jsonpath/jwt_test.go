@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/go-spectest/spectest"
+	"github.com/nao1215/spectest"
 
-	"github.com/go-spectest/spectest/jsonpath"
+	"github.com/nao1215/spectest/jsonpath"
 )
 
 const jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"

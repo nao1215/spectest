@@ -1,6 +1,6 @@
 # jsonpath
 
-This library provides jsonpath assertions for [spectest](https://github.com/go-spectest/spectest).
+This library provides jsonpath assertions for [spectest](https://github.com/nao1215/spectest).
 
 ## Supported OS
 - Linux
@@ -10,7 +10,7 @@ This library provides jsonpath assertions for [spectest](https://github.com/go-s
 ## Installation
 
 ```bash
-go get -u github.com/go-spectest/spectest
+go get -u github.com/nao1215/spectest
 ```
 
 ## Examples

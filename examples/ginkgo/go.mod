@@ -1,9 +1,9 @@
-module github.com/go-spectest/spectest/examples/ginkgo
+module github.com/nao1215/spectest/examples/ginkgo
 
 go 1.18
 
 require (
-	github.com/go-spectest/spectest v0.0.18
+	github.com/nao1215/spectest v0.0.18
 	github.com/gorilla/mux v1.8.1
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.31.1
@@ -14,9 +14,9 @@ require (
 	github.com/PaesslerAG/jsonpath v0.1.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
-	github.com/go-spectest/diff v0.0.0-20231006143314-ce490574d4a9 // indirect
-	github.com/go-spectest/markdown v0.0.7 // indirect
-	github.com/go-spectest/mermaid v0.0.1 // indirect
+	github.com/nao1215/diff v0.0.0-20231006143314-ce490574d4a9 // indirect
+	github.com/nao1215/markdown v0.0.7 // indirect
+	github.com/nao1215/mermaid v0.0.1 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/karrick/godirwalk v1.17.0 // indirect
 	github.com/kr/text v0.2.0 // indirect

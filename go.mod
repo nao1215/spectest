@@ -1,4 +1,4 @@
-module github.com/go-spectest/spectest
+module github.com/nao1215/spectest
 
 go 1.19
 
@@ -7,14 +7,14 @@ require (
 	github.com/PuerkitoBio/goquery v1.9.1
 	github.com/davecgh/go-spew v1.1.1
 	github.com/fatih/color v1.16.0
-	github.com/go-spectest/diff v0.0.0-20231006143314-ce490574d4a9
-	github.com/go-spectest/imaging v1.0.6
-	github.com/go-spectest/markdown v0.0.7
-	github.com/go-spectest/mermaid v0.0.1
 	github.com/google/go-cmp v0.6.0
 	github.com/gorilla/websocket v1.5.1
 	github.com/n7olkachev/imgdiff v1.0.2
+	github.com/nao1215/diff v0.0.1
 	github.com/nao1215/gorky v0.2.1
+	github.com/nao1215/imaging v1.0.8
+	github.com/nao1215/markdown v0.0.8
+	github.com/nao1215/mermaid v0.0.2
 	github.com/spf13/cobra v1.8.0
 	github.com/stretchr/testify v1.9.0
 	github.com/tenntenn/testtime v0.2.2

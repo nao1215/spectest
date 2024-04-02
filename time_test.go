@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/go-spectest/spectest"
+	"github.com/nao1215/spectest"
 	"github.com/tenntenn/testtime"
 )
 
