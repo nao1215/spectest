@@ -1,6 +1,6 @@
 module github.com/nao1215/spectest/examples/httprouter
 
-go 1.18
+go 1.22.2
 
 require (
 	github.com/julienschmidt/httprouter v1.3.0

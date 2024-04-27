@@ -1,6 +1,6 @@
 module github.com/nao1215/spectest/examples/graphql
 
-go 1.21.3
+go 1.22.2
 
 require (
 	github.com/99designs/gqlgen v0.17.39
