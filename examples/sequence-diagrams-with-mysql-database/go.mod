@@ -1,6 +1,6 @@
 module github.com/nao1215/spectest/examples/sequence-diagrams-with-mysql-database
 
-go 1.22.2
+go 1.22.0
 
 require (
 	github.com/go-sql-driver/mysql v1.8.0
