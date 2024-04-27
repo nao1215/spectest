@@ -1,6 +1,6 @@
 module github.com/nao1215/spectest/examples/echo
 
-go 1.22.0
+go 1.22
 
 require (
 	github.com/labstack/echo v3.3.10+incompatible

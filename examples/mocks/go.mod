@@ -1,6 +1,6 @@
 module github.com/nao1215/spectest/examples/mocks
 
-go 1.22.0
+go 1.22
 
 require (
 	github.com/gorilla/mux v1.8.1

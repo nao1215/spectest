@@ -1,6 +1,6 @@
 module github.com/nao1215/spectest
 
-go 1.22.0
+go 1.22
 
 require (
 	github.com/PaesslerAG/jsonpath v0.1.1

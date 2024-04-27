@@ -1,6 +1,6 @@
 module github.com/nao1215/spectest/examples/fiber
 
-go 1.22.0
+go 1.22
 
 require (
 	github.com/gofiber/fiber/v2 v2.52.4
