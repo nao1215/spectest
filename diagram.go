@@ -14,7 +14,7 @@ import (
 	"strings"
 
 	md "github.com/nao1215/markdown"
-	"github.com/nao1215/mermaid/sequence"
+	"github.com/nao1215/markdown/mermaid/sequence"
 )
 
 type (
