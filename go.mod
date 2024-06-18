@@ -13,7 +13,7 @@ require (
 	github.com/nao1215/diff v0.0.1
 	github.com/nao1215/gorky v0.2.1
 	github.com/nao1215/imaging v1.0.8
-	github.com/nao1215/markdown v0.4.0
+	github.com/nao1215/markdown v0.5.0
 	github.com/spf13/cobra v1.8.1
 	github.com/stretchr/testify v1.9.0
 	github.com/tenntenn/testtime v0.2.2
@@ -36,7 +36,6 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/xeipuuv/gojsonpointer v0.0.0-20180127040702-4e3ac2762d5f // indirect
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415 // indirect
-	golang.org/x/image v0.13.0 // indirect
 	golang.org/x/net v0.24.0 // indirect
 	golang.org/x/sync v0.4.0 // indirect
 	golang.org/x/sys v0.19.0 // indirect
