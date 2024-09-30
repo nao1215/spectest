@@ -1,7 +1,6 @@
 module github.com/nao1215/spectest
 
 go 1.22
-
 require (
 	github.com/PaesslerAG/jsonpath v0.1.1
 	github.com/PuerkitoBio/goquery v1.9.2
@@ -16,7 +15,7 @@ require (
 	github.com/nao1215/markdown v0.6.0
 	github.com/spf13/cobra v1.8.1
 	github.com/stretchr/testify v1.9.0
-	github.com/tenntenn/testtime v0.2.2
+	github.com/tenntenn/testtime v0.3.0
 	github.com/xeipuuv/gojsonschema v1.2.0
 	golang.org/x/exp v0.0.0-20231110203233-9a3e6036ecaa
 )
