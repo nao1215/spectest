@@ -15,7 +15,7 @@ require (
 	github.com/nao1215/imaging v1.0.9
 	github.com/nao1215/markdown v0.6.0
 	github.com/spf13/cobra v1.8.1
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.10.0
 	github.com/tenntenn/testtime v0.2.2
 	github.com/xeipuuv/gojsonschema v1.2.0
 	golang.org/x/exp v0.0.0-20231110203233-9a3e6036ecaa
