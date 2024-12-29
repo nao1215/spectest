@@ -751,7 +751,7 @@ func (r *MockResponse) FixedDelay(delay int64) *MockResponse {
 }
 
 // Times respond the given number of times
-func (r *MockResponse) Times(times uint) *MockResponse {
+func (r *MockResponse) Times(times int) *MockResponse {
 	r.mock.execCount.updateExpectCount(times)
 	return r
 }
@@ -1293,18 +1293,18 @@ func (r *mockInteraction) GetRequestHost() string {
 // execCount is used to track the number of times a mock has been executed.
 type execCount struct {
 	// expect is the expected number of times the mock will be executed.
-	expect uint
+	expect int
 	// actual is the actual number of times the mock has been executed.
-	actual uint
+	actual int
 }
 
 // newExecCount creates a new execCount with the given expected number of executions.
-func newExecCount(expect uint) *execCount {
+func newExecCount(expect int) *execCount {
 	return &execCount{expect: expect}
 }
 
 // updateExpectCount updates the expected number of executions.
-func (e *execCount) updateExpectCount(expect uint) {
+func (e *execCount) updateExpectCount(expect int) {
 	e.expect = expect
 }
 

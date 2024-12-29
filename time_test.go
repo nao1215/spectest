@@ -41,14 +41,10 @@ func TestIntervalDuration(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			interval := spectest.NewInterval()
 
-			if !testtime.SetTime(t, tt.fields.start) {
-				t.Fatal("failed to set start time")
-			}
+			testtime.SetTime(t, tt.fields.start)
 			interval.Start()
 
-			if !testtime.SetTime(t, tt.fields.end) {
-				t.Fatal("failed to set end time")
-			}
+			testtime.SetTime(t, tt.fields.end)
 			interval.End()
 
 			if interval.Duration() != tt.want {
@@ -64,15 +60,11 @@ func ExampleInterval_Duration() {
 	interval := spectest.NewInterval()
 
 	// Set started time. Usually, you don't need to set the time. You only call Start() method.
-	if !testtime.SetTime(t, time.Date(2023, 1, 1, 0, 0, 0, 0, time.UTC)) {
-		t.Fatal("failed to set start time")
-	}
+	testtime.SetTime(t, time.Date(2023, 1, 1, 0, 0, 0, 0, time.UTC))
 	interval.Start()
 
 	// Set finished time. Usually, you don't need to set the time. You only call End() method.
-	if !testtime.SetTime(t, time.Date(2023, 1, 1, 0, 0, 1, 0, time.UTC)) {
-		t.Fatal("failed to set end time")
-	}
+	testtime.SetTime(t, time.Date(2023, 1, 1, 0, 0, 1, 0, time.UTC))
 	interval.End()
 
 	fmt.Printf("duration=%f[s]", interval.Duration().Seconds())
