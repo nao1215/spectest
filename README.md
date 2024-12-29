@@ -4,7 +4,6 @@
 [![WindowsUnitTest](https://github.com/nao1215/spectest/actions/workflows/windows_test.yml/badge.svg)](https://github.com/nao1215/spectest/actions/workflows/windows_test.yml)
 [![UnitTestExampleCodes](https://github.com/nao1215/spectest/actions/workflows/test-examples.yml/badge.svg)](https://github.com/nao1215/spectest/actions/workflows/test-examples.yml)
 [![reviewdog](https://github.com/nao1215/spectest/actions/workflows/reviewdog.yml/badge.svg)](https://github.com/nao1215/spectest/actions/workflows/reviewdog.yml)
-[![Gosec](https://github.com/nao1215/spectest/actions/workflows/gosec.yml/badge.svg)](https://github.com/nao1215/spectest/actions/workflows/gosec.yml)
 ![Coverage](https://github.com/nao1215/octocovs-central-repo/blob/main//badges/nao1215/spectest/coverage.svg?raw=true)
 
 ## What is spectest?
