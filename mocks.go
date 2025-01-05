@@ -73,7 +73,7 @@ func (r *Transport) RoundTrip(req *http.Request) (mockResponse *http.Response, e
 		r.debug.mock(mockResponse, req)
 	}()
 
-	if r.observers != nil && len(r.observers) > 0 {
+	if len(r.observers) > 0 {
 		defer func() {
 			for _, observe := range r.observers {
 				observe(mockResponse, req, r.specTest)
