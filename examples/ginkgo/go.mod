@@ -1,12 +1,13 @@
 module github.com/nao1215/spectest/examples/ginkgo
 
 go 1.22
+toolchain go1.22.5
 
 require (
 	github.com/gorilla/mux v1.8.1
 	github.com/nao1215/spectest v0.1.0
 	github.com/onsi/ginkgo v1.16.5
-	github.com/onsi/gomega v1.31.1
+	github.com/onsi/gomega v1.36.2
 )
 
 require (
