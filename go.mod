@@ -9,13 +9,13 @@ require (
 	github.com/PuerkitoBio/goquery v1.10.2
 	github.com/davecgh/go-spew v1.1.1
 	github.com/fatih/color v1.18.0
-	github.com/google/go-cmp v0.6.0
+	github.com/google/go-cmp v0.7.0
 	github.com/gorilla/websocket v1.5.3
 	github.com/n7olkachev/imgdiff v1.0.2
 	github.com/nao1215/diff v0.0.1
 	github.com/nao1215/gorky v0.2.1
 	github.com/nao1215/imaging v1.0.9
-	github.com/nao1215/markdown v0.7.0
+	github.com/nao1215/markdown v0.7.1
 	github.com/spf13/cobra v1.9.1
 	github.com/stretchr/testify v1.10.0
 	github.com/tenntenn/testtime v0.3.2
