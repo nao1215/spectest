@@ -3,7 +3,7 @@ module github.com/nao1215/spectest/examples/gin
 go 1.22
 
 require (
-	github.com/gin-gonic/gin v1.10.0
+	github.com/gin-gonic/gin v1.10.1
 	github.com/nao1215/spectest v0.1.0
 )
 
