@@ -3,7 +3,7 @@ module github.com/nao1215/spectest/examples/fiber
 go 1.22
 
 require (
-	github.com/gofiber/fiber/v2 v2.52.6
+	github.com/gofiber/fiber/v2 v2.52.11
 	github.com/nao1215/spectest v0.1.0
 )
 
